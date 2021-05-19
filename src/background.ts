@@ -1,6 +1,21 @@
 import { MessageType } from "./types";
 import Urbit from "@urbit/http-api";
 
+// let airlock = Urbit.authenticate({
+//           ship: '~zod',
+//           url: 'localhost:8080',
+//           code: 'lidlut-tabwed-pillex-ridrup',
+//           verbose: true
+// }).catch(err => {
+//   console.log(err);
+// });
+
+// airlock.then(urbit => {
+//   console.log("Attempting to connect to urbit ship.");
+//   console.log(urbit.ship);
+//   // urbit.scry()
+// });
+
 
 
 
