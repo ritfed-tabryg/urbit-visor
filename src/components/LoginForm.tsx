@@ -1,11 +1,12 @@
 import * as React from "react";
 import "./Button.css";
-
+var CryptoJS = require("crypto-js");
 
 type FormValues = {
   shipName: string;
   shipURL: string;
   shipCode: string;
+  encryptionPassword: string;
 };
 
 class LoginForm extends React.Component<{}, FormValues> {
@@ -13,7 +14,8 @@ class LoginForm extends React.Component<{}, FormValues> {
         this.setState({
             shipName: '',
             shipURL: '',
-            shipCode: ''
+            shipCode: '',
+            encryptionPassword: ''
         })
     }
 
@@ -25,27 +27,28 @@ class LoginForm extends React.Component<{}, FormValues> {
     onChangeName = (e: React.FormEvent<HTMLInputElement>): void => {
         chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
-            shipName: e.currentTarget.value,
-            shipURL: this.state.shipURL,
-            shipCode: this.state.shipCode
+            shipName: e.currentTarget.value
         })
     };
 
     onChangeURL = (e: React.FormEvent<HTMLInputElement>): void => {
         chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
-            shipName: this.state.shipName,
             shipURL: e.currentTarget.value,
-            shipCode: this.state.shipCode
         })
     };
 
     onChangeCode = (e: React.FormEvent<HTMLInputElement>): void => {
         chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
-            shipName: this.state.shipName,
-            shipURL: this.state.shipURL,
             shipCode: e.currentTarget.value
+        })
+    };
+
+    onChangePassword = (e: React.FormEvent<HTMLInputElement>): void => {
+        chrome.storage.local.set({ test3: e.currentTarget.name });
+        this.setState({
+            encryptionPassword: e.currentTarget.value
         })
     };
 
@@ -76,6 +79,15 @@ class LoginForm extends React.Component<{}, FormValues> {
                     className='loginFormInput'
                     placeholder='Ship +code'
                     onChange={this.onChangeCode}
+                    required
+                    />
+                <input
+                    name='encryptionPassword'
+                    id='loginFormEncryptionPassword'
+                    className='loginFormInput'
+                    placeholder='Account Password'
+                    onChange={this.onChangePassword}
+                    type='password'
                     required
                     />
                 <div className="buttonContainer">
