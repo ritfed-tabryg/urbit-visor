@@ -1,7 +1,8 @@
 import * as React from "react";
 import logo from "./urbit.svg";
 import "./App.css";
-import { Button } from "./components/Button";
+import LoginForm from "./components/LoginForm";
+
 
 const App = () => {
   return (
@@ -11,7 +12,7 @@ const App = () => {
         <p>
           Login With Urbit
         </p>
-        <Button />
+        <LoginForm />
       </header>
     </div>
   );

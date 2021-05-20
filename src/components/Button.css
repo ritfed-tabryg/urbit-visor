@@ -1,4 +1,4 @@
-.boolButton {
+.loginButton {
   border: 0;
   background-color: #1a1d22;
   color: white;
@@ -13,4 +13,10 @@
   color: white;
   min-width: 150px;
   padding: 10px;
+}
+
+.loginFormInput {
+  text-align: center;
+  padding: 4px;
+  margin: 2px;
 }
