@@ -2,7 +2,6 @@ import { MessageType } from "./types";
 import Urbit from "@urbit/http-api";
 
 
-
 // let airlock = Urbit.authenticate({
 //           ship: '~zod',
 //           url: 'localhost:8080',

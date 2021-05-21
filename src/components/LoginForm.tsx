@@ -21,32 +21,48 @@ class LoginForm extends React.Component<{}, FormValues> {
 
     onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        chrome.storage.local.set({ loginCredentials: this.state });
+
+        // Encrypt the ship URL and ship +code
+        let encryptedURL = CryptoJS.AES.encrypt(this.state.shipURL, this.state.encryptionPassword).toString();
+        let encryptedCode = CryptoJS.AES.encrypt(this.state.shipCode, this.state.encryptionPassword).toString();
+
+        // Save the unencrypted ship name together with the encrypted ship URL & +code
+        let encryptedCredentials = {
+            shipName: this.state.shipName,
+            encryptedShipURL: encryptedURL,
+            encryptedShipCode: encryptedCode,
+        }
+        chrome.storage.local.set({ loginCredentials: encryptedCredentials });
+
+        // Decrypt the credentials to test it works
+        let decryptedURL = CryptoJS.AES.decrypt(encryptedURL, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);
+        let decryptedCode = CryptoJS.AES.decrypt(encryptedCode, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);
+
+        // Save the decrypted credentials
+        let decryptedCredentials = {
+            shipName: this.state.shipName,
+            decryptedShipURL: decryptedURL,
+            decryptedShipCode: decryptedCode,
+        }
+        chrome.storage.local.set({ decryptedLoginCredentials: decryptedCredentials });
     };
 
     onChangeName = (e: React.FormEvent<HTMLInputElement>): void => {
-        chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
             shipName: e.currentTarget.value
         })
     };
-
     onChangeURL = (e: React.FormEvent<HTMLInputElement>): void => {
-        chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
             shipURL: e.currentTarget.value,
         })
     };
-
     onChangeCode = (e: React.FormEvent<HTMLInputElement>): void => {
-        chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
             shipCode: e.currentTarget.value
         })
     };
-
     onChangePassword = (e: React.FormEvent<HTMLInputElement>): void => {
-        chrome.storage.local.set({ test3: e.currentTarget.name });
         this.setState({
             encryptionPassword: e.currentTarget.value
         })
