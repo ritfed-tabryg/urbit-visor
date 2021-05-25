@@ -34,6 +34,10 @@ class LoginForm extends React.Component<{}, FormValues> {
         }
         chrome.storage.local.set({ loginCredentials: encryptedCredentials });
 
+        //
+        // Implement an `accounts` array in local store, and when new account is added, then add it to the end of the array
+        //
+
         // Decrypt the credentials to test it works
         let decryptedURL = CryptoJS.AES.decrypt(encryptedURL, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);
         let decryptedCode = CryptoJS.AES.decrypt(encryptedCode, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);

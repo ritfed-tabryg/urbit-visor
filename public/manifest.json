@@ -19,7 +19,7 @@
     "scripts": [
       "background.js"
     ],
-    "persistent": false
+    "persistent": true
   },
   "content_scripts": [
     {
@@ -31,5 +31,10 @@
       ]
     }
   ],
-  "permissions": ["storage"]
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*/*"
+ ]
 }
