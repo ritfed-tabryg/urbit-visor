@@ -5,10 +5,12 @@ import Urbit from "@urbit/http-api";
 chrome.webRequest.onBeforeSendHeaders.addListener(
   function(details) {
     details.initiator
-    if (details.requestHeaders) {
-      for (var i = 0; i < details.requestHeaders.length; ++i) {
-        if (details.requestHeaders[i].name === 'Origin') {
-          details.requestHeaders[i] = {name: "Origin", value: "http://dcspark.io"}
+    if (details.initiator == 'chrome-extension://' + chrome.runtime.id) {
+      if (details.requestHeaders) {
+        for (var i = 0; i < details.requestHeaders.length; ++i) {
+          if (details.requestHeaders[i].name === 'Origin') {
+            details.requestHeaders[i] = {name: "Origin", value: "http://dcspark.io"}
+          }
         }
       }
     }
