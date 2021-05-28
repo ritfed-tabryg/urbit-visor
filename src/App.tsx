@@ -2,20 +2,49 @@ import * as React from "react";
 import logo from "./urbit.svg";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
+import {
+  MemoryRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
-
-const App = () => {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
+    <Router>
+      <div>
+        <Switch>
+          <Route path="/account-added">
+            <AccountAdded />
+          </Route>
+          <Route path="/">
+            <AddAccount />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+
+function AddAccount() {
+  return (
+    <div className="App App-background">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Login With Urbit
         </p>
         <LoginForm />
-      </header>
     </div>
   );
-};
+}
 
-export default App;
+function AccountAdded() {
+  return (
+    <div className="App App-background">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Account Added Successfully
+        </p>
+    </div>
+    );
+}
