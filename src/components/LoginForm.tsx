@@ -37,21 +37,21 @@ class LoginForm extends React.Component<RouteComponentProps, FormValues> {
             encryptedShipCode: encryptedCode,
         }
 
-        // Store new encrypted credentials into account list
-        chrome.storage.local.get("accounts", (res) => {
-            if (res["accounts"]) {
-                let new_accounts = res["accounts"];
-                new_accounts.push(encryptedCredentials)
-                chrome.storage.local.set({ accounts: new_accounts });
+        // Store new encrypted credentials into ship list
+        chrome.storage.local.get("ships", (res) => {
+            if (res["ships"]) {
+                let new_ships = res["ships"];
+                new_ships.push(encryptedCredentials)
+                chrome.storage.local.set({ ships: new_ships });
             } else {
-                let new_accounts = [encryptedCredentials];
-                chrome.storage.local.set({ accounts: new_accounts });
+                let new_ships = [encryptedCredentials];
+                chrome.storage.local.set({ ships: new_ships });
             }
         });
 
-        this.props.history.push("/account-added")
+        this.props.history.push("/ship-added")
         chrome.storage.local.set({ location: this.props.history.location });
-        this.props.history.replace("/account-added")
+        this.props.history.replace("/ship-added")
     };
 
     onChangeName = (e: React.FormEvent<HTMLInputElement>): void => {
@@ -108,14 +108,14 @@ class LoginForm extends React.Component<RouteComponentProps, FormValues> {
                     name='encryptionPassword'
                     id='loginFormEncryptionPassword'
                     className='loginFormInput'
-                    placeholder='Account Password'
+                    placeholder='Ship Password'
                     onChange={this.onChangePassword}
                     type='password'
                     required
                     />
                 <div className="buttonContainer">
                     <button className="loginButton" type='submit'>
-                    Add Account
+                    Add Ship
                     </button>
                 </div>
             </div>
