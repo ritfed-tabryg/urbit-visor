@@ -1,5 +1,8 @@
 import * as React from "react";
 import "./Button.css";
+import { withRouter } from "react-router-dom";
+import {RouteComponentProps} from "react-router";
+
 var CryptoJS = require("crypto-js");
 
 type FormValues = {
@@ -9,7 +12,7 @@ type FormValues = {
   encryptionPassword: string;
 };
 
-class LoginForm extends React.Component<{}, FormValues> {
+class LoginForm extends React.Component<RouteComponentProps, FormValues> {
     componentWillMount() {
         this.setState({
             shipName: '',
@@ -21,6 +24,7 @@ class LoginForm extends React.Component<{}, FormValues> {
 
     onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
+
 
         // Encrypt the ship URL and ship +code
         let encryptedURL = CryptoJS.AES.encrypt(this.state.shipURL, this.state.encryptionPassword).toString();
@@ -44,6 +48,10 @@ class LoginForm extends React.Component<{}, FormValues> {
                 chrome.storage.local.set({ accounts: new_accounts });
             }
         });
+
+        this.props.history.push("/account-added")
+        chrome.storage.local.set({ location: this.props.history.location });
+        this.props.history.replace("/account-added")
     };
 
     onChangeName = (e: React.FormEvent<HTMLInputElement>): void => {
@@ -107,7 +115,7 @@ class LoginForm extends React.Component<{}, FormValues> {
                     />
                 <div className="buttonContainer">
                     <button className="loginButton" type='submit'>
-                       Login
+                    Add Account
                     </button>
                 </div>
             </div>
@@ -116,4 +124,4 @@ class LoginForm extends React.Component<{}, FormValues> {
     };
 }
 
-export default LoginForm;
+export default withRouter(LoginForm);
