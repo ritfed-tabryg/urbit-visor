@@ -32,23 +32,18 @@ class LoginForm extends React.Component<{}, FormValues> {
             encryptedShipURL: encryptedURL,
             encryptedShipCode: encryptedCode,
         }
-        chrome.storage.local.set({ loginCredentials: encryptedCredentials });
 
-        //
-        // Implement an `accounts` array in local store, and when new account is added, then add it to the end of the array
-        //
-
-        // Decrypt the credentials to test it works
-        let decryptedURL = CryptoJS.AES.decrypt(encryptedURL, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);
-        let decryptedCode = CryptoJS.AES.decrypt(encryptedCode, this.state.encryptionPassword).toString(CryptoJS.enc.Utf8);
-
-        // Save the decrypted credentials
-        let decryptedCredentials = {
-            shipName: this.state.shipName,
-            decryptedShipURL: decryptedURL,
-            decryptedShipCode: decryptedCode,
-        }
-        chrome.storage.local.set({ decryptedLoginCredentials: decryptedCredentials });
+        // Store new encrypted credentials into account list
+        chrome.storage.local.get("accounts", (res) => {
+            if (res["accounts"]) {
+                let new_accounts = res["accounts"];
+                new_accounts.push(encryptedCredentials)
+                chrome.storage.local.set({ accounts: new_accounts });
+            } else {
+                let new_accounts = [encryptedCredentials];
+                chrome.storage.local.set({ accounts: new_accounts });
+            }
+        });
     };
 
     onChangeName = (e: React.FormEvent<HTMLInputElement>): void => {

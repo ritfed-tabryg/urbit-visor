@@ -54,6 +54,7 @@ chrome.storage.local.get("bool", (res) => {
   }
 });
 
+
 chrome.runtime.onMessage.addListener((message: MessageType) => {
   switch (message.type) {
     case "REQ_BOOL_STATUS":
