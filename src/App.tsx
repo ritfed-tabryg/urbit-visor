@@ -12,13 +12,13 @@ import {
 export default function App() {
   return (
     <Router>
-      <div>
+      <div className="App App-background">
         <Switch>
-          <Route path="/account-added">
-            <AccountAdded />
+          <Route path="/ship-added">
+            <ShipAdded />
           </Route>
           <Route path="/">
-            <AddAccount />
+            <AddShip />
           </Route>
         </Switch>
       </div>
@@ -26,25 +26,25 @@ export default function App() {
   );
 }
 
-function AddAccount() {
+function AddShip() {
   return (
-    <div className="App App-background">
+    <div className="">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
+        <h4>
           Login With Urbit
-        </p>
+        </h4>
         <LoginForm />
     </div>
   );
 }
 
-function AccountAdded() {
+function ShipAdded() {
   return (
     <div className="App App-background">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Account Added Successfully
-        </p>
+        <h4>
+          Ship Added Successfully
+        </h4>
     </div>
     );
 }

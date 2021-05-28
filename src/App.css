@@ -14,6 +14,7 @@
 }
 
 .App-background {
+  width: 210px;
   background-color: #282c34;
   display: flex;
   flex-direction: column;

@@ -30,11 +30,14 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@types/react-router": "^5.1.14",
+    "@types/react-router-dom": "^5.1.7",
     "@urbit/http-api": "1.1.9",
     "crypto-js": "^4.0.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-hot-loader": "^4.13.0",
+    "react-router-dom": "^5.2.0",
     "stream-http": "^3.2.0"
   }
 }
