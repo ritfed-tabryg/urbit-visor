@@ -32,9 +32,6 @@
     }
   ],
   "permissions": [
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "*://*/*"
+    "storage"
  ]
 }
