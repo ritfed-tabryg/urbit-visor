@@ -2,7 +2,6 @@ import * as React from "react";
 import "./Button.css";
 import { withRouter } from "react-router-dom";
 import {RouteComponentProps} from "react-router";
-
 var CryptoJS = require("crypto-js");
 
 type FormValues = {
@@ -24,7 +23,6 @@ class LoginForm extends React.Component<RouteComponentProps, FormValues> {
 
     onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-
 
         // Encrypt the ship URL and ship +code
         let encryptedURL = CryptoJS.AES.encrypt(this.state.shipURL, this.state.encryptionPassword).toString();

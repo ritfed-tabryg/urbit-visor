@@ -2,6 +2,7 @@ import * as React from "react";
 import logo from "./urbit.svg";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
+import ShipList from "./components/ShipList";
 import {
   MemoryRouter as Router,
   Switch,
@@ -16,11 +17,14 @@ export default function App() {
       <Router>
         <div className="App-content">
           <Switch>
+            <Route path="/ships">
+              <Ships />
+            </Route>
             <Route path="/ship-added">
               <ShipAdded />
             </Route>
             <Route path="/">
-              <AddShip />
+              <Ships />
             </Route>
           </Switch>
         </div>
@@ -55,6 +59,18 @@ function ShipAdded() {
         <h4>
           Ship Added Successfully
         </h4>
+    </div>
+    );
+}
+
+function Ships() {
+  return (
+    <div className="ships">
+        <img src={logo} className="App-logo" alt="logo" />
+        <h4>
+          Ships
+        </h4>
+        <ShipList />
     </div>
     );
 }
