@@ -2,40 +2,38 @@ import * as React from "react";
 import {EncryptedShipCredentials} from "../types";
 
 
-function ShipListElement(props: { shipName: string }) {
+function ShipListElement(props: {shipCredentials: EncryptedShipCredentials}) {
   return (
   <div className="shipListElement">
-      <span>{props.shipName}</span>
+      <span>{props.shipCredentials.shipName}</span>
   </div>
   );
 }
 
-class ShipList extends React.Component< {}, EncryptedShipCredentials[] > {
+class ShipList extends React.Component< {}, {shipCredentials: EncryptedShipCredentials[]} > {
     componentWillMount() {
-      this.setState([{
+      this.setState({
+        shipCredentials: [{
           shipName: '',
           encryptedShipURL: '',
           encryptedShipCode: '',
-      }]);
+      }]});
+
       chrome.storage.local.get("ships", (res) => {
           if (res["ships"]) {
-              this.setState(res["ships"])
+              this.setState({shipCredentials: res["ships"]});
           }
       });
     }
 
   render() {
+    console.log(this.state)
     return (
       <div className="shipList">
-        <div>{this.state.values}</div>
-        <div>{this.state.entries}</div>
-        <div>{this.state.keys}</div>
-        <div>{this.state.toString}</div>
-        {/* {this.state.map(s => <ShipListElement key={s.shipName} shipName={s.shipName} />)} */}
+        {this.state.shipCredentials.map(s => <ShipListElement key={s.shipName} shipCredentials={s} />)}
       </div>
     )
   }
 }
-
 
 export default ShipList;
