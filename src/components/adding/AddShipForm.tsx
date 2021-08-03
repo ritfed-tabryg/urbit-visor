@@ -40,7 +40,11 @@ function encrypt(target: string, password: string): string {
   return CryptoJS.AES.encrypt(target, password).toString();
 }
 
-export default function AddShipForm() {
+interface AddShipFormProps{
+  store: (encryptedCredentials: EncryptedShipCredentials) => void
+}
+
+export default function AddShipForm(props: AddShipFormProps) {
   const history = useHistory();
   const [error, setError] = useState("");
   const [url, setUrl] = useState("https://somecloud.com")
@@ -77,22 +81,10 @@ export default function AddShipForm() {
       encryptedShipURL: encryptedURL,
       encryptedShipCode: encryptedCode,
     }
-    storeCredentials(encryptedCredentials);
+    props.store(encryptedCredentials);
+    history.push("/")
   }
-  
-  function storeCredentials(encryptedCredentials: EncryptedShipCredentials): void {
-    chrome.storage.local.get("ships", (res) => {
-      if (res["ships"]) {
-        let new_ships = res["ships"];
-        new_ships.push(encryptedCredentials)
-        chrome.storage.local.set({ ships: new_ships });
-      } else {
-        let new_ships = [encryptedCredentials];
-        chrome.storage.local.set({ ships: new_ships });
-      }
-      history.push("/");
-    });
-  }
+
 
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => setUrl(e.currentTarget.value)
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)

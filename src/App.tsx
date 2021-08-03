@@ -20,6 +20,7 @@ import "./App.css";
 
 export default function App() {
   function readStorage() {
+    console.log('wtf')
     chrome.storage.local.get(["ships"], (res) => {
       if (res["ships"].length) {
         console.log(res)
@@ -28,8 +29,27 @@ export default function App() {
         setFirst(true)
       }
       setShips(res["ships"]);
+      console.log(ships, "ships")
+
+    });
+    console.log(ships, "ships2")
+
+  }
+
+  function storeCredentials(encryptedCredentials: EncryptedShipCredentials): void {
+    chrome.storage.local.get("ships", (res) => {
+      if (res["ships"]) {
+        let new_ships = res["ships"];
+        new_ships.push(encryptedCredentials)
+        chrome.storage.local.set({ ships: new_ships });
+      } else {
+        let new_ships = [encryptedCredentials];
+        chrome.storage.local.set({ ships: new_ships });
+      }
+      readStorage();
     });
   }
+
 
   function deleteShip(shipName: string):void{
     console.log(shipName, "gonna go")
@@ -59,7 +79,7 @@ export default function App() {
               {root_component}
             </Route>
             <Route path="/add_ship">
-              <AddShipForm />
+              <AddShipForm store={storeCredentials}/>
             </Route>
             <Route path="/dashboard">
               <Dashboard ships={ships} remove={deleteShip}/>
