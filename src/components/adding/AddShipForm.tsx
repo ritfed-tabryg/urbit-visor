@@ -43,9 +43,9 @@ function encrypt(target: string, password: string): string {
 export default function AddShipForm() {
   const history = useHistory();
   const [error, setError] = useState("");
-  const [url, setUrl] = useState("https://m.urbit.cloud")
-  const [code, setCode] = useState("wintun-ridrut-hosdeg-motsyl")
-  const [pw, setPw] = useState("xd")
+  const [url, setUrl] = useState("https://somecloud.com")
+  const [code, setCode] = useState("sampel-sampel-sampe-sampel")
+  const [pw, setPw] = useState("pw")
 
   async function postLogin(url: string, code: string): Promise<void> {
     const res = await fetch(url + "/~/login", {
