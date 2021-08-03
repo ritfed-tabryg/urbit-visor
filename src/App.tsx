@@ -1,89 +1,121 @@
 import * as React from "react";
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import UrbitLogo from "./components/ui/svg/UrbitLogo";
 import logo from "./urbit.svg";
 import Sigil from "./components/ui/svg/Sigil"
 import AddShipForm from "./components/adding/AddShipForm";
+import Dashboard from "./components/list/Dashboard";
 import ShipList from "./components/ShipList";
+import { EncryptedShipCredentials } from "./types";
 import {
-    MemoryRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useHistory
-  } from "react-router-dom";
+  MemoryRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useHistory
+} from "react-router-dom";
 
 
 import "./App.css";
 
 export default function App() {
-    const [first, setFirst] = useState(true);
-    const rootContent = first ? <AddShip/> : <Ships />
+  function readStorage() {
+    chrome.storage.local.get(["ships"], (res) => {
+      if (res["ships"].length) {
+        console.log(res)
+        setFirst(false)
+      } else{
+        setFirst(true)
+      }
+      setShips(res["ships"]);
+    });
+  }
 
-    return (
+  function deleteShip(shipName: string):void{
+    console.log(shipName, "gonna go")
+    chrome.storage.local.get(["ships"], (res) => {
+        if (res["ships"].length) {
+          console.log(res)
+          const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== shipName);
+          console.log(new_ships)
+          chrome.storage.local.set({ships: new_ships})
+          readStorage();
+        }
+      });
+
+}
+  const [first, setFirst] = useState(true);
+  const [ships, setShips] = useState([]);
+  useEffect(() => readStorage(), [])
+  const root_component = first ? <Welcome /> : <Dashboard ships={ships} remove={deleteShip}/>
+
+  return (
     <Router>
       <div className="App">
         <NavBar />
         <Switch>
           <div className="App-content">
-          <Route exact path="/">
-            {rootContent}
-          </Route>
-          <Route path="/add_ship">
-             <AddShipForm />
-          </Route>
+            <Route exact path="/">
+              {root_component}
+            </Route>
+            <Route path="/add_ship">
+              <AddShipForm />
+            </Route>
+            <Route path="/dashboard">
+              <Dashboard ships={ships} remove={deleteShip}/>
+            </Route>
           </div>
         </Switch>
       </div>
-      </Router>
-    );
-  }
-  
-  function NavBar() {
-    return (<nav className ="App-navbar">
-      <h4>Login With Urbit</h4>
-      <img src={logo} className="Nav-logo"/>
-    </nav>);
+    </Router>
+  );
 }
 
-function DoAddShip(){
-    let history = useHistory();
-    return (
-        <div className="">
-              <button onClick={()=> history.push("/")} className="add-ship-button">go back</button>
-          </div>
-        );
+function NavBar() {
+  return (<nav className="App-navbar">
+    <h4>Login With Urbit</h4>
+    <img src={logo} className="Nav-logo" />
+  </nav>);
 }
 
-function AddShip() {
+function DoAddShip() {
   let history = useHistory();
   return (
-  <div className="">
-        <img src={logo} className="App-logo"/>
-        <button onClick={()=> history.push("/add_ship")} className="add-ship-button">Add your Ship</button>
+    <div className="">
+      <button onClick={() => history.push("/")} className="add-ship-button">go back</button>
+    </div>
+  );
+}
+
+function Welcome() {
+  let history = useHistory();
+  return (
+    <div className="welcome">
+      <img src={logo} className="App-logo" />
+      <button onClick={() => history.push("/add_ship")} className="add-ship-button">Add your Ship</button>
     </div>
   );
 }
 
 function ShipAdded() {
-return (
-  <div className="">
+  return (
+    <div className="">
       <img src={logo} className="App-logo" alt="logo" />
       <h4>
         Ship Added Successfully
       </h4>
-  </div>
+    </div>
   );
 }
 
 function Ships() {
-return (
-  <div className="ships">
+  return (
+    <div className="ships">
       <img src={logo} className="App-logo" alt="logo" />
       <h4>
         Ships
       </h4>
       <ShipList />
-  </div>
+    </div>
   );
 }

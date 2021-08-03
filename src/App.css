@@ -1,23 +1,43 @@
 *{
   box-sizing: border-box;
 }
+body{
+  width: 357px;
+}
+
 
 .App {
   text-align: center;
-  width: 357px;
-  height: 600px;
   font-size: calc(10px + 2vmin);
   color: white;
+  height: 600px;
+}
+.Nav-logo {
+  height: 6vmin;
+  float: right;
+  pointer-events: none;
+  margin: 0 1rem;
+}
+
+.App-navbar {
+  height: 70px;
+  background-color: #313742;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+}
+h4{
+  font-size: 1.4rem;
 }
 
 .App-content {
   width: 100%;
-  height: 95%;
+  height: 530px;
   background-color: #282c34;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 .App-logo {
@@ -51,8 +71,6 @@
   vertical-align: middle;
   justify-content: center;
   text-decoration: none;
-  -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
   min-width: 64px;
   box-sizing: border-box;
   transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
@@ -74,20 +92,11 @@
   border-radius: 4px;
 }
 
-.Nav-logo {
-  height: 8vmin;
-  float: right;
-  pointer-events: none;
-  margin: 0 1rem;
+.welcome{
+  margin: auto;
 }
-
-.App-navbar {
-  height: 70px;
-  background-color: #313742;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
+.add-ship-button:hover{
+  opacity: 1;
 }
 
 

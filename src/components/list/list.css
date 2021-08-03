@@ -1,0 +1,39 @@
+.dashboard{
+    width: 100%;
+}
+.ship-list{
+    padding: 0;
+}
+.ship-list .ship{
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    width: 100%;
+    padding: 0 10px;    
+    border-bottom: 1px solid white;
+
+}
+.ship-list .ship:nth-last-child(1){
+  border-top: 1px solid white;
+}
+.ship-list .ship:nth-last-child(){
+  border-bottom: none;
+}
+
+.ship p{
+    margin-left: 1.2rem;
+    cursor: pointer;
+}
+.add-more{
+    position: absolute;
+    top: 100px;
+    left: 50%;
+}
+
+.add-more:hover{
+  color:red;
+  cursor:pointer;
+  font-weight: 700;
+
+}
