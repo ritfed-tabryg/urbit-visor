@@ -6,6 +6,7 @@ import Sigil from "./components/ui/svg/Sigil"
 import AddShipForm from "./components/adding/AddShipForm";
 import Dashboard from "./components/list/Dashboard";
 import ShipList from "./components/ShipList";
+import ShipShow from "./components/show/ShipShow";
 import { EncryptedShipCredentials } from "./types";
 import {
   MemoryRouter as Router,
@@ -22,7 +23,7 @@ export default function App() {
   function readStorage() {
     console.log('wtf')
     chrome.storage.local.get(["ships"], (res) => {
-      if (res["ships"].length) {
+      if (res["ships"] && res["ships"].length) {
         console.log(res)
         setFirst(false)
       } else{
@@ -66,8 +67,9 @@ export default function App() {
 }
   const [first, setFirst] = useState(true);
   const [ships, setShips] = useState([]);
+  const [selected, setSelected] = useState(null);
   useEffect(() => readStorage(), [])
-  const root_component = first ? <Welcome /> : <Dashboard ships={ships} remove={deleteShip}/>
+  const root_component = first ? <Welcome /> : <Dashboard ships={ships} select={(ship)=> setSelected(ship)}remove={deleteShip}/>
 
   return (
     <Router>
@@ -82,7 +84,10 @@ export default function App() {
               <AddShipForm store={storeCredentials}/>
             </Route>
             <Route path="/dashboard">
-              <Dashboard ships={ships} remove={deleteShip}/>
+              <Dashboard ships={ships} select={(ship)=> setSelected(ship)} remove={deleteShip}/>
+            </Route>
+            <Route path="/ship/">
+              <ShipShow ship={selected}/>
             </Route>
           </div>
         </Switch>
@@ -93,7 +98,9 @@ export default function App() {
 
 function NavBar() {
   return (<nav className="App-navbar">
+    <Link to="/">
     <h4>Login With Urbit</h4>
+    </Link>
     <img src={logo} className="Nav-logo" />
   </nav>);
 }

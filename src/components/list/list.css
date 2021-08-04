@@ -20,15 +20,22 @@
 .ship-list .ship:nth-last-child(){
   border-bottom: none;
 }
-
+.shipname{
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  overflow-x: scroll;
+  white-space: nowrap;
+  /* word-wrap:break-word */
+}
 .ship p{
     margin-left: 1.2rem;
     cursor: pointer;
 }
 .add-more{
     position: absolute;
-    top: 100px;
-    left: 50%;
+    top: 20px;
+    left: 10px;
 }
 
 .add-more:hover{
@@ -36,4 +43,10 @@
   cursor:pointer;
   font-weight: 700;
 
+}
+.comet-sigil{
+  height: 78px;
+  width: 78px;
+  min-width: 78px;
+  background-color: black;
 }

@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import * as CryptoJS from "crypto-js";
 import Urbit from "@urbit/http-api";
+import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types";
 import "./adding.css"
@@ -34,8 +35,6 @@ async function startChannel(airlock: Urbit): Promise<any> {
   }
 }
 
-
-
 function encrypt(target: string, password: string): string {
   return CryptoJS.AES.encrypt(target, password).toString();
 }
@@ -46,9 +45,10 @@ interface AddShipFormProps{
 
 export default function AddShipForm(props: AddShipFormProps) {
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [url, setUrl] = useState("https://somecloud.com")
-  const [code, setCode] = useState("sampel-sampel-sampe-sampel")
+  const [code, setCode] = useState("sampel-sampel-sampel-sampel")
   const [pw, setPw] = useState("pw")
 
   async function postLogin(url: string, code: string): Promise<void> {
@@ -85,13 +85,18 @@ export default function AddShipForm(props: AddShipFormProps) {
     history.push("/")
   }
 
+  const spinner =  <Spinner width="24" height="24" innerColor="white" outerColor="black" />
+
 
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => setUrl(e.currentTarget.value)
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)
   const onChangePassword = (e: React.FormEvent<HTMLInputElement>) => setPw(e.currentTarget.value)
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
+    setError("")
+    setLoading(true);
     await postLogin(url, code);
+    setLoading(false);
   }
 
 
@@ -135,6 +140,7 @@ export default function AddShipForm(props: AddShipFormProps) {
             Add Ship
           </button>
         </div>
+        {loading && spinner}
         <div className="errorMessage">
           <p>{error}</p>
         </div>

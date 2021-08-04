@@ -30,6 +30,6 @@ input{
   height: 2rem;
   width: 100%;
 }
-.errorMessage{
-  color: red;
+.spinner{
+  height: 20px;
 }

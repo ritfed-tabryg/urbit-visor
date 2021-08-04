@@ -3,6 +3,7 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
 const config = {
+  // mode: "development",
   entry: {
     popup: path.join(__dirname, "src/popup.tsx"),
     content: path.join(__dirname, "src/content.ts"),
