@@ -1,5 +1,5 @@
 import * as React from "react";
-import {EncryptedShipCredentials} from "../types";
+import {EncryptedShipCredentials} from "../types/types";
 
 
 function ShipListElement(props: {shipCredentials: EncryptedShipCredentials}) {

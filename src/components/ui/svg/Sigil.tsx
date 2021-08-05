@@ -7,9 +7,13 @@ interface SigilProps {
 }
 
 const Sigil = (props: SigilProps) => {
+  const styles = {
+    height: props.size,
+    width: props.size
+  };
   if (props.patp.length > 13) {
     return (
-      <div className="comet-sigil"></div>
+      <div style={styles} className="comet-sigil"></div>
     )
   } else {
     return (

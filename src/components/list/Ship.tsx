@@ -1,6 +1,6 @@
 import * as React from "react";
 import Sigil from "../ui/svg/Sigil"
-import { EncryptedShipCredentials } from "../../types";
+import { EncryptedShipCredentials } from "../../types/types";
 import {processName} from "../../utils"
 
 import Spinner from "../ui/svg/Spinner";

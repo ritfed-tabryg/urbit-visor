@@ -4,7 +4,8 @@ import * as CryptoJS from "crypto-js";
 import Urbit from "@urbit/http-api";
 import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
-import { EncryptedShipCredentials } from "../../types";
+import { EncryptedShipCredentials } from "../../types/types";
+import {storeCredentials} from "../../storage";
 import "./adding.css"
 declare const window: any;
 
@@ -47,30 +48,43 @@ export default function AddShipForm(props: AddShipFormProps) {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [url, setUrl] = useState("https://somecloud.com")
-  const [code, setCode] = useState("sampel-sampel-sampel-sampel")
-  const [pw, setPw] = useState("pw")
+  const [url, setUrl] = useState(null)
+  const [code, setCode] = useState(null)
+  const [pw, setPw] = useState(null)
 
   async function postLogin(url: string, code: string): Promise<void> {
-    const res = await fetch(url + "/~/login", {
+    const controller = new AbortController() 
+    setTimeout(() => {controller.abort()}, 5000)
+    fetch(url.replace(/\/$/g, '') + "/~/login", {
       body: `password=${code}`,
       method: "POST",
       credentials: "include",
-      redirect: "follow"
-    });
-    switch (res.status) {
-      case 204:
-        const urbit = await setAirlock(url, code);
-        startChannel(urbit);
-        saveCredentials(urbit.ship, url, code, pw);
-        break;
-      case 400:
-        setError("Wrong password");
-        break;
-      default:
-        setError("Wrong URL");
-        break;
-    };
+      redirect: "follow",
+      signal: controller.signal
+    })
+    .then(async res =>{
+      switch (res.status) {
+        case 204:
+          const urbit = await setAirlock(url, code);
+          startChannel(urbit);
+          saveCredentials(urbit.ship, url, code, pw);
+          setLoading(false);
+          break;
+        case 400:
+          setError("Invalid +code. Could not connect to ship.");
+          setLoading(false);
+          break;
+        default:
+          setError("Invalid URL. Could not connect to ship.");
+          setLoading(false);
+          break;
+      };
+    })
+    .catch(err => {
+      console.log(err, "err")
+      setError("Could not connect")
+      setLoading(false);
+    })
   }
 
   function saveCredentials(ship: string, url: string, code: string, pw: string): void {
@@ -81,7 +95,7 @@ export default function AddShipForm(props: AddShipFormProps) {
       encryptedShipURL: encryptedURL,
       encryptedShipCode: encryptedCode,
     }
-    props.store(encryptedCredentials);
+    storeCredentials(encryptedCredentials);
     history.push("/")
   }
 
@@ -95,8 +109,7 @@ export default function AddShipForm(props: AddShipFormProps) {
     e.preventDefault();
     setError("")
     setLoading(true);
-    await postLogin(url, code);
-    setLoading(false);
+    postLogin(url, code);
   }
 
 
@@ -105,36 +118,45 @@ export default function AddShipForm(props: AddShipFormProps) {
   return (
     <form onSubmit={onSubmit}>
       <div>
+        <label htmlFor="shipURL">
+          URL
         <input
           type="text"
           name='shipURL'
           id='loginFormShipURL'
           className='loginFormInput'
           value={url}
-          // placeholder='Ship URL'
+          placeholder='http://localhost'
           onChange={onChangeURL}
           required
         />
+        </label>
+        <label htmlFor="shipCode">
+          +code
         <input
           type="password"
           name='shipCode'
           id='loginFormShipCode'
           className='loginFormInput'
           value={code}
-          // placeholder='Ship +code'
+          placeholder='sampel-sampel-sampel-sampel'
           onChange={onChangeCode}
           required
         />
+        </label>
+        <label htmlFor="encryptionPassword">
+          Password
         <input
           name='encryptionPassword'
           id='loginFormEncryptionPassword'
           className='loginFormInput'
           value={pw}
-          // placeholder='Ship Password'
+          placeholder='Ship Password'
           onChange={onChangePassword}
           type='password'
           required
         />
+        </label>
         <div className="buttonContainer">
           <button className="loginButton" type='submit'>
             Add Ship

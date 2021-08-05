@@ -1,6 +1,9 @@
 .dashboard{
     width: 100%;
 }
+.dashboard p{
+  font-size: 1.5rem;
+}
 .ship-list{
     padding: 0;
 }
@@ -33,20 +36,9 @@
     cursor: pointer;
 }
 .add-more{
-    position: absolute;
-    top: 20px;
-    left: 10px;
+    
 }
 
-.add-more:hover{
-  color:red;
-  cursor:pointer;
-  font-weight: 700;
-
-}
 .comet-sigil{
-  height: 78px;
-  width: 78px;
-  min-width: 78px;
   background-color: black;
 }

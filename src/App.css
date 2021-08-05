@@ -8,15 +8,14 @@ body{
 
 .App {
   text-align: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 1.5rem;
   color: white;
   height: 600px;
 }
 .Nav-logo {
-  height: 6vmin;
+  height: 50px;
   float: right;
   pointer-events: none;
-  margin: 0 1rem;
 }
 
 .App-navbar {
@@ -24,8 +23,8 @@ body{
   background-color: #313742;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
+  justify-content: space-between;
+  padding: 10px 10px;
 }
 h4{
   font-size: 1.4rem;
@@ -41,7 +40,7 @@ h4{
 }
 
 .App-logo {
-  height: 20vmin;
+  height: 200px;
   pointer-events: none;
 }
 
@@ -60,7 +59,7 @@ h4{
   }
 }
 
-.add-ship-button{
+.button{
   border: 0;
   margin: 0;
   display: inline-flex;
@@ -95,7 +94,7 @@ h4{
 .welcome{
   margin: auto;
 }
-.add-ship-button:hover{
+.button:hover{
   opacity: 1;
 }
 

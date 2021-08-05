@@ -1,6 +1,7 @@
-.ship{
-
-}
 .data{
     display: flex;
+}
+
+.disconnect-button{
+    background-color: red;
 }
