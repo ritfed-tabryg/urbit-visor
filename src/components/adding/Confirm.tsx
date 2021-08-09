@@ -28,11 +28,11 @@ export default function Confirm(props: ConfirmProps){
       <a onClick={props.goBack}>back</a>
       <p>Connection successful.</p>
       <p>Please confirm your Encryption Password.</p>
-      <form>
+      <div className="form">
       <input value={pw} onChange={(e)=> setPw(e.currentTarget.value)} type="password" />
       <button onClick={validate}>Submit</button>
       <p className="errorMessage">{error}</p>
-      </form>
+      </div>
       </>
     )
   }

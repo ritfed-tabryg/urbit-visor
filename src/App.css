@@ -150,7 +150,7 @@ input{
   font-family: 'Source Code Pro', monospace;
   outline: none;
 }
-form{
+.form{
   margin: auto;
   width: 80%;
   padding: 10%;

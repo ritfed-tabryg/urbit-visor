@@ -93,7 +93,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, setConfirm }: 
 
   return (
     <div className="add-ship-form">
-      <form onSubmit={onSubmit}>
+      <form className="form" onSubmit={onSubmit}>
         <label htmlFor="shipURL">
           URL
           <input

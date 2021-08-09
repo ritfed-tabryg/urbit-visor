@@ -144,12 +144,12 @@ function Setup(){
     <div className="setup">
       <p>Please set up a master password for this extension.</p>
       <p>The password will be used to encrypt the credentials to access your Urbit ships.</p>
-      <form>
+      <div className="form">
       <label>Password<input onChange={(e)=> setpw(e.currentTarget.value)} type="password" /></label>
       <label>Confirm password<input onChange={(e)=> setconfirmation(e.currentTarget.value)} type="password" /></label>
       <p className="errorMessage">{error}</p>
       <button onClick={validate} className="button">Submit</button>
-      </form>
+      </div>
     </div>
   );
 }
