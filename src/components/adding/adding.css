@@ -1,3 +1,8 @@
+.add-ship-form{
+  margin: auto;
+  width: 100%;
+}
+
 .loginButton {
   border: 0;
   background-color: #1a1d22;
@@ -7,29 +12,44 @@
   cursor: pointer;
 }
 
-.buttonContainer {
+/* .buttonContainer {
   display: flex;
-  background-color: #282c34;
-  color: white;
   min-width: 150px;
   padding: 10px;
-}
+} */
 
-.loginFormInput {
-  text-align: center;
-  padding: 4px;
-  margin: 2rem 0;
-}
 
-form{
-  width: 100%;
-  padding: 10%;
+
+.add-ship-form{
+  margin-top: -3rem;
+}
+label{
+  line-height: 1.5;
 }
 input{
-  display: block;
-  height: 2rem;
   width: 100%;
+  margin: 12px 0;
+  border: 1px solid grey;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  box-shadow: none;
+  display: block;
+  font-family: 'Source Code Pro', monospace;
 }
 .spinner{
   height: 20px;
+}
+button[type="submit"]:disabled {
+  border-color: currentColor;
+  background: rgba(33,157,255,0.05);
+  pointer-events: none;
+  cursor:not-allowed
+}
+button[type="submit"] {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: rgba(33,157,255,0.3);
+  border: 1px solid rgba(33,157,255,1);
 }

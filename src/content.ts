@@ -1,15 +1,48 @@
-import  { getAll } from "./storage";
+const injectScript = () => {
+  console.log("testing injection content")
+    const script = document.createElement('script');
+    script.async = false;
+    script.src = chrome.runtime.getURL('injected.js');
+    script.onload = function () {
+      (this as any).remove();
+    };
+    (document.head || document.documentElement).appendChild(script);
+  };
+  
+  // function shouldInject() {
+  //   const documentElement = document.documentElement.nodeName;
+  //   const docElemCheck = documentElement
+  //     ? documentElement.toLowerCase() === 'html'
+  //     : true;
+  //   const { docType } = window.document;
+  //   const docTypeCheck = docType ? docType.name === 'html' : true;
+  //   return docElemCheck && docTypeCheck;
+  // }
+  
+  // if (shouldInject) {
+    injectScript();
+    // Messaging.createProxyController();
+  // }
+
+window.addEventListener("message", (event) =>{
+  console.log(event, "event received")
+  if(event.data && event.data.type === "urbit")
+  chrome.runtime.sendMessage({type: "gimme"})
+}, false)
+
+
+// import  { getAll } from "./storage";
 
 
 
 
-console.log("Testing")
+// console.log("Testing")
 
-window.addEventListener('load', loadEvent => {
-    let window = loadEvent.currentTarget;
-    (window as any).document.title='You changed me!';
-    (window as any).urbit = {lmao: "lol"};
-});
+// window.addEventListener('load', loadEvent => {
+//     let window = loadEvent.currentTarget;
+//     (window as any).document.title='You changed me!';
+//     (window as any).urbit = {lmao: "lol"};
+// });
 
 
 // function codeToInject(thing: any):void {

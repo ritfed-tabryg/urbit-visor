@@ -31,6 +31,9 @@
       ]
     }
   ],
+  "web_accessible_resources": [
+    "injected.js"
+  ],
   "permissions": [
     "storage"
  ]

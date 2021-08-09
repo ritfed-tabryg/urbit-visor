@@ -4,14 +4,20 @@ import Ship from "./Ship"
 import { EncryptedShipCredentials } from "../../types/types";
 import { useHistory } from "react-router-dom";
 import "./list.css";
+import {reset} from "../../storage";
 
-interface DashboardProps {
+
+interface ShipListProps {
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
     remove: (string: string) => void
 }
 
-export default function Dashboard(props: DashboardProps) {
+export default function Dashboard(props: ShipListProps) {
+    function doReset(){
+        reset();
+        history.push("/");
+      }
     const history = useHistory();
     return (
         <div className="dashboard">
@@ -24,6 +30,7 @@ export default function Dashboard(props: DashboardProps) {
                  })}
             </div>
             <button className="button add-more-button" onClick={()=> history.push("/add_ship")}>Add More</button>
+            <button className="button reset-button" onClick={doReset}>reset app</button>
         </div>
     )
 }

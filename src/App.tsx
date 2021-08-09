@@ -4,11 +4,10 @@ import UrbitLogo from "./components/ui/svg/UrbitLogo";
 import logo from "./urbit.svg";
 import NavBar from "./components/ui/NavBar";
 import Sigil from "./components/ui/svg/Sigil"
-import AddShipForm from "./components/adding/AddShipForm";
-import Dashboard from "./components/list/Dashboard";
-import ShipList from "./components/ShipList";
+import AddShip from "./components/adding/AddShip"
+import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
-import { getAll, saveSelection } from "./storage";
+import { getStorage, getAll, storeCredentials, savePassword, saveSelection } from "./storage";
 import { EncryptedShipCredentials } from "./types/types";
 import {
   MemoryRouter as Router,
@@ -23,30 +22,36 @@ declare const window: any;
 import "./App.css";
 
 export default function App() {
+  const [first, setFirst] = useState(true);
+  const [ships, setShips] = useState([]);
+  const [active, setActive] = useState(null);
+  const [selected, setSelected] = useState(null);
+
+  chrome.storage.onChanged.addListener(function (changes, namespace) {
+    readStorage();
+  });
   function readStorage() {
-    getAll()
-      .then((res) => {
-        setFirst(false);
-        setShips(res.ships);
-        setSelected(res.selected);
-        setActive(res.selected);
-      })
-      .catch(err => console.log("err"))
+    console.log("reading!")
+    getStorage(["password", "ships", "selected"])
+    .then(res => {
+      setFirst(!("password" in res));
+      setShips(res.ships || []);
+      setSelected(res.selected);
+      setActive(res.selected);
+      route();
+    })
+  };
+  function route(){
+    const route = 
+    first 
+    ?  <Welcome />
+    : selected 
+    ? <ShipShow save={saveShip} active={active} ship={selected} />
+    : <ShipList ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} /> 
+    return route
   }
 
-  function storeCredentials(encryptedCredentials: EncryptedShipCredentials): void {
-    chrome.storage.local.get("ships", (res) => {
-      if (res["ships"]) {
-        let new_ships = res["ships"];
-        new_ships.push(encryptedCredentials)
-        chrome.storage.local.set({ ships: new_ships });
-      } else {
-        let new_ships = [encryptedCredentials];
-        chrome.storage.local.set({ ships: new_ships });
-      }
-      readStorage();
-    });
-  }
+
   function saveShip(ship: EncryptedShipCredentials):void{
     saveSelection(ship);
     setActive(ship);
@@ -63,21 +68,11 @@ export default function App() {
         readStorage();
       }
     });
-
   }
-  const [first, setFirst] = useState(true);
-  const [ships, setShips] = useState([]);
-  const [active, setActive] = useState(null);
-  const [selected, setSelected] = useState(null);
   useEffect(() => {
     readStorage();
   }, []);
-  const root_component = first
-    ? <Welcome />
-    : selected
-      ? <ShipShow save={saveShip} connected={active === selected} ship={selected} />
-      : <Dashboard ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} />
-  console.log(selected, "selected")
+  const root_component = route();
   return (
     <Router>
       <div className="App">
@@ -91,14 +86,17 @@ export default function App() {
             <Route exact path="/">
               {root_component}
             </Route>
+            <Route path="/setup">
+              <Setup />
+            </Route>       
             <Route path="/add_ship">
-              <AddShipForm store={storeCredentials} />
+              <AddShip />
             </Route>
             <Route path="/dashboard">
-              <Dashboard ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} />
+              <ShipList ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} />
             </Route>
-            <Route path="/ship/">
-              <ShipShow save={saveShip} connected={active === selected} ship={selected} />
+            <Route path="/ship">
+              <ShipShow save={saveShip} active={active} ship={selected} />
             </Route>
           </Switch>
         </div>
@@ -119,6 +117,43 @@ function DoAddShip() {
 }
 
 function Welcome() {
+  const history = useHistory();
+  return (
+    <div className="welcome">
+      <img src={logo} className="App-logo" />
+      <button onClick={() => history.push("/setup")} className="button add-ship-button">Setup</button>
+    </div>
+  );
+}
+
+function Setup(){
+   const history = useHistory();
+   const [pw, setpw] = useState("");
+   const [confirmationpw, setconfirmation] = useState("");
+   const [error, setError] = useState("");
+   function validate(){
+     if (pw === confirmationpw){
+       setError("");
+       savePassword(pw)
+       .then(res => history.push("/"))
+     } else{
+       setError("Passwords do not match")
+     }
+   }
+  return (
+    <div className="setup">
+      <p>Please set up a master password for this extension.</p>
+      <p>The password will be used to encrypt the credentials to access your Urbit ships.</p>
+      <form>
+      <label>Password<input onChange={(e)=> setpw(e.currentTarget.value)} type="password" /></label>
+      <label>Confirm password<input onChange={(e)=> setconfirmation(e.currentTarget.value)} type="password" /></label>
+      <p className="errorMessage">{error}</p>
+      <button onClick={validate} className="button">Submit</button>
+      </form>
+    </div>
+  );
+}
+function Welcome2() {
   let history = useHistory();
   return (
     <div className="welcome">
@@ -139,14 +174,14 @@ function ShipAdded() {
   );
 }
 
-function Ships() {
-  return (
-    <div className="ships">
-      <img src={logo} className="App-logo" alt="logo" />
-      <h4>
-        Ships
-      </h4>
-      <ShipList />
-    </div>
-  );
-}
+// function Ships() {
+//   return (
+//     <div className="ships">
+//       <img src={logo} className="App-logo" alt="logo" />
+//       <h4>
+//         Ships
+//       </h4>
+//       <ShipList />
+//     </div>
+//   );
+// }

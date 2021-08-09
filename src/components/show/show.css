@@ -1,7 +1,7 @@
 .data{
     display: flex;
+    margin-bottom: 2rem;
 }
-
-.disconnect-button{
-    background-color: red;
+.ship{
+    padding: 2rem 0;
 }

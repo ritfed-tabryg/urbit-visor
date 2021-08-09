@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Sigil from "../ui/svg/Sigil"
 import { useHistory } from "react-router-dom";
 import Spinner from "../ui/svg/Spinner";
@@ -13,8 +13,8 @@ declare const window: any;
 
 interface ShipProps{
     ship: EncryptedShipCredentials,
+    active: EncryptedShipCredentials,
     save: (ship: EncryptedShipCredentials) => void,
-    connected: boolean
   }
 
 export default function Ship(props: ShipProps) {
@@ -100,7 +100,7 @@ export default function Ship(props: ShipProps) {
 
     const connectButton = <div onClick={connect} className="button">Connect</div>;
     const disconnectButton = <div onClick={disconnect} className="button disconnect-button">disconnect</div>
-    const connectionButton = props.connected ? disconnectButton : connectButton
+    const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton
 
 
       return (

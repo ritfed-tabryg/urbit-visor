@@ -31,7 +31,10 @@ export default function NavBar(props: NavBarProps) {
       <Modal
         parent={sigilbutton}
         hide={() => toggleModal(!modalOpen)}
-        select={(s: EncryptedShipCredentials) => props.switchShip(s)} {...props} />}
+        select={(s: EncryptedShipCredentials) => props.switchShip(s)} 
+        {...props} 
+      />
+    }
   </nav>);
 }
 
@@ -61,7 +64,7 @@ function Modal(props: ModalProps) {
       <div>My ships</div>
       <hr />
       {props.ships.map((ship: EncryptedShipCredentials) => {
-        return <div onClick={() => select(ship)} className="ship-in-modal">{processName(ship.shipName)}</div>
+        return <div key={ship.shipName} onClick={() => select(ship)} className="ship-in-modal">{processName(ship.shipName)}</div>
       })}
       <div onClick={addMore} className="add-more-link">+ Add more</div>
     </div>
