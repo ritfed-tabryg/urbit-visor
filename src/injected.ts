@@ -1,6 +1,6 @@
 console.log("testing injection")
 
-type LWURequest = "all" | "active" | "scry" | "poke" | "subscribe";
+type LWURequest = "all" | "active" | "scry" | "poke" | "subscribe" | "unlock" | "isLocked";
 
 function requestData(request: LWURequest, data : any = null){
   return new Promise((res, rej) => {
@@ -18,6 +18,8 @@ function requestData(request: LWURequest, data : any = null){
 
 
 (window as any).urbit = {
+  isLocked: () => requestData("isLocked"),
+  unLock: () => requestData("unlock"),
   getAll: () => requestData("all"),
   getShip: () => requestData("active"),
   scry: (resource: any) => requestData("scry", resource),

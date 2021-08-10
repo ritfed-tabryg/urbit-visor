@@ -1,14 +1,13 @@
 const injectScript = () => {
   console.log("testing injection content")
-    const script = document.createElement('script');
-    script.async = false;
-    script.src = chrome.runtime.getURL('injected.js');
-    script.onload = function () {
-      (this as any).remove();
-    };
-    (document.head || document.documentElement).appendChild(script);
+  const script = document.createElement('script');
+  script.async = false;
+  script.src = chrome.runtime.getURL('injected.js');
+  script.onload = function () {
+    (this as any).remove();
   };
-  
+  (document.head || document.documentElement).appendChild(script);
+};
   // function shouldInject() {
   //   const documentElement = document.documentElement.nodeName;
   //   const docElemCheck = documentElement
@@ -18,7 +17,6 @@ const injectScript = () => {
   //   const docTypeCheck = docType ? docType.name === 'html' : true;
   //   return docElemCheck && docTypeCheck;
   // }
-  
   // if (shouldInject) {
     injectScript();
     // Messaging.createProxyController();
