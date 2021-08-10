@@ -36,12 +36,24 @@ export default function Ship(props: ShipProps) {
         console.log(airlock)
         airlock.ship = props.ship.shipName;
         airlock.verbose = true;
-        const poke = await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
-        console.log(poke);
-        setLoading(false);
-        if(poke){
-          props.save(props.ship);
-        }
+        airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
+        .then(res => {
+          setLoading(false);
+          console.log(res, "poke resolved")
+          if(res){
+            props.save(props.ship);
+          }
+        })
+        .catch(err => {
+          setLoading(false);
+          console.log(err)
+          setError("Could not connect")
+        })
+        // const time = new Promise((res) => setTimeout(() => res("p1"), 5000));
+        // Promise.race([time, poke])
+        // .then(value => {
+        //   console.log(value, "promise race")
+        // })
       } else{
         setError("wrong password")
       }

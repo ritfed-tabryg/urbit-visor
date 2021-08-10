@@ -1,5 +1,17 @@
-import  { getAll } from "./storage";
+import  { getSelected } from "./storage";
+import Urbit from "@urbit/http-api";
 
-getAll()
-.then()
-// (window as any).urbit = thing;    
+// export async function scry(){
+
+//     const airlock = new Urbit(url, "");
+//     const res = await airlock.scry({app: "graph-store", path: "/keys"});
+//     return await res;
+// }
+
+// export async function poke(){
+
+// }
+
+// export async function subscribe(){
+
+// }
