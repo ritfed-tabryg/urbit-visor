@@ -10,7 +10,6 @@ import {reset} from "../../storage";
 interface ShipListProps {
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
-    remove: (string: string) => void
 }
 
 export default function Dashboard(props: ShipListProps) {
@@ -25,7 +24,7 @@ export default function Dashboard(props: ShipListProps) {
             <div className="ship-list">
                 {props.ships.map((ship) => {
                     return (
-                    <Ship key={ship.shipName} ship={ship} select={props.select} remove={props.remove} />
+                    <Ship key={ship.shipName} ship={ship} select={props.select} />
                     )
                  })}
             </div>

@@ -10,7 +10,6 @@
 .ship-list .ship{
     list-style: none;
     display: flex;
-    justify-content: space-between;
     height: 80px;
     width: 100%;
     padding: 0 10px;    

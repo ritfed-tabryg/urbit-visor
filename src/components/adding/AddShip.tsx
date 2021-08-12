@@ -3,6 +3,7 @@ import { useState } from "react";
 import Form from "./Form";
 import Confirm from "./Confirm"
 import Urbit from "@urbit/http-api";
+import {initPerms} from "../../urbit";
 import {storeCredentials} from "../../storage";
 import {useHistory} from "react-router";
 
@@ -24,8 +25,12 @@ export default function AddShip(){
     async function save(url: string, code: string, pw: string) : Promise<any>{
         const airlock = await setAirlock(url, code);
         const set = await storeCredentials(airlock.ship, url, code, pw);
-        if (set == true) history.push("/");
+        if (set == true) {
+          await initPerms(url);
+          history.push("/");
+        }
     }
+      
     const history = useHistory();
     const [url, setUrl] = useState("http://localhost");
     const [code, setCode] = useState("micmev-rapteb-fopsur-monsug");

@@ -22,6 +22,8 @@ declare const window: any;
 import "./App.css";
 
 export default function App() {
+  const history = useHistory();
+  const [locked, setLocked] = useState(false); 
   const [first, setFirst] = useState(true);
   const [ships, setShips] = useState([]);
   const [active, setActive] = useState(null);
@@ -32,13 +34,17 @@ export default function App() {
   });
   function readStorage() {
     console.log("reading!")
-    getStorage(["password", "ships", "selected"])
+    getStorage(["password", "ships"])
     .then(res => {
       setFirst(!("password" in res));
       setShips(res.ships || []);
-      setSelected(res.selected);
-      setActive(res.selected);
-      route();
+    })
+    chrome.runtime.sendMessage({type: "active"}, res => {
+      console.log(res, "popup just fetched shit from background")
+      if(res){
+        setSelected(res.activeShip)
+        setActive(res.activeShip)
+      }
     })
   };
   function route(){
@@ -46,13 +52,15 @@ export default function App() {
     first 
     ?  <Welcome />
     : selected 
-    ? <ShipShow save={saveShip} active={active} ship={selected} />
-    : <ShipList ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} /> 
+    ? <ShipShow save={saveShip} active={active} ship={selected} remove={deleteShip} />
+    : <ShipList ships={ships} select={(ship) => setSelected(ship)}/> 
     return route
   }
 
 
-  function saveShip(ship: EncryptedShipCredentials):void{
+  function saveShip(ship: EncryptedShipCredentials, url: string):void{
+    // send message to background script to keep the url in memory
+    chrome.runtime.sendMessage({type: "selected", ship: ship, url: url}, (res) => console.log(res));
     saveSelection(ship);
     setActive(ship);
     setSelected(ship);
@@ -93,10 +101,10 @@ export default function App() {
               <AddShip />
             </Route>
             <Route path="/dashboard">
-              <ShipList ships={ships} select={(ship) => setSelected(ship)} remove={deleteShip} />
+              <ShipList ships={ships} select={(ship) => setSelected(ship)}/>
             </Route>
             <Route path="/ship">
-              <ShipShow save={saveShip} active={active} ship={selected} />
+              <ShipShow save={saveShip} active={active} ship={selected} remove={deleteShip} />
             </Route>
           </Switch>
         </div>

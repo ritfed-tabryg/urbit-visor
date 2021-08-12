@@ -8,6 +8,28 @@ const injectScript = () => {
   };
   (document.head || document.documentElement).appendChild(script);
 };
+
+function injectModal(){
+  const background = document.createElement('div');
+  background.style.cssText = 'background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;display:none;';
+  background.id = "lwu-modal-bg";
+  document.body.appendChild(background)
+  // 
+  const foreground = document.createElement('div');
+  const modaltext = document.createElement('p');
+  modaltext.innerText= "Input your password to unlock Login With Urbit"
+  const input = document.createElement('input');
+  input.type = "password"
+  foreground.appendChild(modaltext)
+  foreground.appendChild(input)
+  const button = document.createElement("button");
+  button.id = "submit-urbit-login";
+  button.innerText = "Submit";
+  foreground.appendChild(button)
+  foreground.style.cssText = 'background-color:white;position:absolute;top:50%;left:50%;width:400px;height:100px;display:none;';
+  foreground.id = "lwu-modal-fg";
+  document.body.appendChild(foreground)
+}
   // function shouldInject() {
   //   const documentElement = document.documentElement.nodeName;
   //   const docElemCheck = documentElement
@@ -19,6 +41,7 @@ const injectScript = () => {
   // }
   // if (shouldInject) {
     injectScript();
+    // injectModal();
     // Messaging.createProxyController();
   // }
 

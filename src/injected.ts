@@ -1,12 +1,12 @@
-console.log("testing injection")
+import {Scry, Thread, Poke, SubscriptionRequestInterface} from "@urbit/http-api/src/types"
 
-type LWURequest = "all" | "active" | "scry" | "poke" | "subscribe" | "unlock" | "isLocked";
+type LWURequest = "all" | "ship" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
 
 function requestData(request: LWURequest, data : any = null){
   return new Promise((res, rej) => {
     window.addEventListener("message", function handler(event) {
       // don't listen to messages from this same page
-      if (event.data.type) return;
+      if (event.data && event.data.app === "urbit") return;
       window.removeEventListener('message', handler);
       if (event.data.error) rej(event.data.error);
       else res(event.data);
@@ -15,14 +15,20 @@ function requestData(request: LWURequest, data : any = null){
   });
 }
 
+function unlock(){
+  document.getElementById("lwu-modal-bg").style.display = "block";
+  document.getElementById("lwu-modal-fg").style.display = "block";
+}
+
 
 
 (window as any).urbit = {
+  unlock: () => unlock(),
   isLocked: () => requestData("isLocked"),
-  unLock: () => requestData("unlock"),
   getAll: () => requestData("all"),
-  getShip: () => requestData("active"),
-  scry: (resource: any) => requestData("scry", resource),
-  poke: (path: any) => requestData("poke", path),
-  subscribe: (subscription: any) => requestData("subscribe", subscription),
+  getShip: () => requestData("ship"),
+  scry: (payload: Scry) => requestData("scry", payload),
+  poke: (payload: Poke<any>) => requestData("poke", payload),
+  thread: (payload: Thread<any>) => requestData("thread", payload),
+  subscribe: (payload: SubscriptionRequestInterface) => requestData("subscribe", payload),
 };

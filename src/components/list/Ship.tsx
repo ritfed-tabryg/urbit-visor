@@ -12,7 +12,6 @@ import { useHistory, Link } from "react-router-dom";
 interface ShipProps{
     ship: EncryptedShipCredentials,
     select: (ship: EncryptedShipCredentials) => void
-    remove: (shipName: string) => void
   }
   export default function Ship(props: ShipProps) {
     const history = useHistory();
@@ -21,15 +20,11 @@ interface ShipProps{
         props.select(props.ship);
         history.push("/ship")
     }
-    function connect(){
-       console.log('oh hai')
-    }
-
+    
       return (
           <div className="ship">
               <Sigil size={78} patp={props.ship.shipName} />
               <p onClick={select}className="shipname">~{displayName}</p>
-              <p onClick={() => props.remove(props.ship.shipName)}>❌</p>
           </div>
       )
   }

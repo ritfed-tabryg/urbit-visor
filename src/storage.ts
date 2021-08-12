@@ -1,10 +1,15 @@
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "./types/types";
 
+interface Permission{
+    thing: string
+}
+
 interface Storage{
     ships?: EncryptedShipCredentials[],
     selected?: EncryptedShipCredentials,
     password?: string
+    permissions?: Permission[]
 }
 export const getStorage = (key: string | string[]) : Promise<Storage> =>
   new Promise((res, rej) =>
