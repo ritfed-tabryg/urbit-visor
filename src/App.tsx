@@ -8,8 +8,10 @@ import AddShip from "./components/adding/AddShip"
 import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
 import Permissions from "./components/perms/Permissions";
-import { getStorage, getAll, storeCredentials, savePassword } from "./storage";
+import PermissionsPrompt from "./components/perms/PermissionsPrompt";
+import { decrypt, getStorage, storeCredentials, savePassword } from "./storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
+import {fetchAllPerms, grantPerms} from "./urbit";
 import {
   MemoryRouter as Router,
   Switch,
@@ -30,7 +32,6 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [prompt, setPrompt] = useState(null);
   const [perms, setPerms] = useState(null);
-  const [site, setSite] = useState(null);
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     // readStorage();
@@ -97,9 +98,9 @@ export default function App() {
       setPrompt("No ship connected");
       history.push("/dashboard");
     }
-    else if (state.perms) {
-      setPerms(state.perms);
-      history.push("/permissions");
+    else if (state.requestedPerms) {
+      setPerms(state.requestedPerms);
+      history.push("/ask_perms");
     }
     else if (state.activeShip) history.push("/ship");
     else if (first) history.push("/welcome");
@@ -144,8 +145,16 @@ export default function App() {
     });
   }
 
-  function savePerms(perms: PermissionRequest): void{
+  function savePerms(pw: string, perms: PermissionRequest): void{
+    const url = decrypt(active.encryptedShipURL, pw);
+    grantPerms(active.shipName, url, perms)
     console.log(perms)
+  }
+
+  async function setThemPerms(url: string){
+    const perms = await fetchAllPerms(url);
+    setPerms(perms.bucket);
+    history.push("/perms")
   }
   useEffect(() => {
     setState();
@@ -175,10 +184,13 @@ export default function App() {
               <ShipList message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
             </Route>
             <Route path="/ship">
-              <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} />
+              <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} setThemPerms={setThemPerms}/>
             </Route>
-            <Route path="/permissions">
-              <Permissions perms={perms} savePerms={savePerms}/>
+            <Route path="/perms">
+              <Permissions active={active} perms={perms}/>
+            </Route>
+            <Route path="/ask_perms">
+              <PermissionsPrompt perms={perms} savePerms={savePerms}/>
             </Route>
           </Switch>
         </div>

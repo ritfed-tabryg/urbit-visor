@@ -1,0 +1,10 @@
+.permissions{
+    padding: 2rem;
+}
+
+.permissions button{
+    margin: 0 1rem;
+}
+.permslist{
+    overflow-y: scroll;
+}

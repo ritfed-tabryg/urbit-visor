@@ -1,43 +1,43 @@
 import Urbit from "@urbit/http-api";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 
-import {getAll, getSelected} from "./storage"
-import {fetchPerms, checkPerms, scry, thread, poke, subscribe} from "./urbit"
+import { getAll, getSelected } from "./storage"
+import { fetchAllPerms, checkPerms, scry, thread, poke, subscribe } from "./urbit"
 
 // opens extension in a full screen tab to use devtools properly, to delete in production
-function openTab(filename : string) {
-    const myid = chrome.i18n.getMessage("@@extension_id");
-    console.log(myid, "myid")
-    chrome.windows.getCurrent(function (win) {
-        chrome.tabs.query({ 'windowId': win.id }, function (tabArray) {
-            for (let i in tabArray) {
-                if (tabArray[i].url == "chrome-extension://" + myid + "/" + filename) {
-                    // console.log("already opened"); 
-                    chrome.tabs.update(tabArray[i].id, { active: true }); return;
-                }
-            } chrome.tabs.create({ url: chrome.extension.getURL(filename) });
-        });
+function openTab(filename: string) {
+  const myid = chrome.i18n.getMessage("@@extension_id");
+  console.log(myid, "myid")
+  chrome.windows.getCurrent(function (win) {
+    chrome.tabs.query({ 'windowId': win.id }, function (tabArray) {
+      for (let i in tabArray) {
+        if (tabArray[i].url == "chrome-extension://" + myid + "/" + filename) {
+          // console.log("already opened"); 
+          chrome.tabs.update(tabArray[i].id, { active: true }); return;
+        }
+      } chrome.tabs.create({ url: chrome.extension.getURL(filename) });
     });
+  });
 }
 openTab("popup.html")
 
 
 
-const controller : BackgroundController = {
+const controller: BackgroundController = {
   locked: true,
-  perms: null,
+  requestedPerms: null,
   activeShip: null,
   url: null,
+  permissions: {}
 }
-// browser.runtime.onMessage.addListener((request) => {
-  
-// })
 
-// sync permissions data from ship to browser storage
+// TODO sync permissions data from ship to browser storage
+
 
 // background listener handles messages from the content script, fetches data from the extension, then sends back a response to the content script 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request, "request")
+  console.log(controller, "controller as of now")
   // console.log(request, "background script receiving message from content script")
   // console.log(sender, "sender")
   // console.log(sender.tab 
@@ -46,19 +46,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
   // console.log(controller, "as of now controller is")
   // // idea would be to open the extension and trigger something here
   if (request.open) {
-      chrome.browserAction.getPopup({}, (popup) => {
-        sendResponse(popup)
-      })
+    chrome.browserAction.getPopup({}, (popup) => {
+      sendResponse(popup)
+    })
   }
-  const needPerms = ["ship", "scry", "thread", "poke", "subscribe"];
+  const needPerms = ["shipName", "scry", "thread", "poke", "subscribe"];
   if (needPerms.includes(request.type)) firewall(request, sender, sendResponse);
   else respond(request, sender, sendResponse);
   return true
 });
 
-function firewall(request: any, sender: any, sendResponse: any){
+function firewall(request: any, sender: any, sendResponse: any) {
   console.log(request, "firewall")
-  if(controller.locked){
+  if (controller.locked) {
     console.log('extension is locked')
     // window.postMessage({ app: "openModal" }, window.origin)
     // chrome.tabs.create({url : "popup.html"})
@@ -66,20 +66,19 @@ function firewall(request: any, sender: any, sendResponse: any){
     // chrome.runtime.sendMessage({type: "locked"});
     controller.locked = true;
     sendResponse("locked")
-  }else {
-    fetchPerms(controller.url).then(res => {
+  } else {
+    fetchAllPerms(controller.url).then(res => {
       console.log(res, "permissions!");
+      console.log(sender, "sender")
       const perms = res.bucket[sender.origin];
-      if (!perms){
-        controller.perms = {website: sender.origin, permissions: [request.type]};
-        // chrome.runtime.sendMessage({type: "noperms", perms: [request.type], site: sender.origin});
+      if (!perms) {
+        controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
         sendResponse("noperms");
-      } else{
-        if (request.type in perms){
+      } else {
+        if (perms.includes(request.type)) {
           respond(request, sender, sendResponse);
-        } else{
-          controller.perms = {website: sender.origin, permissions: [request.type]};
-          // chrome.runtime.sendMessage({type: "noperms", perms: [request.type], site: sender.origin});
+        } else {
+          controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
           sendResponse("noperms")
         }
       }
@@ -87,14 +86,14 @@ function firewall(request: any, sender: any, sendResponse: any){
   }
 };
 
-function respond(request: any, sender: any, sendResponse: any) : void{
-  switch (request.type){
+function respond(request: any, sender: any, sendResponse: any): void {
+  switch (request.type) {
     // saves ship data to background state
     case "selected":
-      controller.locked = false;
       controller.url = request.url;
       controller.activeShip = request.ship
-      console.log(controller, "ship selected");
+      console.log(controller, "ship selection saved to memory");
+      if (request.url) controller.locked = false;
       sendResponse("ok")
       break;
     // 
@@ -108,35 +107,41 @@ function respond(request: any, sender: any, sendResponse: any) : void{
       console.log(controller, "background controller after unlock request");
       sendResponse(controller);
       break;
-    case "lock": 
+    case "lock":
       controller.url = "";
       controller.locked = true;
       sendResponse(controller);
+    case "dismissPerms":
+      controller.requestedPerms = null;
+      break;
     case "all":
       getAll()
-      .then(res => sendResponse({res: res}))
-      .catch(err => sendResponse({err: err}))
+        .then(res => sendResponse({ res: res }))
+        .catch(err => sendResponse({ error: err }))
       break;
-    case "ship":
+    case "shipName":
       sendResponse(controller.activeShip.shipName)
       break;
     case "scry":
-        console.log("sneaked here somehow")
-        scry(controller.url, request.data)
+      scry(controller.url, request.data)
         .then(res => sendResponse(res))
+        .catch(err => sendResponse({ error: err }))
       break;
     case "poke":
       poke(controller.activeShip.shipName, controller.url, request.data)
-      .then(res => sendResponse(res))
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ error: err }))
       break;
     case "thread":
       thread(controller.url, request.data)
         .then(res => sendResponse(res))
+        .catch(err => sendResponse({ error: err }))
       break;
     case "subscribe":
       subscribe(controller.activeShip.shipName, controller.url, request.data)
-      .then(res => sendResponse(res))
-    break;
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ error: err }))
+      break;
     default: break;
   }
 }

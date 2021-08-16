@@ -132,8 +132,10 @@ a{
   padding: 1rem;
 }
 
-.disconnect-button{
-  background-color: red;
+
+
+.red-bg{
+  background-color: red !important;
 }
 label{
   line-height: 1.5;

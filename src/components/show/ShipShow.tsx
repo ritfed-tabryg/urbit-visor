@@ -6,7 +6,7 @@ import Spinner from "../ui/svg/Spinner";
 import Urbit from "@urbit/http-api";
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
-import {fetchPerms} from "../../urbit";
+import {fetchAllPerms} from "../../urbit";
 import "./show.css";
 import { processName } from "../../utils"
 declare const window: any;
@@ -17,9 +17,11 @@ interface ShipProps {
   active: EncryptedShipCredentials,
   save: (ship: EncryptedShipCredentials, url: string) => void,
   remove: (ship: string) => void
+  setThemPerms: (pw: string) => void;
 }
 
 export default function Ship(props: ShipProps) {
+  const history = useHistory();
   const [pw, setPw] = useState("");
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false);
@@ -70,6 +72,7 @@ export default function Ship(props: ShipProps) {
     }
   }
   async function disconnect(): Promise<void> {
+    chrome.runtime.sendMessage({type: "lock"}, (res) => console.log(res));
     props.save(null, null)
   }
   async function testScry() {
@@ -125,19 +128,27 @@ export default function Ship(props: ShipProps) {
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
     if (url.length) {
       setLoading(true);
-      const res = await fetchPerms(url)
+      const res = await fetchAllPerms(url)
       console.log(res);
       setLoading(false);
     } else{
       setError("wrong password")
     }
-
   }
 
   const connectButton = <div onClick={connect} className="button">Connect</div>;
-  const disconnectButton = <div onClick={disconnect} className="button disconnect-button">disconnect</div>
+  const disconnectButton = <div onClick={disconnect} className="button red-bg">disconnect</div>
   const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton
-
+  
+  function gotoPerms(){
+    setError("");
+    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    if (url.length) {
+      props.setThemPerms(url);
+    } else{
+      setError("wrong password")
+    }
+  }
 
   return (
     <div className="ship">
@@ -158,6 +169,7 @@ export default function Ship(props: ShipProps) {
       </div>
       {connectionButton}
       <button onClick={remove} className="button">remove</button>
+      <button onClick={gotoPerms} className="button">Perms</button>
       <div className="sse-consumer">
 
       </div>

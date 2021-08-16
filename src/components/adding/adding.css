@@ -53,6 +53,7 @@ button[type="submit"] {
   background: rgba(33,157,255,0.3);
   border: 1px solid rgba(33,157,255,1);
 }
+
 .back-button{
   cursor: pointer;
   font-size: 2rem;

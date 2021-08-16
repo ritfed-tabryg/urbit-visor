@@ -11,16 +11,21 @@ export type EncryptedShipCredentials = {
   encryptedShipCode: string;
 };
 
+export interface BackgroundController {
+  locked: boolean,
+  requestedPerms: PermissionRequest,
+  activeShip: EncryptedShipCredentials,
+  url: string,
+  permissions: PermissionsGraph
+}
+
 export interface PermissionRequest {
   website: string,
   permissions: string[]
-
+}
+type Permission = "shipName" | "scry" | "thread" | "poke" | "subscribe"
+export interface PermissionsGraph {
+  [key: string] : Permission
 }
 
-export interface BackgroundController {
-  locked: boolean,
-  perms: PermissionRequest,
-  activeShip: EncryptedShipCredentials,
-  url: string,
-
-}
+export type LWURequest = "all" | "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";

@@ -59,21 +59,18 @@ function injectFrame() {
   p.appendChild(b2)
   document.body.appendChild(p);
 }
-// function shouldInject() {
-//   const documentElement = document.documentElement.nodeName;
-//   const docElemCheck = documentElement
-//     ? documentElement.toLowerCase() === 'html'
-//     : true;
-//   const { docType } = window.document;
-//   const docTypeCheck = docType ? docType.name === 'html' : true;
-//   return docElemCheck && docTypeCheck;
-// }
-// if (shouldInject) {
-injectScript();
-// injectFrame();
-// injectModal();
-// Messaging.createProxyController();
-// }
+function shouldInject(): boolean {
+  const documentElement = document.documentElement.nodeName;
+  const docElemCheck = documentElement
+    ? documentElement.toLowerCase() === 'html'
+    : true;
+  const { doctype } = window.document;
+  const docTypeCheck = doctype ? doctype.name === 'html' : true;
+  return docElemCheck && docTypeCheck;
+}
+if (shouldInject()) {
+  injectScript();
+}
 
 // listen to messages from the injected script (i.e. websites)
 // and relays those to the background script, where data is fetched
@@ -85,16 +82,17 @@ window.addEventListener("message", (event) => {
     // then relays that back to the injected script
     chrome.runtime.sendMessage(event.data, (res) => {
       console.log(res, 'receiving response from background script')
+      // if background script response is "locked" or "noperms" inject popup into page
       if(res == "locked" || res == "noperms"){
         console.log('injecting iframe')
         const iframe = document.querySelector('iframe');
         console.log(iframe, "iframe exists")
+        // only inject iframe if one doesn't already exist, else they keep stacking up
         if(!iframe) injectFrame();
       }else{
+      // permissions exist, so relay data from background script into page
       window.postMessage(res, window.origin)
       }
     });
-  // } else if(event.data && event.data.app == "openModal"){
-  //   injectFrame();
   }
 }, false);

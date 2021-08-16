@@ -55,7 +55,8 @@ function Modal(props: ModalProps) {
   const handleClickOutside = () => props.hide();
   function select(ship: EncryptedShipCredentials) {
     props.hide();
-    props.switchShip(ship)
+    props.switchShip(ship);
+    history.push("/ship");
   };
   function addMore() {
     props.hide();
