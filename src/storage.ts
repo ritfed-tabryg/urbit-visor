@@ -11,6 +11,13 @@ interface Storage{
     password?: string
     permissions?: Permission[]
 }
+
+export async function validate(password: string): Promise<boolean>{
+    const res = await getStorage("password");
+    const string = decrypt(res.password, password);
+    if (string === "lwu") return true 
+    else return false
+}
 export const getStorage = (key: string | string[]) : Promise<Storage> =>
   new Promise((res, rej) =>
     chrome.storage.local.get(key, (result) => {
@@ -35,35 +42,23 @@ export async function storeCredentials(ship: string, url: string, code: string, 
       encryptedShipURL: encryptedURL,
       encryptedShipCode: encryptedCode,
     }
-    const res : any = await getStorage("ships");
+    const res = await getStorage("ships");
     if (res["ships"]){
         const new_ships = res["ships"];
-        // TODO prevent duplicates
+        // TODO prevent duplicates and error handling
         new_ships.push(encryptedCredentials);
-        return setStorage({ ships: new_ships });
+        await setStorage({ ships: new_ships });
+        return encryptedCredentials;
     } else{
         const new_ships = [encryptedCredentials];
-        return setStorage({ ships: new_ships });
+        await setStorage({ ships: new_ships });
+        return encryptedCredentials;
     }
-    // chrome.storage.local.get("ships", (res) => {
-    //     if (res["ships"]) {
-    //       let new_ships = res["ships"];
-    //       new_ships.push(encryptedCredentials);
-    //       return setStorage({ ships: new_ships });
-    //     } else {
-    //       let new_ships = [encryptedCredentials];
-    //       return setStorage({ ships: new_ships });
-    //     }
-    // });
-
 };
 
 export function savePassword(password: string) : Promise<any>{
     const encryptedString = encrypt("lwu", password);
     return setStorage({password: encryptedString})
-}
-export function saveSelection(ship: EncryptedShipCredentials):Promise<any>{
-    return setStorage({selected: ship})
 }
 
 export function reset(){

@@ -7,109 +7,182 @@ import Sigil from "./components/ui/svg/Sigil"
 import AddShip from "./components/adding/AddShip"
 import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
-import { getStorage, getAll, storeCredentials, savePassword, saveSelection } from "./storage";
-import { EncryptedShipCredentials } from "./types/types";
+import Permissions from "./components/perms/Permissions";
+import { getStorage, getAll, storeCredentials, savePassword } from "./storage";
+import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 import {
   MemoryRouter as Router,
   Switch,
   Route,
   Link,
+  Redirect,
   useHistory
 } from "react-router-dom";
-declare const window: any;
-
+import { LocationDescriptor } from "history";
 
 import "./App.css";
 
 export default function App() {
   const history = useHistory();
-  const [locked, setLocked] = useState(false); 
   const [first, setFirst] = useState(true);
   const [ships, setShips] = useState([]);
   const [active, setActive] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [prompt, setPrompt] = useState(null);
+  const [perms, setPerms] = useState(null);
+  const [site, setSite] = useState(null);
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    readStorage();
+    // readStorage();
   });
-  function readStorage() {
-    console.log("reading!")
-    getStorage(["password", "ships"])
-    .then(res => {
-      setFirst(!("password" in res));
-      setShips(res.ships || []);
-    })
-    chrome.runtime.sendMessage({type: "active"}, res => {
-      console.log(res, "popup just fetched shit from background")
-      if(res){
-        setSelected(res.activeShip)
-        setActive(res.activeShip)
-      }
+
+  // this is probably the wrong approach. better to keep that state in the background and fetch it here on `useEffect()`
+    // chrome.runtime.onMessage.addListener(function handler(request, sender, sendResponse) {
+    //   console.log(request, "popup listening to messages")
+    //   switch(request.type){
+    //     case "locked":
+    //       setPrompt("Please connect to a ship before requesting data");
+    //       history.push("/dashboard")
+    //       break;
+    //     case "noperms":
+    //       console.log("no permissions")
+    //       setSite(request.site);
+    //       setPerms(request.perms);
+    //       history.push("/permissions")
+    //       break;
+    //   }
+    //   chrome.runtime.onMessage.removeListener(handler);
+    //   return true
+    // });
+
+  async function readStorage(){
+    return await getStorage(["ships", "password"])
+  }
+  async function readState(): Promise<any>{
+    return new Promise((res, rej) => {
+      chrome.runtime.sendMessage({type: "active"}, state => {
+       res(state)
+      })
     })
   };
-  function route(){
-    const route = 
-    first 
-    ?  <Welcome />
-    : selected 
-    ? <ShipShow save={saveShip} active={active} ship={selected} remove={deleteShip} />
-    : <ShipList ships={ships} select={(ship) => setSelected(ship)}/> 
-    return route
+
+  async function setState(){
+    const storage = await readStorage();
+    const state = await readState();
+    const f = !("password" in storage);
+    setFirst(f);
+    const s = storage.ships || []
+    setShips(s);
+    if (state.activeShip){
+      setSelected(state.activeShip);
+      setActive(state.activeShip);
+    };
+    route(f, s, state)
+  }
+
+  function redirect(): LocationDescriptor{
+    console.log("redirecting")
+    if (active) return "/ship"
+    else if (first) return "/welcome"
+    else if (ships) return "/dashboard"
+    else return "/add_ship"
   }
 
 
-  function saveShip(ship: EncryptedShipCredentials, url: string):void{
+  function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundController){
+    console.log(first)
+    console.log(ships)
+    console.log(state)
+    if (state.locked){ 
+      setPrompt("No ship connected");
+      history.push("/dashboard");
+    }
+    else if (state.perms) {
+      setPerms(state.perms);
+      history.push("/permissions");
+    }
+    else if (state.activeShip) history.push("/ship");
+    else if (first) history.push("/welcome");
+    else if (ships) history.push("/dashboard");
+    else history.push("/add_ship");
+  }
+
+  function showShip(ship: EncryptedShipCredentials){
+    setSelected(ship);
+  }
+
+  async function saveShip(ship: string, url: string, code: string, pw: string){
+    const creds = await storeCredentials(ship, url, code, pw);
+    console.log(creds, "here")
+    setSelected(creds);
+    const storage = await readStorage();
+    setShips(storage.ships);
+    route(first, storage.ships, creds);
+  }
+
+
+  function saveActive(ship: EncryptedShipCredentials, url: string):void{
+    console.log(ship, 'setting active ship')
+    // go to dashboard to avoid a crash if the active ship is set to null (clicking on 'disconnect')
+    history.push("/dashboard");
     // send message to background script to keep the url in memory
-    chrome.runtime.sendMessage({type: "selected", ship: ship, url: url}, (res) => console.log(res));
-    saveSelection(ship);
+    chrome.runtime.sendMessage({type: "selected", ship: ship, url: url}, (res) => console.log("ok"));
     setActive(ship);
     setSelected(ship);
+    setState();
   };
 
 
   function deleteShip(shipName: string): void {
-    console.log(shipName, "gonna go")
     chrome.storage.local.get(["ships"], (res) => {
       if (res["ships"].length) {
         const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== shipName);
         chrome.storage.local.set({ ships: new_ships })
-        readStorage();
+        history.push("/dashboard");
+        setState();
       }
     });
   }
+
+  function savePerms(perms: PermissionRequest): void{
+    console.log(perms)
+  }
   useEffect(() => {
-    readStorage();
+    setState();
   }, []);
-  const root_component = route();
   return (
-    <Router>
       <div className="App">
         <NavBar
           ships={ships}
           selected={selected}
-          switchShip={(s: EncryptedShipCredentials) => setSelected(s)}
+          switchShip={(s: EncryptedShipCredentials) => showShip(s)}
         />
         <div className="App-content">
           <Switch>
             <Route exact path="/">
-              {root_component}
+              <Redirect to={redirect()} />
+            </Route>
+            <Route path="/welcome">
+              <Welcome />
             </Route>
             <Route path="/setup">
               <Setup />
             </Route>       
             <Route path="/add_ship">
-              <AddShip />
+              <AddShip add={saveShip}/>
             </Route>
             <Route path="/dashboard">
-              <ShipList ships={ships} select={(ship) => setSelected(ship)}/>
+              <ShipList message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
             </Route>
             <Route path="/ship">
-              <ShipShow save={saveShip} active={active} ship={selected} remove={deleteShip} />
+              <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} />
+            </Route>
+            <Route path="/permissions">
+              <Permissions perms={perms} savePerms={savePerms}/>
             </Route>
           </Switch>
         </div>
       </div>
-    </Router>
   );
 }
 

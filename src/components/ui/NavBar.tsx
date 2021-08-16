@@ -18,21 +18,25 @@ interface NavBarProps {
 export default function NavBar(props: NavBarProps) {
   const sigilbutton = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
-  const active = props.selected ? props.selected.shipName : "master-mirtyl-wacdec"
+  const dummystyle = {width: "50px"}
+  const dummy = <div className="dummySigil" style={dummystyle} />
+  const sigil =
+    <div ref={sigilbutton} onClick={() => toggleModal(!modalOpen)} className="navbar-sigil">
+      <Sigil size={50} patp={props.selected?.shipName} />
+    </div>
+  const active = props.selected ? sigil : dummy
   return (<nav className="App-navbar">
     <img src={logo} className="Nav-logo" />
     <Link to="/">
       <h4>Login With Urbit</h4>
     </Link>
-    <div ref={sigilbutton} onClick={() => toggleModal(!modalOpen)} className="navbar-sigil">
-      <Sigil size={50} patp={active} />
-    </div>
+    {active}
     {modalOpen &&
       <Modal
         parent={sigilbutton}
         hide={() => toggleModal(!modalOpen)}
-        select={(s: EncryptedShipCredentials) => props.switchShip(s)} 
-        {...props} 
+        select={(s: EncryptedShipCredentials) => props.switchShip(s)}
+        {...props}
       />
     }
   </nav>);
@@ -52,9 +56,8 @@ function Modal(props: ModalProps) {
   function select(ship: EncryptedShipCredentials) {
     props.hide();
     props.switchShip(ship)
-    history.push("/");
   };
-  function addMore(){
+  function addMore() {
     props.hide();
     history.push("/add_ship");
   }

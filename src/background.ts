@@ -1,5 +1,5 @@
 import Urbit from "@urbit/http-api";
-import { EncryptedShipCredentials } from "./types/types";
+import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 
 import {getAll, getSelected} from "./storage"
 import {fetchPerms, checkPerms, scry, thread, poke, subscribe} from "./urbit"
@@ -21,31 +21,73 @@ function openTab(filename : string) {
 }
 openTab("popup.html")
 
-interface BackgroundController {
-  locked: boolean
-  activeShip: EncryptedShipCredentials,
-  url: string,
-}
+
 
 const controller : BackgroundController = {
   locked: true,
+  perms: null,
   activeShip: null,
   url: null,
 }
-
+// browser.runtime.onMessage.addListener((request) => {
+  
+// })
 
 // sync permissions data from ship to browser storage
 
 // background listener handles messages from the content script, fetches data from the extension, then sends back a response to the content script 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
-  console.log(request, "background script receiving message from content script")
-  console.log(sender.tab 
-    ? "from a content script:" + sender.tab.url 
-    : "from the extension");
-  console.log(controller, "as of now controller is")
-  // idea would be to open the extension and trigger something here
-  if(controller.locked) sendResponse(false)
-  fetchPerms(controller.url).then(res => console.log(res, "permissions!"))
+  console.log(request, "request")
+  // console.log(request, "background script receiving message from content script")
+  // console.log(sender, "sender")
+  // console.log(sender.tab 
+  //   ? "from a content script:" + sender.tab.url 
+  //   : "from the extension");
+  // console.log(controller, "as of now controller is")
+  // // idea would be to open the extension and trigger something here
+  if (request.open) {
+      chrome.browserAction.getPopup({}, (popup) => {
+        sendResponse(popup)
+      })
+  }
+  const needPerms = ["ship", "scry", "thread", "poke", "subscribe"];
+  if (needPerms.includes(request.type)) firewall(request, sender, sendResponse);
+  else respond(request, sender, sendResponse);
+  return true
+});
+
+function firewall(request: any, sender: any, sendResponse: any){
+  console.log(request, "firewall")
+  if(controller.locked){
+    console.log('extension is locked')
+    // window.postMessage({ app: "openModal" }, window.origin)
+    // chrome.tabs.create({url : "popup.html"})
+    // window.open("chrome-extension://apddmnnkhembaaebippnckmnhbgifcfl/popup.html");
+    // chrome.runtime.sendMessage({type: "locked"});
+    controller.locked = true;
+    sendResponse("locked")
+  }else {
+    fetchPerms(controller.url).then(res => {
+      console.log(res, "permissions!");
+      const perms = res.bucket[sender.origin];
+      if (!perms){
+        controller.perms = {website: sender.origin, permissions: [request.type]};
+        // chrome.runtime.sendMessage({type: "noperms", perms: [request.type], site: sender.origin});
+        sendResponse("noperms");
+      } else{
+        if (request.type in perms){
+          respond(request, sender, sendResponse);
+        } else{
+          controller.perms = {website: sender.origin, permissions: [request.type]};
+          // chrome.runtime.sendMessage({type: "noperms", perms: [request.type], site: sender.origin});
+          sendResponse("noperms")
+        }
+      }
+    });
+  }
+};
+
+function respond(request: any, sender: any, sendResponse: any) : void{
   switch (request.type){
     // saves ship data to background state
     case "selected":
@@ -79,11 +121,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
       sendResponse(controller.activeShip.shipName)
       break;
     case "scry":
+        console.log("sneaked here somehow")
         scry(controller.url, request.data)
         .then(res => sendResponse(res))
       break;
     case "poke":
-      poke(controller.url, request.data)
+      poke(controller.activeShip.shipName, controller.url, request.data)
       .then(res => sendResponse(res))
       break;
     case "thread":
@@ -91,10 +134,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
         .then(res => sendResponse(res))
       break;
     case "subscribe":
-      subscribe(controller.url, request.data)
+      subscribe(controller.activeShip.shipName, controller.url, request.data)
       .then(res => sendResponse(res))
     break;
     default: break;
   }
-  return true
-});
+}

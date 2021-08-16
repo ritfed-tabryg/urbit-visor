@@ -29,10 +29,11 @@ interface AddShipFormProps {
   code: string,
   setUrl: (v: string) => void,
   setCode: (v: string) => void,
+  getShipname: (url: string, code: string) => void,
   setConfirm: (v: boolean) => void,
 }
 
-export default function AddShipForm({ url, code, setUrl, setCode, setConfirm }: AddShipFormProps) {
+export default function AddShipForm({ url, code, setUrl, setCode, getShipname, setConfirm }: AddShipFormProps) {
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -52,6 +53,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, setConfirm }: 
         switch (res.status) {
           case 204:
             setLoading(false);
+            getShipname(url, code);
             setConfirm(true);
             // const urbit = await setAirlock(url, code);
             // startChannel(urbit);

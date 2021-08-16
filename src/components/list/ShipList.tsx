@@ -10,6 +10,7 @@ import {reset} from "../../storage";
 interface ShipListProps {
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
+    message: string
 }
 
 export default function Dashboard(props: ShipListProps) {
@@ -20,6 +21,7 @@ export default function Dashboard(props: ShipListProps) {
     const history = useHistory();
     return (
         <div className="dashboard">
+            <p className="errorMessage"> {props.message}</p>
             <p>Your urbits</p>
             <div className="ship-list">
                 {props.ships.map((ship) => {
@@ -33,8 +35,3 @@ export default function Dashboard(props: ShipListProps) {
         </div>
     )
 }
-
-
-
-// micmev-rapteb-fopsur-monsug
-// magdec-sognev-somfed-baclux

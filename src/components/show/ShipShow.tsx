@@ -1,12 +1,13 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Sigil from "../ui/svg/Sigil"
 import { useHistory } from "react-router-dom";
 import Spinner from "../ui/svg/Spinner";
 import Urbit from "@urbit/http-api";
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
-import "./show.css"
+import {fetchPerms} from "../../urbit";
+import "./show.css";
 import { processName } from "../../utils"
 declare const window: any;
 
@@ -22,10 +23,8 @@ export default function Ship(props: ShipProps) {
   const [pw, setPw] = useState("");
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState([]);
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
   const displayName = processName(props.ship.shipName);
-  const history = useHistory();
 
   function remove() {
     setError("");
@@ -121,6 +120,19 @@ export default function Ship(props: ShipProps) {
       setError("wrong password")
     }
   }
+  async function testPerms(){
+    setError("");
+    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    if (url.length) {
+      setLoading(true);
+      const res = await fetchPerms(url)
+      console.log(res);
+      setLoading(false);
+    } else{
+      setError("wrong password")
+    }
+
+  }
 
   const connectButton = <div onClick={connect} className="button">Connect</div>;
   const disconnectButton = <div onClick={disconnect} className="button disconnect-button">disconnect</div>
@@ -138,6 +150,7 @@ export default function Ship(props: ShipProps) {
         <button onClick={testScry}>Test Scry</button>
         <button onClick={testPoke}>Test Poke</button>
         <button onClick={testSubscribe}>Test Subscribe</button>
+        <button onClick={testPerms}>Test Permissions</button>
         <div className="spinner">
           {loading && spinner}
         </div>

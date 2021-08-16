@@ -10,3 +10,17 @@ export type EncryptedShipCredentials = {
   encryptedShipURL: string;
   encryptedShipCode: string;
 };
+
+export interface PermissionRequest {
+  website: string,
+  permissions: string[]
+
+}
+
+export interface BackgroundController {
+  locked: boolean,
+  perms: PermissionRequest,
+  activeShip: EncryptedShipCredentials,
+  url: string,
+
+}

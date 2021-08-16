@@ -9,53 +9,92 @@ const injectScript = () => {
   (document.head || document.documentElement).appendChild(script);
 };
 
-function injectModal(){
+function injectModal() {
   const background = document.createElement('div');
-  background.style.cssText = 'background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;display:none;';
+  background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;';
   background.id = "lwu-modal-bg";
-  document.body.appendChild(background)
-  // 
   const foreground = document.createElement('div');
-  const modaltext = document.createElement('p');
-  modaltext.innerText= "Input your password to unlock Login With Urbit"
-  const input = document.createElement('input');
-  input.type = "password"
-  foreground.appendChild(modaltext)
-  foreground.appendChild(input)
-  const button = document.createElement("button");
-  button.id = "submit-urbit-login";
-  button.innerText = "Submit";
-  foreground.appendChild(button)
-  foreground.style.cssText = 'background-color:white;position:absolute;top:50%;left:50%;width:400px;height:100px;display:none;';
+  foreground.style.cssText = 'background-color:grey;position:absolute;top:50%;left:50%;width:400px;height:100px;transform: translate(-50%, -50%);padding:1rem;';
   foreground.id = "lwu-modal-fg";
-  document.body.appendChild(foreground)
+  background.appendChild(foreground)
+  document.body.appendChild(background)
 }
-  // function shouldInject() {
-  //   const documentElement = document.documentElement.nodeName;
-  //   const docElemCheck = documentElement
-  //     ? documentElement.toLowerCase() === 'html'
-  //     : true;
-  //   const { docType } = window.document;
-  //   const docTypeCheck = docType ? docType.name === 'html' : true;
-  //   return docElemCheck && docTypeCheck;
-  // }
-  // if (shouldInject) {
-    injectScript();
-    // injectModal();
-    // Messaging.createProxyController();
-  // }
+
+// function injectFrame() {
+//   const i = document.createElement('iframe')
+//   const p = document.createElement('div');
+//   p.style.cssText = "width: 357px; height: 600px; position: fixed; top:0; right:50px;";
+//   i.style.cssText = "width: 357px; height: 600px;";
+
+//   const b = document.createElement('button')
+//   b.innerHTML = 'Open'
+//   b.addEventListener('click', (evt) => {
+//     evt.preventDefault()
+//     chrome.runtime.sendMessage({ open: true }, (response) => {
+//       console.log(response, "response")
+//       i.src = response
+//       p.appendChild(i)
+//     })
+//   })
+//   const b2 = document.createElement('button');
+//   b2.innerHTML = "Close";
+//   b2.onclick = () => p.removeChild(i);
+//   p.appendChild(b)
+//   p.appendChild(b2)
+//   document.body.appendChild(p);
+// }
+function injectFrame() {
+  const i = document.createElement('iframe')
+  const p = document.createElement('div');
+  p.style.cssText = "width: 357px; height: 600px; position: fixed; top:0; right:50px;";
+  i.style.cssText = "width: 357px; height: 600px;";
+  chrome.runtime.sendMessage({ open: true }, (response) => {
+    console.log(response, "response")
+    i.src = response
+    p.appendChild(i)
+  })
+  const b2 = document.createElement('button');
+  b2.innerHTML = "Close";
+  b2.onclick = () => document.body.removeChild(p);
+  p.appendChild(b2)
+  document.body.appendChild(p);
+}
+// function shouldInject() {
+//   const documentElement = document.documentElement.nodeName;
+//   const docElemCheck = documentElement
+//     ? documentElement.toLowerCase() === 'html'
+//     : true;
+//   const { docType } = window.document;
+//   const docTypeCheck = docType ? docType.name === 'html' : true;
+//   return docElemCheck && docTypeCheck;
+// }
+// if (shouldInject) {
+injectScript();
+// injectFrame();
+// injectModal();
+// Messaging.createProxyController();
+// }
 
 // listen to messages from the injected script (i.e. websites)
 // and relays those to the background script, where data is fetched
-window.addEventListener("message", (event) =>{
+window.addEventListener("message", (event) => {
   console.log(event, "content script receiving window message")
-  if(event.data && event.data.app === "urbit"){
+  if (event.data && event.data.app === "urbit") {
     console.log('calling background script');
-// and listens to the response from the background script after the data is fetched
-// then relays that back to the injected script
-  chrome.runtime.sendMessage(event.data, (res) => {
-    console.log('receiving response from background script')
-    window.postMessage(res, window.origin)
-  });
+    // and listens to the response from the background script after the data is fetched
+    // then relays that back to the injected script
+    chrome.runtime.sendMessage(event.data, (res) => {
+      console.log(res, 'receiving response from background script')
+      if(res == "locked" || res == "noperms"){
+        console.log('injecting iframe')
+        const iframe = document.querySelector('iframe');
+        console.log(iframe, "iframe exists")
+        if(!iframe) injectFrame();
+      }else{
+      window.postMessage(res, window.origin)
+      }
+    });
+  // } else if(event.data && event.data.app == "openModal"){
+  //   injectFrame();
   }
 }, false);
