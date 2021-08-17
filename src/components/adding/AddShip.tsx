@@ -35,7 +35,7 @@ export default function AddShip(props: AddShipProps) {
   const component =
     confirm
       ? <Confirm
-        url={url}
+        url={url.replace(/\/$/g, '')}
         code={code}
         save={save}
         ship={ship}
