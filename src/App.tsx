@@ -83,8 +83,8 @@ export default function App() {
 
   function redirect(): LocationDescriptor{
     console.log("redirecting")
-    if (active) return "/ship"
-    else if (first) return "/welcome"
+    if (first) return "/welcome"
+    else if (active) return "/ship"
     else if (ships) return "/dashboard"
     else return "/add_ship"
   }
