@@ -31,6 +31,20 @@
       ]
     }
   ],
+  "web_accessible_resources": [
+    "injected.js",
+    "popup.html"
+  ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+U",
+        "mac": "Ctrl+Shift+U",
+        "chromeos": "Ctrl+Shift+U",
+        "linux": "Ctrl+Shift+U"
+      }
+    }
+  },
   "permissions": [
     "storage"
  ]

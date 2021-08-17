@@ -3,9 +3,12 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
 const config = {
+  mode: "development",
+  devtool: 'cheap-module-source-map',
   entry: {
     popup: path.join(__dirname, "src/popup.tsx"),
     content: path.join(__dirname, "src/content.ts"),
+    injected: path.join(__dirname, "src/injected.ts"),
     background: path.join(__dirname, "src/background.ts"),
   },
   output: { path: path.join(__dirname, "dist"), filename: "[name].js" },

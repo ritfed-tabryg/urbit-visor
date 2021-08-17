@@ -1,0 +1,7 @@
+.data{
+    display: flex;
+    margin-bottom: 2rem;
+}
+.ship{
+    padding: 2rem;
+}
