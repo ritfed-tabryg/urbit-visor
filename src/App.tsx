@@ -83,8 +83,8 @@ export default function App() {
 
   function redirect(): LocationDescriptor{
     console.log("redirecting")
-    if (active) return "/ship"
-    else if (first) return "/welcome"
+    if (first) return "/welcome"
+    else if (active) return "/ship"
     else if (ships) return "/dashboard"
     else return "/add_ship"
   }
@@ -94,7 +94,8 @@ export default function App() {
     console.log(first)
     console.log(ships)
     console.log(state)
-    if (state.locked){ 
+    if (first) history.push("/welcome");
+    else if (state.locked){ 
       setPrompt("No ship connected");
       history.push("/dashboard");
     }
@@ -103,7 +104,6 @@ export default function App() {
       history.push("/ask_perms");
     }
     else if (state.activeShip) history.push("/ship");
-    else if (first) history.push("/welcome");
     else if (ships) history.push("/dashboard");
     else history.push("/add_ship");
   }
@@ -175,13 +175,13 @@ export default function App() {
               <Welcome />
             </Route>
             <Route path="/setup">
-              <Setup />
+              <Setup setFirst={setFirst}/>
             </Route>       
             <Route path="/add_ship">
               <AddShip add={saveShip}/>
             </Route>
             <Route path="/dashboard">
-              <ShipList message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
+              <ShipList setFirst={setFirst} message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
             </Route>
             <Route path="/ship">
               <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} setThemPerms={setThemPerms}/>
@@ -218,8 +218,10 @@ function Welcome() {
     </div>
   );
 }
-
-function Setup(){
+interface SetupProps {
+  setFirst: (b: boolean) => void
+}
+function Setup({setFirst} : SetupProps){
    const history = useHistory();
    const [pw, setpw] = useState("");
    const [confirmationpw, setconfirmation] = useState("");
@@ -228,7 +230,10 @@ function Setup(){
      if (pw === confirmationpw){
        setError("");
        savePassword(pw)
-       .then(res => history.push("/"))
+       .then(res => {
+         setFirst(false)
+         history.push("/");
+        })
      } else{
        setError("Passwords do not match")
      }

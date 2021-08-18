@@ -11,11 +11,13 @@ interface ShipListProps {
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
     message: string
+    setFirst: (b: boolean) => void;
 }
 
 export default function Dashboard(props: ShipListProps) {
     function doReset(){
         reset();
+        props.setFirst(true);
         history.push("/");
       }
     const history = useHistory();
