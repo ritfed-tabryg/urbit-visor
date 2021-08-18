@@ -36,8 +36,8 @@ body{
 }
 .Nav-logo {
   height: 50px;
-  float: right;
-  pointer-events: none;
+  cursor: pointer;
+  /* pointer-events: none; */
 }
 
 .App-navbar {

@@ -8,6 +8,7 @@ import {reset} from "../../storage";
 
 
 interface ShipListProps {
+    active: EncryptedShipCredentials
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
     message: string
@@ -23,17 +24,17 @@ export default function Dashboard(props: ShipListProps) {
     const history = useHistory();
     return (
         <div className="dashboard">
-            <p className="errorMessage"> {props.message}</p>
+            <p className="ships-connected-msg"> {props.message}</p>
             <p>Your urbits</p>
             <div className="ship-list">
                 {props.ships.map((ship) => {
                     return (
-                    <Ship key={ship.shipName} ship={ship} select={props.select} />
+                    <Ship active={props.active} key={ship.shipName} ship={ship} select={props.select} />
                     )
                  })}
             </div>
             <button className="button add-more-button" onClick={()=> history.push("/add_ship")}>Add More</button>
-            <button className="button reset-button" onClick={doReset}>reset app</button>
+            <button className="button reset-button red-bg" onClick={doReset}>reset app</button>
         </div>
     )
 }

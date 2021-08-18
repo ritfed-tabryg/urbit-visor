@@ -44,7 +44,8 @@ function injectModal() {
 //   document.body.appendChild(p);
 // }
 function injectFrame() {
-  const i = document.createElement('iframe')
+  const i = document.createElement('iframe');
+  // (i as any).sandbox = "allow-scripts allow-same-origin"
   const p = document.createElement('div');
   p.style.cssText = "width: 357px; height: 600px; position: fixed; top:0; right:50px;";
   i.style.cssText = "width: 357px; height: 600px;";

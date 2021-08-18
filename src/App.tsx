@@ -34,27 +34,10 @@ export default function App() {
   const [perms, setPerms] = useState(null);
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
+    // TODO use this instead of dispatching setFirst() around
     // readStorage();
   });
 
-  // this is probably the wrong approach. better to keep that state in the background and fetch it here on `useEffect()`
-    // chrome.runtime.onMessage.addListener(function handler(request, sender, sendResponse) {
-    //   console.log(request, "popup listening to messages")
-    //   switch(request.type){
-    //     case "locked":
-    //       setPrompt("Please connect to a ship before requesting data");
-    //       history.push("/dashboard")
-    //       break;
-    //     case "noperms":
-    //       console.log("no permissions")
-    //       setSite(request.site);
-    //       setPerms(request.perms);
-    //       history.push("/permissions")
-    //       break;
-    //   }
-    //   chrome.runtime.onMessage.removeListener(handler);
-    //   return true
-    // });
 
   async function readStorage(){
     return await getStorage(["ships", "password"])
@@ -82,7 +65,6 @@ export default function App() {
   }
 
   function redirect(): LocationDescriptor{
-    console.log("redirecting")
     if (first) return "/welcome"
     else if (active) return "/ship"
     else if (ships) return "/dashboard"
@@ -91,9 +73,6 @@ export default function App() {
 
 
   function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundController){
-    console.log(first)
-    console.log(ships)
-    console.log(state)
     if (first) history.push("/welcome");
     else if (state.locked){ 
       setPrompt("No ship connected");
@@ -114,7 +93,6 @@ export default function App() {
 
   async function saveShip(ship: string, url: string, code: string, pw: string){
     const creds = await storeCredentials(ship, url, code, pw);
-    console.log(creds, "here")
     setSelected(creds);
     const storage = await readStorage();
     setShips(storage.ships);
@@ -123,9 +101,8 @@ export default function App() {
 
 
   function saveActive(ship: EncryptedShipCredentials, url: string):void{
-    console.log(ship, 'setting active ship')
-    // go to dashboard to avoid a crash if the active ship is set to null (clicking on 'disconnect')
-    history.push("/dashboard");
+    if (ship == null) history.push("/dashboard");
+    else history.push("/ship")
     // send message to background script to keep the url in memory
     chrome.runtime.sendMessage({type: "selected", ship: ship, url: url}, (res) => console.log("ok"));
     setActive(ship);
@@ -148,7 +125,6 @@ export default function App() {
   function savePerms(pw: string, perms: PermissionRequest): void{
     const url = decrypt(active.encryptedShipURL, pw);
     grantPerms(active.shipName, url, perms)
-    console.log(perms)
   }
 
   async function setThemPerms(url: string){
@@ -181,13 +157,13 @@ export default function App() {
               <AddShip add={saveShip}/>
             </Route>
             <Route path="/dashboard">
-              <ShipList setFirst={setFirst} message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
+              <ShipList setFirst={setFirst} active={active} message={prompt} ships={ships} select={(ship) => setSelected(ship)}/>
             </Route>
             <Route path="/ship">
               <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} setThemPerms={setThemPerms}/>
             </Route>
             <Route path="/perms">
-              <Permissions active={active} perms={perms}/>
+              <Permissions ship={selected} perms={perms}/>
             </Route>
             <Route path="/ask_perms">
               <PermissionsPrompt perms={perms} savePerms={savePerms}/>

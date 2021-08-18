@@ -151,24 +151,24 @@ export default function Ship(props: ShipProps) {
   }
 
   return (
-    <div className="ship">
-      <div className="data">
+    <div className="ship-show">
+      <div className="ship-data">
         <Sigil size={78} patp={props.ship.shipName} />
         <p className="shipname">~{displayName}</p>
       </div>
       <div className="buttons">
         <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
-        <button onClick={testScry}>Test Scry</button>
+        {/* <button onClick={testScry}>Test Scry</button>
         <button onClick={testPoke}>Test Poke</button>
         <button onClick={testSubscribe}>Test Subscribe</button>
-        <button onClick={testPerms}>Test Permissions</button>
+        <button onClick={testPerms}>Test Permissions</button> */}
         <div className="spinner">
           {loading && spinner}
         </div>
         <p className="errorMessage">{error}</p>
       </div>
       {connectionButton}
-      <button onClick={remove} className="button">remove</button>
+      <button onClick={remove} className="button red-bg">remove</button>
       <button onClick={gotoPerms} className="button">Perms</button>
       <div className="sse-consumer">
 
