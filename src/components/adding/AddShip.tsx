@@ -15,7 +15,7 @@ interface AddShipProps{
 export default function AddShip(props: AddShipProps) {
 
   async function getShipname(url: string, code: string) : Promise<void>{
-    const res = await fetch(url + "/~/login");
+    const res = await fetch(url.replace(/\/$/g, '') + "/~/login");
     const parser = new DOMParser();
     const htmlString = await res.text();
     const doc = parser.parseFromString(htmlString, "text/html");
@@ -35,7 +35,7 @@ export default function AddShip(props: AddShipProps) {
   const component =
     confirm
       ? <Confirm
-        url={url}
+        url={url.replace(/\/$/g, '')}
         code={code}
         save={save}
         ship={ship}
