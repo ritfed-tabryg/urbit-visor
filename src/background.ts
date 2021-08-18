@@ -7,7 +7,6 @@ import { fetchAllPerms, checkPerms, scry, thread, poke, subscribe } from "./urbi
 // opens extension in a full screen tab to use devtools properly, to delete in production
 function openTab(filename: string) {
   const myid = chrome.i18n.getMessage("@@extension_id");
-  console.log(myid, "myid")
   chrome.windows.getCurrent(function (win) {
     chrome.tabs.query({ 'windowId': win.id }, function (tabArray) {
       for (let i in tabArray) {

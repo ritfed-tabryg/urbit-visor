@@ -16,6 +16,7 @@ interface NavBarProps {
 }
 
 export default function NavBar(props: NavBarProps) {
+  const history = useHistory();
   const sigilbutton = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
   const dummystyle = {width: "50px"}
@@ -26,7 +27,7 @@ export default function NavBar(props: NavBarProps) {
     </div>
   const active = props.selected ? sigil : dummy
   return (<nav className="App-navbar">
-    <img src={logo} className="Nav-logo" />
+    <img onClick={()=> history.push("/dashboard")} src={logo} className="Nav-logo" />
     <Link to="/">
       <h4>Login With Urbit</h4>
     </Link>

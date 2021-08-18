@@ -1,7 +1,19 @@
-.data{
+.ship-data{
     display: flex;
     margin-bottom: 2rem;
 }
-.ship{
-    padding: 2rem;
+.ship-data p{
+    font-size: 1.5rem;
+    margin-left: 1.2rem;
+    cursor: pointer;
+}
+
+.ship-show{
+    padding: 1rem;
+}
+.ship-show .buttons{
+    padding: 0 1rem;
+}
+.errorMessage{
+    margin: 0;
 }

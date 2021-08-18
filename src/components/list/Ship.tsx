@@ -10,6 +10,7 @@ import { useHistory, Link } from "react-router-dom";
 
 
 interface ShipProps{
+    active: EncryptedShipCredentials
     ship: EncryptedShipCredentials,
     select: (ship: EncryptedShipCredentials) => void
   }
@@ -23,8 +24,10 @@ interface ShipProps{
     
       return (
           <div className="ship">
-              <Sigil size={78} patp={props.ship.shipName} />
-              <p onClick={select}className="shipname">~{displayName}</p>
+              <div onClick={select} className={props.active?.shipName == props.ship.shipName ? "sigil-wrapper active-ship" : "sigil-wrapper"}>
+              <Sigil size={68} patp={props.ship.shipName} />
+              </div>
+              <p onClick={select} className="shipname">~{displayName}</p>
           </div>
       )
   }

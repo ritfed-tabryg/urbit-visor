@@ -2,7 +2,7 @@
     width: 100%;
 }
 .dashboard p{
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 .ship-list{
     padding: 0;
@@ -17,17 +17,16 @@
 
 }
 .ship-list .ship:nth-last-child(1){
-  border-top: 1px solid white;
+  /* border-bottom: 1px solid white; */
 }
-.ship-list .ship:nth-last-child(){
+.ship-list .ship:nth-last-child(1){
   border-bottom: none;
 }
 .shipname{
   color: white;
   text-decoration: none;
-  font-size: 1.5rem;
-  overflow-x: scroll;
-  white-space: nowrap;
+  font-size: 1.2rem;
+  /* white-space: nowrap; */
   /* word-wrap:break-word */
 }
 .ship p{
@@ -37,7 +36,21 @@
 .add-more{
     
 }
-
+.sigil-wrapper{
+  margin: 5px;
+  cursor: pointer;
+  width: 70px;
+  height: 70px;
+}
 .comet-sigil{
   background-color: black;
+}
+
+.active-ship{
+  border: 1px solid green;
+}
+
+.ships-connected-msg{
+  color: red;
+  font-size: 1.1rem !important;
 }
