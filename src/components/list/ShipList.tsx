@@ -12,22 +12,24 @@ interface ShipListProps {
     ships: EncryptedShipCredentials[]
     select:  (ship: EncryptedShipCredentials) => void
     message: string
-    setFirst: (b: boolean) => void;
 }
 
 export default function Dashboard(props: ShipListProps) {
-    function doReset(){
-        reset();
-        props.setFirst(true);
+    async function doReset(){
+        await reset();
         history.push("/");
       }
     const history = useHistory();
+    const inactive = props.ships.filter(s => s.shipName != props.active?.shipName);
+    let ordered = [];
+    ordered = props.active ? [props.active, ...inactive] : inactive;
+
     return (
         <div className="dashboard">
             <p className="ships-connected-msg"> {props.message}</p>
             <p>Your urbits</p>
             <div className="ship-list">
-                {props.ships.map((ship) => {
+                {ordered.map((ship) => {
                     return (
                     <Ship active={props.active} key={ship.shipName} ship={ship} select={props.select} />
                     )

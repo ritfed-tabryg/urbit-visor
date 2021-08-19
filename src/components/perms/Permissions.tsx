@@ -31,7 +31,9 @@ export default function Permissions(props: PermissionsProps) {
             </div>
             <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
             <div className="permslist">
-                {!query.length
+                {!domains.length 
+                ? <p>No permissions granted</p>
+                : !query.length
                     ? domains.map((domain) => <Domain domain={domain} perms={props.perms[domain]} />)
                     : domains.filter((d) => d.includes(query)).map((domain) => <Domain domain={domain} perms={props.perms[domain]} />)
                 }

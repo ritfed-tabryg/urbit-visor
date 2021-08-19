@@ -6,6 +6,8 @@ import { fetchAllPerms, checkPerms, scry, thread, poke, subscribe } from "./urbi
 
 // opens extension in a full screen tab to use devtools properly, to delete in production
 function openTab(filename: string) {
+  // chrome.browserAction.setBadgeText({text: "nc"});
+  // chrome.browserAction.setBadgeBackgroundColor({color: "#ff0000"});
   const myid = chrome.i18n.getMessage("@@extension_id");
   chrome.windows.getCurrent(function (win) {
     chrome.tabs.query({ 'windowId': win.id }, function (tabArray) {
@@ -93,7 +95,8 @@ function respond(request: any, sender: any, sendResponse: any): void {
       controller.activeShip = request.ship
       console.log(controller, "ship selection saved to memory");
       if (request.url) controller.locked = false;
-      sendResponse("ok")
+      else controller.locked = true;
+      sendResponse(request.ship)
       break;
     // 
     case "active":

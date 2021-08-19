@@ -17,3 +17,6 @@
 .errorMessage{
     margin: 0;
 }
+.small-button{
+    cursor: pointer;
+}

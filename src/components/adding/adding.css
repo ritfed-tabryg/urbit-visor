@@ -54,9 +54,9 @@ button[type="submit"] {
   border: 1px solid rgba(33,157,255,1);
 }
 
-.back-button{
-  cursor: pointer;
-  font-size: 2rem;
-  text-align: left;
-  width: 100%;
+.confirm-shipname{
+  font-size: 1.2rem;
+}
+.confirm-form{
+  margin: 0 !important;
 }

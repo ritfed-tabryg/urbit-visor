@@ -46,16 +46,12 @@ export default function Ship(props: ShipProps) {
     if (url.length) {
       setLoading(true);
       const airlock = new Urbit(url, "");
-      console.log(airlock)
       airlock.ship = props.ship.shipName;
       airlock.verbose = true;
       airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
         .then(res => {
           setLoading(false);
-          console.log(res, "poke resolved")
-          if (res) {
-            props.save(props.ship, url);
-          }
+          props.save(props.ship, url);
         })
         .catch(err => {
           setLoading(false);
@@ -72,7 +68,6 @@ export default function Ship(props: ShipProps) {
     }
   }
   async function disconnect(): Promise<void> {
-    chrome.runtime.sendMessage({type: "lock"}, (res) => console.log(res));
     props.save(null, null)
   }
   async function testScry() {
@@ -139,7 +134,15 @@ export default function Ship(props: ShipProps) {
   const connectButton = <div onClick={connect} className="button">Connect</div>;
   const disconnectButton = <div onClick={disconnect} className="button red-bg">disconnect</div>
   const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton
-  
+  function gotoLandscape(){
+    setError("");
+    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    if (url.length) {
+      chrome.tabs.create({url: url})
+    } else{
+      setError("wrong password")
+    }
+  }
   function gotoPerms(){
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
@@ -164,12 +167,13 @@ export default function Ship(props: ShipProps) {
         <button onClick={testPerms}>Test Permissions</button> */}
         <div className="spinner">
           {loading && spinner}
+          <p className="errorMessage">{error}</p>
         </div>
-        <p className="errorMessage">{error}</p>
       </div>
       {connectionButton}
-      <button onClick={remove} className="button red-bg">remove</button>
+      <button onClick={gotoLandscape} className="button">Landscape</button>
       <button onClick={gotoPerms} className="button">Perms</button>
+      <button onClick={remove} className="button red-bg">remove</button>
       <div className="sse-consumer">
 
       </div>

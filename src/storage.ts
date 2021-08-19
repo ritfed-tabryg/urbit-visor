@@ -43,10 +43,12 @@ export async function storeCredentials(ship: string, url: string, code: string, 
       encryptedShipCode: encryptedCode,
     }
     const res = await getStorage("ships");
-    if (res["ships"]){
-        const new_ships = res["ships"];
-        // TODO prevent duplicates and error handling
-        new_ships.push(encryptedCredentials);
+    if (res["ships"].length){
+        const ships = res["ships"];
+        console.log(res.ships, "ships")
+        let new_ships;
+        if (ships.filter(sp => sp.shipName == ship).length) new_ships = ships;
+        else new_ships = [...ships, encryptedCredentials];
         await setStorage({ ships: new_ships });
         return encryptedCredentials;
     } else{
@@ -61,8 +63,13 @@ export function savePassword(password: string) : Promise<any>{
     return setStorage({password: encryptedString})
 }
 
-export function reset(){
-    chrome.storage.local.clear();
+export function reset(): Promise<any>{
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.clear(()=>{
+            if (chrome.runtime.lastError) reject(undefined);
+            resolve("ok");
+        });
+    })
 }
 
 
@@ -109,36 +116,3 @@ export function encrypt(target: string, password: string): string {
 export function decrypt(target: string, password: string): string {
     return CryptoJS.AES.decrypt(target, password).toString(CryptoJS.enc.Utf8);
 }
-
-// export async function getShips(){
-//     chrome.storage.local.get(["ships"], (res) => {
-//         if (res["ships"] && res["ships"].length) {
-//           console.log(res, "res")
-//           setFirst(false)
-//         } else{
-//           setFirst(true)
-//         }
-//         setShips(res["ships"]);
-//         setSelected(res["selected"]);
-//         console.log(ships, "ships");
-//       });
-// }
-
-
-
-// const getStorage = (key) =>
-//   new Promise((res, rej) =>
-//     chrome.storage.local.get(key, (result) => {
-//       if (chrome.runtime.lastError) rej(undefined);
-//       res(result);
-//     })
-//   );
-
-//   async function check(){
-//       const r = await getStorage("password");
-//       if (r.ships){
-//           return r
-//       }else{
-//         return "oops"
-//       }
-//   }
