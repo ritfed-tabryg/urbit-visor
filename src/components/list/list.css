@@ -6,6 +6,9 @@
 }
 .ship-list{
     padding: 0;
+    overflow-y: scroll;
+    /* TODO get these numbers right */
+    max-height: 240px;
 }
 .ship-list .ship{
     list-style: none;
@@ -47,7 +50,7 @@
 }
 
 .active-ship{
-  border: 1px solid green;
+  border: 3px solid green;
 }
 
 .ships-connected-msg{

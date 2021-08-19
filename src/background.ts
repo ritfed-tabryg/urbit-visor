@@ -93,7 +93,8 @@ function respond(request: any, sender: any, sendResponse: any): void {
       controller.activeShip = request.ship
       console.log(controller, "ship selection saved to memory");
       if (request.url) controller.locked = false;
-      sendResponse("ok")
+      else controller.locked = true;
+      sendResponse(request.ship)
       break;
     // 
     case "active":

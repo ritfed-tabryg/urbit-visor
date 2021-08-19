@@ -27,7 +27,7 @@ export default function NavBar(props: NavBarProps) {
     </div>
   const active = props.selected ? sigil : dummy
   return (<nav className="App-navbar">
-    <img onClick={()=> history.push("/dashboard")} src={logo} className="Nav-logo" />
+    <img onClick={()=> history.push("/ship_list")} src={logo} className="Nav-logo" />
     <Link to="/">
       <h4>Login With Urbit</h4>
     </Link>
@@ -69,7 +69,7 @@ function Modal(props: ModalProps) {
       <div>My ships</div>
       <hr />
       {props.ships.map((ship: EncryptedShipCredentials) => {
-        return <div key={ship.shipName} onClick={() => select(ship)} className="ship-in-modal">{processName(ship.shipName)}</div>
+        return <div key={ship.shipName} onClick={() => select(ship)} className="ship-in-modal">~{processName(ship.shipName)}</div>
       })}
       <div onClick={addMore} className="add-more-link">+ Add more</div>
     </div>
