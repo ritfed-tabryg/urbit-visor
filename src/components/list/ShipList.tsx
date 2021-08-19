@@ -20,7 +20,7 @@ export default function Dashboard(props: ShipListProps) {
         history.push("/");
       }
     const history = useHistory();
-    const inactive = props.ships.filter(s => s.shipName != props.active.shipName);
+    const inactive = props.ships.filter(s => s.shipName != props.active?.shipName);
     let ordered = [];
     ordered = props.active ? [props.active, ...inactive] : inactive;
 
