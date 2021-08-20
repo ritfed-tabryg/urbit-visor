@@ -8,13 +8,14 @@
     padding: 0;
     overflow-y: scroll;
     /* TODO get these numbers right */
-    max-height: 240px;
+    max-height: 260px;
 }
 .ship-list .ship{
     list-style: none;
     display: flex;
-    height: 80px;
+    height: 85px;
     width: 100%;
+    margin: auto;
     padding: 0 10px;    
     border-bottom: 1px solid white;
 
@@ -33,17 +34,18 @@
   /* word-wrap:break-word */
 }
 .ship p{
-    margin-left: 1.2rem;
+    margin: auto auto auto 1.2rem;
     cursor: pointer;
 }
 .add-more{
     
 }
 .sigil-wrapper{
-  margin: 5px;
+  margin: auto 5px;
   cursor: pointer;
   width: 70px;
   height: 70px;
+  box-sizing: content-box;
 }
 .comet-sigil{
   background-color: black;

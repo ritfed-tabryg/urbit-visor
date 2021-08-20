@@ -26,8 +26,8 @@ export default function Dashboard(props: ShipListProps) {
 
     return (
         <div className="dashboard">
+            <p>Your Ships</p>
             <p className="ships-connected-msg"> {props.message}</p>
-            <p>Your urbits</p>
             <div className="ship-list">
                 {ordered.map((ship) => {
                     return (
@@ -35,8 +35,8 @@ export default function Dashboard(props: ShipListProps) {
                     )
                  })}
             </div>
-            <button className="button add-more-button" onClick={()=> history.push("/add_ship")}>Add More</button>
-            <button className="button reset-button red-bg" onClick={doReset}>reset app</button>
+            <button className="button add-more-button" onClick={()=> history.push("/add_ship")}>Add Ship</button>
+            {/* <button className="button reset-button red-bg" onClick={doReset}>reset app</button> */}
         </div>
     )
 }
