@@ -121,7 +121,7 @@ export default function App() {
 
   function deleteShip(shipName: string): void {
     chrome.storage.local.get(["ships"], (res) => {
-      if (res["ships"].length) {
+      if (res["ships"] && res["ships"].length) {
         const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== shipName);
         chrome.storage.local.set({ ships: new_ships })
         // history.push("/ship_list");
