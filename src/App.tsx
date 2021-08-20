@@ -78,7 +78,7 @@ export default function App() {
   function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundController) {
     if (first) history.push("/welcome");
     else if (state.locked) {
-      setPrompt("No ship connected");
+      setPrompt("No Ship Connected");
       history.push("/ship_list");
     }
     else if (state.requestedPerms) {

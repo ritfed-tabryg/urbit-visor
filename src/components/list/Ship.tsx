@@ -25,7 +25,7 @@ interface ShipProps{
       return (
           <div className="ship">
               <div onClick={select} className={props.active?.shipName == props.ship.shipName ? "sigil-wrapper active-ship" : "sigil-wrapper"}>
-              <Sigil size={64} patp={props.ship.shipName} />
+              <Sigil size={props.active?.shipName == props.ship.shipName ? 64 :70} patp={props.ship.shipName} />
               </div>
               <p onClick={select} className="shipname">~{displayName}</p>
           </div>
