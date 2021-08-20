@@ -36,7 +36,7 @@ export default function Dashboard(props: ShipListProps) {
                  })}
             </div>
             <button className="button add-more-button" onClick={()=> history.push("/add_ship")}>Add Ship</button>
-            {/* <button className="button reset-button red-bg" onClick={doReset}>reset app</button> */}
+            <button className="button reset-button red-bg" onClick={doReset}>reset app</button>
         </div>
     )
 }

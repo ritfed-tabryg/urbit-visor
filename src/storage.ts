@@ -43,7 +43,7 @@ export async function storeCredentials(ship: string, url: string, code: string, 
       encryptedShipCode: encryptedCode,
     }
     const res = await getStorage("ships");
-    if (res["ships"].length){
+    if (res["ships"]?.length){
         const ships = res["ships"];
         console.log(res.ships, "ships")
         let new_ships;
