@@ -21,6 +21,8 @@ function openTab(filename: string) {
   });
 }
 openTab("popup.html")
+// chrome.cookies.getAll({}, cookies => console.log(cookies, "cookies"))
+// chrome.cookies.getAllCookieStores(cookies => console.log(cookies))
 
 
 
@@ -38,6 +40,7 @@ const controller: BackgroundController = {
 // background listener handles messages from the content script, fetches data from the extension, then sends back a response to the content script 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request, "request")
+  console.log(sender, "sender")
   console.log(controller, "controller as of now")
   // console.log(request, "background script receiving message from content script")
   // console.log(sender, "sender")
@@ -130,7 +133,8 @@ function respond(request: any, sender: any, sendResponse: any): void {
         .catch(err => sendResponse({ error: err }))
       break;
     case "poke":
-      poke(controller.activeShip.shipName, controller.url, request.data)
+      const pokePayload = Object.assign(request.data, {onSuccess: handlePokeSuccess, onError: handleError});
+      poke(controller.activeShip.shipName, controller.url, pokePayload)
         .then(res => sendResponse(res))
         .catch(err => sendResponse({ error: err }))
       break;
@@ -140,10 +144,30 @@ function respond(request: any, sender: any, sendResponse: any): void {
         .catch(err => sendResponse({ error: err }))
       break;
     case "subscribe":
-      subscribe(controller.activeShip.shipName, controller.url, request.data)
+      const payload = Object.assign(request.data, {event: (event: any) => handleEvent(event, sender.tab.id), err: handleError})
+      subscribe(controller.activeShip.shipName, controller.url, payload)
         .then(res => sendResponse(res))
         .catch(err => sendResponse({ error: err }))
       break;
     default: break;
   }
 }
+
+function handlePokeSuccess(){
+  window.postMessage({app: "urbit-sse", poke: "ok"}, window.origin)
+}
+function handleEvent(event: any, tab_id: number){
+  console.log(event, "event handled, kinda")
+  chrome.tabs.sendMessage(tab_id, {app: "urbit-sse", event: event})
+  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  //   chrome.tabs.sendMessage(tabs[0].id, {app: "urbit-sse", event: event}, function(response) {
+  //     console.log(response,  "background received response");
+  //   });
+  // });
+}
+function handleError(error: any){
+  window.postMessage({app: "urbit-sse", error: error}, window.origin)
+}
+
+
+// sighet-lopled-migted-wicmel
