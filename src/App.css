@@ -1,3 +1,16 @@
+@media (prefers-color-scheme: dark) {
+  :root   { 
+    --background: rgb(26, 26, 26);
+    --foreground: rgb(255, 255, 255); 
+}
+}
+@media (prefers-color-scheme: light) {
+  :root   { 
+    --background: rgb(255, 255, 255);
+    --foreground: rgb(0, 0, 0); 
+  }
+}
+
 *{
   box-sizing: border-box;
 }
@@ -9,24 +22,15 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-@media (prefers-color-scheme: dark) {
   .App-content   { 
-    background-color: rgb(26, 26, 26);
-    color: rgb(255, 255, 255); 
+    background-color: var(--background);
+    color: var(--foreground);
   }
   .App-navbar{
     background-color: rgb(10, 10, 10);
   }
-}
-@media (prefers-color-scheme: light) {
-  .App-content   { 
-    background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0); 
-  }
-  .App-navbar{
-    background-color: rgb(240, 240, 240);
-  }
-}
+
+
 
 
 .App {

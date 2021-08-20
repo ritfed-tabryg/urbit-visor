@@ -8,24 +8,22 @@
     /* border: 1px solid white; */
 }
 
-.ship-switcher-modal{
+.navbar-modal{
     /* opacity: 0.7; */
-    background-color: black;
-    position: absolute;
+    background-color: var(--background);
+    border: 1px solid var(--foreground);
+    position: fixed;
     top: 70px;
-    left: 40px;
-    width: 300px;
-    height: 400px;
+    left: 5px;
+    width: 100px;
+    /* height: 150px; */
     z-index: 999;
 }
-.ship-in-modal:hover, .add-more-link:hover{
+.ship-in-modal:hover, .modal-link:hover{
     background-color: darkgrey;
     cursor: pointer;
 }
-.ship-switcher-modal .ship-in-modal{
-    padding: 1.5rem 0;
-}
-.add-more-link{
-    margin-top: 3rem;
+
+.modal-link{
     padding: 1.5rem 0;
 }
