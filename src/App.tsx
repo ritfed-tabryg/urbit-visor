@@ -9,6 +9,7 @@ import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
 import Permissions from "./components/perms/Permissions";
 import PermissionsPrompt from "./components/perms/PermissionsPrompt";
+import Settings from "./components/settings/Settings";
 import { decrypt, getStorage, storeCredentials, savePassword } from "./storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 import { fetchAllPerms, grantPerms } from "./urbit";
@@ -174,6 +175,9 @@ export default function App() {
           </Route>
           <Route path="/ask_perms">
             <PermissionsPrompt perms={perms} savePerms={savePerms} />
+          </Route>
+          <Route path="/settings">
+            <Settings />
           </Route>
         </Switch>
       </div>

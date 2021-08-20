@@ -5,6 +5,7 @@ import {LWURequest} from "./types/types"
 function requestData(request: LWURequest, data: any = null) {
   return new Promise((res, rej) => {
     window.addEventListener("message", function handler(event) {
+      console.log(event, "window message received by injected script")
       // don't listen to messages from this same page
       if (event.data && event.data.app === "urbit") return;
       // remove listener so they don't keep stacking up
@@ -26,6 +27,7 @@ function requestData(request: LWURequest, data: any = null) {
         res(event.data); 
       }
     }, false);
+    console.log(data, "trying to post this message")
     window.postMessage({ app: "urbit", type: request, data: data }, window.origin);
   });
 }

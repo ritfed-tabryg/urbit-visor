@@ -97,3 +97,12 @@ window.addEventListener("message", (event) => {
     });
   }
 }, false);
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
+  console.log(request, "fetching sse from background at content")
+  if(request.app == "urbit-sse"){
+    console.log("sending sse to injected script")
+    window.postMessage(request, window.origin)
+    sendResponse("content script sent response to background")
+  }
+});

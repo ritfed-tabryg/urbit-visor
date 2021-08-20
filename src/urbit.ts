@@ -108,16 +108,19 @@ export async function thread(url: string, payload: Thread<any>) {
   const res = await airlock.thread(payload);
   return await res
 }
+// Pokes take two optional callbacks, onSuccess and onError
 export async function poke(ship: string, url: string, payload: Poke<any>) {
   const airlock = new Urbit(url, "");
   airlock.ship = ship;
   const res = await airlock.poke(payload);
   return await res
 }
+// subscriptions take two optional callbacks, event() and err()
 export async function subscribe(ship: string, url: string, payload: SubscriptionRequestInterface) {
   const airlock = new Urbit(url, "");
   airlock.ship = ship;
   const res = await airlock.subscribe(payload);
+  console.log(airlock, "airlock after request")
   return await res
 }
 export async function unsubscribe(ship: string, url: string, subscription: number) {
@@ -126,18 +129,3 @@ export async function unsubscribe(ship: string, url: string, subscription: numbe
   const res = await airlock.unsubscribe(subscription);
   return await res
 }
-
-// export async function scry(){
-
-//     const airlock = new Urbit(url, "");
-//     const res = await airlock.scry({app: "graph-store", path: "/keys"});
-//     return await res;
-// }
-
-// export async function poke(){
-
-// }
-
-// export async function subscribe(){
-
-// }
