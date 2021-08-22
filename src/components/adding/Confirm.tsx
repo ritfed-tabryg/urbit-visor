@@ -25,7 +25,7 @@ export default function Confirm(props: ConfirmProps){
          if(string === "lwu"){
            saveShip()
          }else{
-           setError("invalid password")
+           setError("Invalid password.")
          }
       })
     }    
@@ -45,7 +45,7 @@ export default function Confirm(props: ConfirmProps){
       <>
       <p>Connection successful to:</p>
       <p className="confirm-shipname">~{props.ship} </p>
-      <p>Please confirm your Encryption Password.</p>
+      <p>Please confirm your master password.</p>
       <div className="form confirm-form">
       <input value={pw} onChange={(e)=> setPw(e.currentTarget.value)} type="password" />
       {loading && spinner}

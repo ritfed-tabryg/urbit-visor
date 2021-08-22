@@ -34,7 +34,7 @@ export default function Ship(props: ShipProps) {
     if (url.length) {
       props.remove(props.ship.shipName)
     } else {
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
 
@@ -64,7 +64,7 @@ export default function Ship(props: ShipProps) {
       //   console.log(value, "promise race")
       // })
     } else {
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
   async function disconnect(): Promise<void> {
@@ -115,7 +115,7 @@ export default function Ship(props: ShipProps) {
       console.log(res);
       setLoading(false);
     } else {
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
   async function testPerms(){
@@ -127,7 +127,7 @@ export default function Ship(props: ShipProps) {
       console.log(res);
       setLoading(false);
     } else{
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
 
@@ -140,7 +140,7 @@ export default function Ship(props: ShipProps) {
     if (url.length) {
       chrome.tabs.create({url: url})
     } else{
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
   function gotoPerms(){
@@ -149,7 +149,7 @@ export default function Ship(props: ShipProps) {
     if (url.length) {
       props.setThemPerms(url);
     } else{
-      setError("wrong password")
+      setError("Wrong password.")
     }
   }
 
@@ -160,7 +160,10 @@ export default function Ship(props: ShipProps) {
         <p className="shipname">~{displayName}</p>
       </div>
       <div className="buttons">
+        <label>
+          Input your master password.
         <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
+        </label>
         {/* <button onClick={testScry}>Test Scry</button>
         <button onClick={testPoke}>Test Poke</button>
         <button onClick={testSubscribe}>Test Subscribe</button>

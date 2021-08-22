@@ -34,7 +34,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
         <div className="permissions">
             <p>{props.perms.website} is requesting the following permissions: </p>
             <p>{props.perms.permissions}</p>
-            <p>Enter your password to grant them</p>
+            <p>Enter your master password to grant them.</p>
             <input onChange={(e) => setPw(e.currentTarget.value)} type="password" />
             <button onClick={grant} type="submit">Grant</button>
             <button className="red-bg" onClick={deny} type="submit">Deny</button>
