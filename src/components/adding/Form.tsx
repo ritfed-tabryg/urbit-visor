@@ -124,7 +124,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           />
         </label>
         <div className="buttonContainer">
-          <button disabled={code.length < 27} className="loginButton" type='submit'>
+          <button disabled={code.length < 27} className="small-button" type='submit'>
             Add Ship
           </button>
         </div>
