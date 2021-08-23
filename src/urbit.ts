@@ -34,7 +34,9 @@ export async function grantPerms(ship: string, url: string, perms: PermissionReq
   airlock.ship = ship;
   let value;
   const existing = await checkPerms(url, perms.website);
-  const set = new Set(existing)
+  const set = new Set(existing);
+  console.log(url, "requesting url")
+  console.log(perms, "requested perms")
   if (existing) {
     for (let p of perms.permissions) set.add(p);
     value = Array.from(set);
@@ -68,6 +70,18 @@ export async function revokePerms(ship: string, url: string, perms: PermissionRe
       "bucket-key": "login-with-urbit-permissions",
       "entry-key": perms.website,
       "value": value
+    }
+  }
+  return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
+}
+
+export async function deleteDomain(ship: string, url: string, domain: string){
+  const airlock = new Urbit(url, "");
+  airlock.ship = ship;
+  const json = {
+    "del-entry": {
+      "bucket-key": "login-with-urbit-permissions",
+      "entry-key": domain,
     }
   }
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })

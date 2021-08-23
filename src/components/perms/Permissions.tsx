@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { validate } from "../../storage";
-import { fetchAllPerms } from "../../urbit";
+import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
 import "./perms.css";
 import Sigil from "../ui/svg/Sigil"
 import { processName } from "../../utils"
@@ -10,7 +10,9 @@ import { EncryptedShipCredentials, PermissionRequest } from "../../types/types"
 
 interface PermissionsProps {
     ship: EncryptedShipCredentials,
-    perms: any
+    shipURL: string,
+    perms: any,
+    setThemPerms: (url: string) => void
 }
 
 
@@ -31,11 +33,11 @@ export default function Permissions(props: PermissionsProps) {
             </div>
             <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
             <div className="permslist">
-                {!domains.length 
-                ? <p>No permissions granted</p>
-                : !query.length
-                    ? domains.map((domain) => <Domain domain={domain} perms={props.perms[domain]} />)
-                    : domains.filter((d) => d.includes(query)).map((domain) => <Domain domain={domain} perms={props.perms[domain]} />)
+                {!domains.length
+                    ? <p>No permissions granted</p>
+                    : !query.length
+                        ? domains.map((domain) => <Domain setThemPerms={props.setThemPerms} shipURL={props.shipURL} ship={props.ship} key={domain} domain={domain} perms={props.perms[domain]} />)
+                        : domains.filter((d) => d.includes(query)).map((domain) => <Domain setThemPerms={props.setThemPerms} shipURL={props.shipURL} ship={props.ship} key={domain} domain={domain} perms={props.perms[domain]} />)
                 }
             </div>
         </div>
@@ -44,31 +46,82 @@ export default function Permissions(props: PermissionsProps) {
 
 interface DomainProps {
     domain: string,
-    perms: string[]
+    ship: EncryptedShipCredentials,
+    shipURL: string,
+    perms: string[],
+    setThemPerms: (url: string) => void
 }
-function Domain({ domain, perms }: DomainProps) {
+function Domain({ ship, shipURL, domain, perms, setThemPerms }: DomainProps) {
+    async function revokePerm(perm: string) {
+        const p = { website: domain, permissions: [perm] };
+        revokePerms(ship.shipName, shipURL, p)
+            .then(res => {
+                if (typeof res === "number") setThemPerms(shipURL) // set perms anew
+            })
+            .catch(err => console.log(err))
+    }
     const [toDisplay, display] = useState("");
-    const displayterms = toDisplay == domain ? <DisplayPerms perms={perms} /> : <div />
+    const displayterms = toDisplay == domain ? <DisplayPerms revokePerm={revokePerm} perms={perms} /> : <div />
 
     function uncollapse(domain: string) {
         if (toDisplay == domain) display("")
         else display(domain)
     }
+    function eraseDomain(){
+      deleteDomain(ship.shipName, shipURL, domain)
+      .then(res => {
+        if (typeof(res) === "number") setThemPerms(shipURL)
+       })
+      .catch(err => console.log(err))
+    }
     return (
         <>
-            <p className="domain" onClick={() => uncollapse(domain)} key={domain}>{domain}</p>
+            <div className="domain">
+                <p className="domain-text">{domain}</p>
+                <button onClick={() => uncollapse(domain)} >Show</button>
+                <button onClick={eraseDomain} >Delete </button>
+            </div>
             {displayterms}
         </>
+
     )
 }
 
 interface DPProps {
-    perms: string[]
+    perms: string[],
+    revokePerm: (perm: string) => void
 }
-function DisplayPerms({ perms }: DPProps) {
-    return (
+function DisplayPerms({ perms, revokePerm }: DPProps) {
+    if (perms.length) return (
         <div className="grantedperms">
-            {perms.map((perm) => <p key={perm}>{perm}</p>)}
+            {perms.map((perm) => <IndividualPerm key={perm} revokePerm={revokePerm} perm={perm} />)}
+
         </div>
+    )
+    else return (
+        <p>No permissions</p>
+    )
+}
+interface IPProps {
+    perm: string
+    revokePerm: (perm: string) => void
+}
+function IndividualPerm({ perm, revokePerm }: IPProps) {
+    const [showRevoke, setShowRevoke] = useState(null);
+    function promptRevoke() {
+        showRevoke === perm ? setShowRevoke(null) : setShowRevoke(perm)
+    };
+    const revoke = () => revokePerm(perm);
+    return (
+        <>
+            <p onClick={promptRevoke} className="permission-string" key={perm}>{perm}</p>
+            {showRevoke === perm &&
+                <>
+                    <p>Revoke permission?</p>
+                    <button className="small-button" onClick={revoke}> Yes</button>
+                    <button className="small-button red-bg" onClick={() => setShowRevoke(null)} >No</button>
+                </>
+            }
+        </>
     )
 }
