@@ -33,6 +33,7 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [prompt, setPrompt] = useState(null);
   const [perms, setPerms] = useState(null);
+  const [shipURL, setShipURL] = useState(null);
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     setState();
@@ -135,9 +136,10 @@ export default function App() {
     grantPerms(active.shipName, url, perms)
   }
 
-  async function setThemPerms(url: string) {
-    const perms = await fetchAllPerms(url);
+  async function setThemPerms(shipURL: string) {
+    const perms = await fetchAllPerms(shipURL);
     setPerms(perms.bucket);
+    setShipURL(shipURL);
     history.push("/perms")
   }
   useEffect(() => {
@@ -171,7 +173,7 @@ export default function App() {
             <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} setThemPerms={setThemPerms} />
           </Route>
           <Route path="/perms">
-            <Permissions ship={selected} perms={perms} />
+            <Permissions setThemPerms={setThemPerms} shipURL={shipURL} ship={selected} perms={perms} />
           </Route>
           <Route path="/ask_perms">
             <PermissionsPrompt perms={perms} savePerms={savePerms} />

@@ -19,8 +19,8 @@ export default function NavBar(props: NavBarProps) {
   const history = useHistory();
   const urbitlogo = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
-  const dummystyle = {width: "50px"}
-  const dummy = <div className="dummySigil" style={dummystyle} />
+  const dummystyle = {width: "50px", height: "50px"}
+  const dummy = <div className="dummy-sigil" style={dummystyle} />
   const sigil =
     <div onClick={() => history.push("/ship")} className="navbar-sigil">
       <Sigil size={50} patp={props.selected?.shipName} />
