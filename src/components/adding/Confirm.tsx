@@ -18,14 +18,15 @@ export default function Confirm(props: ConfirmProps){
   const [error, setError] = useState("");
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
 
-    function addShip(){
+    function addShip(e: React.FormEvent<HTMLFormElement>){
+      e.preventDefault();
       getStorage("password")
       .then((res) =>{
          const string = decrypt(res.password, pw);
          if(string === "lwu"){
            saveShip()
          }else{
-           setError("Invalid password.")
+           setError("Wrong password.")
          }
       })
     }    
@@ -42,17 +43,17 @@ export default function Confirm(props: ConfirmProps){
       })
     };
     return(
-      <>
+      <div className="confirm">
       <p>Connection successful to:</p>
       <p className="confirm-shipname">~{props.ship} </p>
       <p>Please confirm your master password.</p>
-      <div className="form confirm-form">
+      <form onSubmit={addShip} className="form confirm-form">
       <input value={pw} onChange={(e)=> setPw(e.currentTarget.value)} type="password" />
       {loading && spinner}
       <p className="errorMessage">{error}</p>
-      <button type="submit" className="loginButton" onClick={addShip}>Submit</button>
-      <button type="submit" className="loginButton red-bg" onClick={props.goBack}>Cancel</button>
+      <button type="submit" className="small-button loginButton">Submit</button>
+      <button className="small-button loginButton red-bg" onClick={props.goBack}>Cancel</button>
+      </form>
       </div>
-      </>
     )
   }

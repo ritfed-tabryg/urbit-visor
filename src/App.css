@@ -85,7 +85,7 @@ h4{
 
 .button{
   border: 0;
-  margin: 0;
+  margin: 0.2rem auto;
   display: inline-flex;
   outline: 0;
   position: relative;
@@ -134,14 +134,35 @@ a{
   text-align: center;
 }
 
-.setup{
-  padding: 1rem;
+.setup .errorMessage{
+  margin-bottom: 0.5rem;
+}
+.tooltip-trigger{
+  vertical-align: super;
+  margin: 0.1rem 0 0.1rem 0.1rem;
+}
+.setup .tooltip{
+  position: fixed;
+  top: 180px;
+  left: 200px;
+  height: 100px;
+  width: 150px;
+  font-size: 0.9rem;
+  border: 1px solid var(--foreground);
+  background-color: var(--background);
+  z-index: 900;
 }
 
 
 
+.setup{
+  padding: 1rem;
+  margin: auto;
+}
+
 .red-bg{
-  background-color: red !important;
+  background-color: rgba(200,0,0,1) !important;
+  border: 1px solid rgba(100,0,0,1) !important;
 }
 label{
   line-height: 1.5;
@@ -163,4 +184,8 @@ input{
   width: 80%;
   padding: 10%;
   text-align: left;
+}
+.submit-setup-button{
+  margin: auto;
+  width: 100%;
 }
