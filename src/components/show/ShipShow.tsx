@@ -6,7 +6,7 @@ import Spinner from "../ui/svg/Spinner";
 import Urbit from "@urbit/http-api";
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
-import {fetchAllPerms} from "../../urbit";
+import { loginToShip, fetchAllPerms } from "../../urbit";
 import "./show.css";
 import { processName } from "../../utils"
 declare const window: any;
@@ -28,6 +28,11 @@ export default function Ship(props: ShipProps) {
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
   const displayName = processName(props.ship.shipName);
 
+  window.onkeypress = function (e: any) {
+    if (e.key == "Enter" && props.ship?.shipName !== props.active?.shipName) connect();
+  }
+
+
   function remove() {
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
@@ -38,10 +43,25 @@ export default function Ship(props: ShipProps) {
     }
   }
 
+  async function reconnect(url: string): Promise<void> {
+    const code = CryptoJS.AES.decrypt(props.ship.encryptedShipCode, pw).toString(CryptoJS.enc.Utf8);
+    setLoading(true);
+    loginToShip(url, code)
+      .then(res => {
+        // TODO this approach was suspiciously smooth. Keep this flag in case it breaks.
+        connect();
+      })
+  }
+
+
 
 
   async function connect(): Promise<void> {
     setError("");
+    if (pw === "") {
+      setError("Password can't be empty.")
+      return
+    }
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
     if (url.length) {
       setLoading(true);
@@ -54,9 +74,11 @@ export default function Ship(props: ShipProps) {
           props.save(props.ship, url);
         })
         .catch(err => {
-          setLoading(false);
-          console.log(err)
-          setError("Could not connect")
+          if (err.message == 'Failed to PUT channel') reconnect(url)
+          else {
+            setError("Could not connect")
+            setLoading(false);
+          }
         })
       // const time = new Promise((res) => setTimeout(() => res("p1"), 5000));
       // Promise.race([time, poke])
@@ -118,7 +140,7 @@ export default function Ship(props: ShipProps) {
       setError("wrong password")
     }
   }
-  async function testPerms(){
+  async function testPerms() {
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
     if (url.length) {
@@ -126,7 +148,7 @@ export default function Ship(props: ShipProps) {
       const res = await fetchAllPerms(url)
       console.log(res);
       setLoading(false);
-    } else{
+    } else {
       setError("wrong password")
     }
   }
@@ -134,21 +156,21 @@ export default function Ship(props: ShipProps) {
   const connectButton = <div onClick={connect} className="button">Connect</div>;
   const disconnectButton = <div onClick={disconnect} className="button red-bg">disconnect</div>
   const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton
-  function gotoLandscape(){
+  function gotoLandscape() {
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
     if (url.length) {
-      chrome.tabs.create({url: url})
-    } else{
+      chrome.tabs.create({ url: url })
+    } else {
       setError("wrong password")
     }
   }
-  function gotoPerms(){
+  function gotoPerms() {
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
     if (url.length) {
       props.setThemPerms(url);
-    } else{
+    } else {
       setError("wrong password")
     }
   }

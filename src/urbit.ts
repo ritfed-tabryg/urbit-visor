@@ -4,6 +4,19 @@ import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-ap
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials, PermissionRequest } from "./types/types";
 
+
+export async function loginToShip(url: string, code: string): Promise<any>{
+  const controller = new AbortController()
+  setTimeout(() => { controller.abort() }, 5000)
+  const res = await fetch(url.replace(/\/$/g, '') + "/~/login", {
+    body: `password=${code}`,
+    method: "POST",
+    credentials: "include",
+    redirect: "follow",
+    signal: controller.signal
+  })
+  return res
+}
 export async function savePermission(permission: any): Promise<void> {
 
 }
