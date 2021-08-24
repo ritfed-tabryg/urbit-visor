@@ -16,7 +16,6 @@ interface ShipProps {
   ship: EncryptedShipCredentials,
   active: EncryptedShipCredentials,
   save: (ship: EncryptedShipCredentials, url: string) => void,
-  remove: (ship: string) => void
   setThemPerms: (pw: string) => void;
 }
 
@@ -30,17 +29,6 @@ export default function Ship(props: ShipProps) {
 
   window.onkeypress = function (e: any) {
     if (e.key == "Enter" && props.ship?.shipName !== props.active?.shipName) connect();
-  }
-
-
-  function remove() {
-    setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
-    if (url.length) {
-      props.remove(props.ship.shipName)
-    } else {
-      setError("Wrong password.")
-    }
   }
 
   async function reconnect(url: string): Promise<void> {
@@ -198,10 +186,6 @@ export default function Ship(props: ShipProps) {
       {connectionButton}
       <button onClick={gotoLandscape} className="button">Landscape</button>
       <button onClick={gotoPerms} className="button">Perms</button>
-      <button onClick={remove} className="button red-bg">remove</button>
-      <div className="sse-consumer">
-
-      </div>
     </div>
   )
 }
