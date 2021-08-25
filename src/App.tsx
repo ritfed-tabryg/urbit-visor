@@ -150,6 +150,7 @@ export default function App() {
       <NavBar
         ships={ships}
         selected={selected}
+        active={active}
         switchShip={(s: EncryptedShipCredentials) => showShip(s)}
       />
       <div className="App-content">
