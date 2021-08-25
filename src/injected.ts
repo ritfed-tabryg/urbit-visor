@@ -63,8 +63,9 @@ function requestData(request: LWURequest, data: any = null) {
 
 (window as any).urbit = {
   getShip: () => requestData("shipName"),
+  requestPermissions: (permissions: LWURequest[]) => requestData("perms", permissions),
   scry: (payload: Scry) => requestData("scry", payload),
   poke: (payload: Poke<any>) => requestData("poke", payload),
   thread: (payload: Thread<any>) => requestData("thread", payload),
-  subscribe: (payload: SubscriptionRequestInterface) => requestData("subscribe", payload),
+  subscribe: (payload: SubscriptionRequestInterface) => requestData("subscribe", payload)
 };
