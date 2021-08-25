@@ -21,11 +21,12 @@ export interface BackgroundController {
 
 export interface PermissionRequest {
   website: string,
-  permissions: string[]
+  permissions: Permission[],
+  existing?: Permission[]
 }
-type Permission = "shipName" | "scry" | "thread" | "poke" | "subscribe"
+export type Permission = "shipName" | "url" | "scry" | "thread" | "poke" | "subscribe"
 export interface PermissionsGraph {
   [key: string] : Permission
 }
 
-export type LWURequest = "all" | "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
+export type LWURequest = "all" | "url" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";

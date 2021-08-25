@@ -6,7 +6,7 @@ import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
 import "./perms.css";
 import Sigil from "../ui/svg/Sigil"
 import { processName } from "../../utils"
-import { EncryptedShipCredentials, PermissionRequest } from "../../types/types"
+import { EncryptedShipCredentials, PermissionRequest, Permission } from "../../types/types"
 
 interface PermissionsProps {
     ship: EncryptedShipCredentials,
@@ -48,11 +48,11 @@ interface DomainProps {
     domain: string,
     ship: EncryptedShipCredentials,
     shipURL: string,
-    perms: string[],
+    perms: Permission[],
     setThemPerms: (url: string) => void
 }
 function Domain({ ship, shipURL, domain, perms, setThemPerms }: DomainProps) {
-    async function revokePerm(perm: string) {
+    async function revokePerm(perm: Permission) {
         const p = { website: domain, permissions: [perm] };
         revokePerms(ship.shipName, shipURL, p)
             .then(res => {
@@ -88,8 +88,8 @@ function Domain({ ship, shipURL, domain, perms, setThemPerms }: DomainProps) {
 }
 
 interface DPProps {
-    perms: string[],
-    revokePerm: (perm: string) => void
+    perms: Permission[],
+    revokePerm: (perm: Permission) => void
 }
 function DisplayPerms({ perms, revokePerm }: DPProps) {
     if (perms.length) return (
@@ -103,8 +103,8 @@ function DisplayPerms({ perms, revokePerm }: DPProps) {
     )
 }
 interface IPProps {
-    perm: string
-    revokePerm: (perm: string) => void
+    perm: Permission
+    revokePerm: (perm: Permission) => void
 }
 function IndividualPerm({ perm, revokePerm }: IPProps) {
     const [showRevoke, setShowRevoke] = useState(null);

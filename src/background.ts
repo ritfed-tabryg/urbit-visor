@@ -1,5 +1,5 @@
 import Urbit from "@urbit/http-api";
-import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
+import { EncryptedShipCredentials, BackgroundController, PermissionRequest, LWURequest } from "./types/types";
 
 import { getAll, getSelected } from "./storage"
 import { fetchAllPerms, checkPerms, scry, thread, poke, subscribe } from "./urbit"
@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(popup)
     })
   }
-  const needPerms = ["shipName", "scry", "thread", "poke", "subscribe"];
+  const needPerms = ["perms", "shipName", "scry", "thread", "poke", "subscribe"];
   if (needPerms.includes(request.type)) firewall(request, sender, sendResponse);
   else respond(request, sender, sendResponse);
   return true
@@ -71,15 +71,16 @@ function firewall(request: any, sender: any, sendResponse: any) {
     controller.locked = true;
     sendResponse("locked")
   } else {
-    fetchAllPerms(controller.url).then(res => {
+    if (request.type == "perms") bulkRequest(request, sender, sendResponse);
+    else {fetchAllPerms(controller.url).then(res => {
       console.log(res, "permissions!");
       console.log(sender, "sender")
-      const perms = res.bucket[sender.origin];
-      if (!perms) {
+      const existingPerms = res.bucket[sender.origin];      
+      if (!existingPerms) {
         controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
         sendResponse("noperms");
       } else {
-        if (perms.includes(request.type)) {
+        if (existingPerms.includes(request.type)) {
           respond(request, sender, sendResponse);
         } else {
           controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
@@ -88,7 +89,23 @@ function firewall(request: any, sender: any, sendResponse: any) {
       }
     });
   }
+  }
 };
+
+function bulkRequest(request: any, sender: any, sendResponse: any){
+  fetchAllPerms(controller.url)
+        .then(res => {
+        const existingPerms = res.bucket[sender.origin];
+        console.log(existingPerms, "existingperms")
+        console.log(request.data)
+        if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist") 
+        else {
+          controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
+          sendResponse("noperms")
+        }
+      })
+      .catch((err) => console.log(err, "failed to fetch"));
+}
 
 function respond(request: any, sender: any, sendResponse: any): void {
   switch (request.type) {
