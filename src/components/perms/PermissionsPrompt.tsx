@@ -12,9 +12,11 @@ interface PermissionsProps {
     savePerms: (pw: string, perms: PermissionRequest) => void
 }
 export default function PermissionsPrompt(props: PermissionsProps) {
+    console.log(props.perms, "perms")
     const history = useHistory();
     const [pw, setPw] = useState("");
     const [error, setError] = useState("");
+    
 
     async function grant() {
         const valid = await validate(pw);
@@ -33,12 +35,24 @@ export default function PermissionsPrompt(props: PermissionsProps) {
     return (
         <div className="permissions">
             <p>{props.perms.website} is requesting the following permissions: </p>
-            <p>{props.perms.permissions}</p>
+            {props.perms.permissions.map(perm => {
+                return <p key={perm}>{perm}</p>
+            })}
+            {props.perms.existing && <Existing {...props}/>}
             <p>Enter your master password to grant them.</p>
             <input onChange={(e) => setPw(e.currentTarget.value)} type="password" />
             <button onClick={grant} type="submit">Grant</button>
             <button className="red-bg" onClick={deny} type="submit">Deny</button>
             <p className="errorMessage">{error}</p>
         </div>
+    )
+}
+
+function Existing(props: PermissionsProps){
+    return(
+        <>
+        <p>Following permissions already granted:</p>
+        {props.perms.existing.map(perm => <p key={perm}>{perm}</p>)}
+        </>
     )
 }

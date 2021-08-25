@@ -8,7 +8,8 @@ interface Permission{
 interface Storage{
     ships?: EncryptedShipCredentials[],
     selected?: EncryptedShipCredentials,
-    password?: string
+    password?: string,
+    popup?: PopupPreference,
     permissions?: Permission[]
 }
 
@@ -71,6 +72,23 @@ export function reset(): Promise<any>{
         });
     })
 }
+type PopupPreference = "modal" | "window";
+export function setPopupPreference(preference: PopupPreference): Promise<any>{
+  return setStorage({popup: preference})
+}
+
+export async function initStorage(password: string): Promise<any>{
+  await setPopupPreference("modal");
+  return savePassword(password);
+}
+
+export async function removeShip(ship: EncryptedShipCredentials): Promise<any>{
+    // TODO error handling?
+    const res = await getStorage("ships");
+    const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== ship.shipName);
+    return setStorage({ships: new_ships});  
+}
+
 
 
 // getters
@@ -114,5 +132,6 @@ export function encrypt(target: string, password: string): string {
     return CryptoJS.AES.encrypt(target, password).toString();
 }
 export function decrypt(target: string, password: string): string {
+    if (password === "") return ""
     return CryptoJS.AES.decrypt(target, password).toString(CryptoJS.enc.Utf8);
 }

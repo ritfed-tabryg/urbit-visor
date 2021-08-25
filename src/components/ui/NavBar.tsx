@@ -12,6 +12,7 @@ import { processName } from "../../utils"
 interface NavBarProps {
   ships: EncryptedShipCredentials[],
   selected: EncryptedShipCredentials,
+  active: EncryptedShipCredentials,
   switchShip: (s: EncryptedShipCredentials) => void;
 }
 
@@ -23,9 +24,9 @@ export default function NavBar(props: NavBarProps) {
   const dummy = <div className="dummy-sigil" style={dummystyle} />
   const sigil =
     <div onClick={() => history.push("/ship")} className="navbar-sigil">
-      <Sigil size={50} patp={props.selected?.shipName} />
+      <Sigil size={50} patp={props.active?.shipName} />
     </div>
-  const active = props.selected ? sigil : dummy
+  const active = props.active ? sigil : dummy
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
     <Link to="/">
@@ -60,13 +61,18 @@ function Modal(props: ModalProps) {
   };
   function gotoSettings() {
     props.hide();
-    history.push("/settings");
+    history.push("/settings/menu");
+  }
+  function gotoAbout() {
+    props.hide();
+    history.push("/about");
   }
   useOnClickOutside(refs, handleClickOutside);
   return (
     <div ref={ref} className="navbar-modal">
       <div onClick={gotoShips} className="modal-link">My Ships</div>
       <div onClick={gotoSettings} className="modal-link">Settings</div>
+      <div onClick={gotoAbout} className="modal-link">About</div>
     </div>
   )
 }

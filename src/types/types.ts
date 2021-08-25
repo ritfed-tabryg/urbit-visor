@@ -30,5 +30,3 @@ export interface PermissionsGraph {
 }
 
 export type LWURequest = "all" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
-
-

@@ -189,3 +189,27 @@ input{
   margin: auto;
   width: 100%;
 }
+
+.small-button {
+  display: block;
+  margin: auto;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: rgba(33,157,255,0.3);
+  border: 1px solid rgba(33,157,255,1);
+}
+
+.modal-background{
+  height: 100%;
+  width: 100%;
+  background-color: rgb(0,0,0,0.7);
+}
+.modal-foreground{
+  padding: 0.5rem;
+  background-color: grey;
+  margin: 40% auto;
+  width: 70%;
+}
+.modal-foreground img{
+  width: 120px;
+}

@@ -78,34 +78,34 @@ function firewall(request: any, sender: any, sendResponse: any) {
         console.log(sender, "sender")
         const existingPerms = res.bucket[sender.origin];
         if (!existingPerms) {
+        controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
+        sendResponse("noperms");
+      } else {
+        if (existingPerms.includes(request.type)) {
+          respond(request, sender, sendResponse);
+        } else {
           controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
           sendResponse("noperms");
-        } else {
-          if (existingPerms.includes(request.type)) {
-            respond(request, sender, sendResponse);
-          } else {
-            controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
-            sendResponse("noperms")
-          }
         }
       });
     }
   }
+  }
 };
 
-function bulkRequest(request: any, sender: any, sendResponse: any) {
+function bulkRequest(request: any, sender: any, sendResponse: any){
   fetchAllPerms(controller.url)
-    .then(res => {
-      const existingPerms = res.bucket[sender.origin];
-      console.log(existingPerms, "existingperms")
-      console.log(request.data)
-      if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist")
-      else {
-        controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
-        sendResponse("noperms")
-      }
-    })
-    .catch((err) => console.log(err, "failed to fetch"));
+        .then(res => {
+        const existingPerms = res.bucket[sender.origin];
+        console.log(existingPerms, "existingperms")
+        console.log(request.data)
+        if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist") 
+        else {
+          controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
+          sendResponse("noperms")
+        }
+      })
+      .catch((err) => console.log(err, "failed to fetch"));
 }
 
 function respond(request: any, sender: any, sendResponse: any): void {
