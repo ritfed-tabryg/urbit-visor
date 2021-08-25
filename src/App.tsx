@@ -3,14 +3,13 @@ import { useState, useEffect } from "react";
 import UrbitLogo from "./components/ui/svg/UrbitLogo";
 import logo from "./urbit.svg";
 import NavBar from "./components/ui/NavBar";
-import Sigil from "./components/ui/svg/Sigil"
 import AddShip from "./components/adding/AddShip"
 import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
 import Permissions from "./components/perms/Permissions";
 import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
-import { decrypt, getStorage, storeCredentials, savePassword } from "./storage";
+import { decrypt, getStorage, storeCredentials, initStorage } from "./storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 import { fetchAllPerms, grantPerms } from "./urbit";
 import {
@@ -36,7 +35,11 @@ export default function App() {
   const [shipURL, setShipURL] = useState(null);
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    setState();
+    // TODO automatically wipe active ship if deleted
+
+    // stay in settings if individual settings changed
+    if (changes.popup || changes.password && !changes.ships) return
+    else setState();
   });
 
 
@@ -119,18 +122,6 @@ export default function App() {
 
   };
 
-
-  function deleteShip(shipName: string): void {
-    chrome.storage.local.get(["ships"], (res) => {
-      if (res["ships"] && res["ships"].length) {
-        const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== shipName);
-        chrome.storage.local.set({ ships: new_ships })
-        // history.push("/ship_list");
-        // setState();
-      }
-    });
-  }
-
   function savePerms(pw: string, perms: PermissionRequest): void {
     const url = decrypt(active.encryptedShipURL, pw);
     grantPerms(active.shipName, url, perms)
@@ -171,7 +162,7 @@ export default function App() {
             <ShipList active={active} message={prompt} ships={ships} select={(ship) => setSelected(ship)} />
           </Route>
           <Route path="/ship">
-            <ShipShow save={saveActive} active={active} ship={selected} remove={deleteShip} setThemPerms={setThemPerms} />
+            <ShipShow save={saveActive} active={active} ship={selected} setThemPerms={setThemPerms} />
           </Route>
           <Route path="/perms">
             <Permissions setThemPerms={setThemPerms} shipURL={shipURL} ship={selected} perms={perms} />
@@ -180,7 +171,10 @@ export default function App() {
             <PermissionsPrompt perms={perms} savePerms={savePerms} />
           </Route>
           <Route path="/settings">
-            <Settings />
+            <Settings ships={ships}/>
+          </Route>
+          <Route path="/about">
+            <About />
           </Route>
         </Switch>
       </div>
@@ -223,7 +217,7 @@ function Setup({ setFirst }: SetupProps) {
     e.preventDefault();
     if (pw === confirmationpw) {
       setError("");
-      savePassword(pw)
+      initStorage(pw)
         .then(res => {
           setFirst(false)
           history.push("/");
@@ -272,15 +266,19 @@ function ShipAdded() {
   );
 }
 
-// function Ships() {
-//   return (
-//     <div className="ships">
-//       <img src={logo} className="App-logo" alt="logo" />
-//       <h4>
-//         Ships
-//       </h4>
-//       <ShipList />
-//     </div>
-//   );
-// }
+function About(){
+  return(
+    <div className="modal-background">
+      <div className="modal-foreground">
+        <p>Login with Urbit Extension</p>
+        <p>1.0.0</p>
+        <p>Created by:</p>
+        <img src="/dcsparklogo.png" alt="" />
+        <p>Supported by a grant from</p>
+        <p>Urbit Foundation</p>
+      </div>
+    </div>
+  )
+}
+
 

@@ -1,0 +1,20 @@
+.settings{
+    width: 100%;
+}
+.settings div{
+    padding: 1rem;
+}
+
+.settings-option{
+    cursor: pointer
+}
+
+.change-password-form{
+    width: 80%;
+    padding: 1rem;
+    margin: auto;
+}
+.ship-to-remove{
+    display: flex;
+    justify-content: space-between;
+}
