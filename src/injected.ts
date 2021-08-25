@@ -63,6 +63,7 @@ function requestData(request: LWURequest, data: any = null) {
 
 (window as any).urbit = {
   getShip: () => requestData("shipName"),
+  getURL: () => requestData("shipURL"),
   scry: (payload: Scry) => requestData("scry", payload),
   poke: (payload: Poke<any>) => requestData("poke", payload),
   thread: (payload: Thread<any>) => requestData("thread", payload),
