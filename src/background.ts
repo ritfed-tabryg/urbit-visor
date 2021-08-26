@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(popup)
     })
   }
-  const needPerms = ["perms", "shipName", "scry", "thread", "poke", "subscribe"];
+  const needPerms = ["perms", "shipName", "shipURL", "scry", "thread", "poke", "subscribe"];
   if (needPerms.includes(request.type)) firewall(request, sender, sendResponse);
   else respond(request, sender, sendResponse);
   return true
@@ -74,11 +74,12 @@ function firewall(request: any, sender: any, sendResponse: any) {
     sendResponse("locked")
   } else {
     if (request.type == "perms") bulkRequest(request, sender, sendResponse);
-    else {fetchAllPerms(controller.url).then(res => {
-      console.log(res, "permissions!");
-      console.log(sender, "sender")
-      const existingPerms = res.bucket[sender.origin];      
-      if (!existingPerms) {
+    else {
+      fetchAllPerms(controller.url).then(res => {
+        console.log(res, "permissions!");
+        console.log(sender, "sender")
+        const existingPerms = res.bucket[sender.origin];
+        if (!existingPerms) {
         controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
         sendResponse("noperms");
       } else {
@@ -86,10 +87,10 @@ function firewall(request: any, sender: any, sendResponse: any) {
           respond(request, sender, sendResponse);
         } else {
           controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
-          sendResponse("noperms")
+          sendResponse("noperms");
         }
-      }
-    });
+      });
+    }
   }
   }
 };
@@ -157,13 +158,16 @@ function respond(request: any, sender: any, sendResponse: any): void {
     case "shipName":
       sendResponse(controller.activeShip.shipName)
       break;
+    case "shipURL":
+      sendResponse(controller.url)
+      break;
     case "scry":
       scry(controller.url, request.data)
         .then(res => sendResponse(res))
         .catch(err => sendResponse({ error: err }))
       break;
     case "poke":
-      const pokePayload = Object.assign(request.data, {onSuccess: handlePokeSuccess, onError: handleError});
+      const pokePayload = Object.assign(request.data, { onSuccess: handlePokeSuccess, onError: handleError });
       poke(controller.activeShip.shipName, controller.url, pokePayload)
         .then(res => sendResponse(res))
         .catch(err => sendResponse({ error: err }))
@@ -174,7 +178,7 @@ function respond(request: any, sender: any, sendResponse: any): void {
         .catch(err => sendResponse({ error: err }))
       break;
     case "subscribe":
-      const payload = Object.assign(request.data, {event: (event: any) => handleEvent(event, sender.tab.id), err: handleError})
+      const payload = Object.assign(request.data, { event: (event: any) => handleEvent(event, sender.tab.id), err: handleError })
       subscribe(controller.activeShip.shipName, controller.url, payload)
         .then(res => sendResponse(res))
         .catch(err => sendResponse({ error: err }))
@@ -183,20 +187,20 @@ function respond(request: any, sender: any, sendResponse: any): void {
   }
 }
 
-function handlePokeSuccess(){
-  window.postMessage({app: "urbit-sse", poke: "ok"}, window.origin)
+function handlePokeSuccess() {
+  window.postMessage({ app: "urbit-sse", poke: "ok" }, window.origin)
 }
-function handleEvent(event: any, tab_id: number){
+function handleEvent(event: any, tab_id: number) {
   console.log(event, "event handled, kinda")
-  chrome.tabs.sendMessage(tab_id, {app: "urbit-sse", event: event})
+  chrome.tabs.sendMessage(tab_id, { app: "urbit-sse", event: event })
   // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   //   chrome.tabs.sendMessage(tabs[0].id, {app: "urbit-sse", event: event}, function(response) {
   //     console.log(response,  "background received response");
   //   });
   // });
 }
-function handleError(error: any){
-  window.postMessage({app: "urbit-sse", error: error}, window.origin)
+function handleError(error: any) {
+  window.postMessage({ app: "urbit-sse", error: error }, window.origin)
 }
 
 

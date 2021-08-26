@@ -54,6 +54,7 @@ function promptPerms(){
 
 (window as any).urbitVisor = {
   getShip: () => requestData("shipName"),
+  getURL: () => requestData("shipURL"),
   requestPermissions: (permissions: LWURequest[]) => requestData("perms", permissions),
   scry: (payload: Scry) => requestData("scry", payload),
   poke: (payload: Poke<any>) => requestData("poke", payload),
