@@ -30,7 +30,7 @@ export default function NavBar(props: NavBarProps) {
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
     <Link to="/">
-      <h4>Login With Urbit</h4>
+      <h4>Urbit Visor</h4>
     </Link>
     {active}
     {modalOpen &&

@@ -270,7 +270,7 @@ function About(){
   return(
     <div className="modal-background">
       <div className="modal-foreground">
-        <p>Login with Urbit Extension</p>
+        <p>Urbit Visor</p>
         <p>1.0.0</p>
         <p>Created by:</p>
         <img src="/dcsparklogo.png" alt="" />

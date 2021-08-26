@@ -16,7 +16,7 @@ interface Storage{
 export async function validate(password: string): Promise<boolean>{
     const res = await getStorage("password");
     const string = decrypt(res.password, password);
-    if (string === "lwu") return true 
+    if (string === "urbit_visor") return true 
     else return false
 }
 export const getStorage = (key: string | string[]) : Promise<Storage> =>
@@ -60,7 +60,7 @@ export async function storeCredentials(ship: string, url: string, code: string, 
 };
 
 export function savePassword(password: string) : Promise<any>{
-    const encryptedString = encrypt("lwu", password);
+    const encryptedString = encrypt("urbit_visor", password);
     return setStorage({password: encryptedString})
 }
 

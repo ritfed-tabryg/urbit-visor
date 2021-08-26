@@ -12,10 +12,10 @@ const injectScript = () => {
 function injectModal() {
   const background = document.createElement('div');
   background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;';
-  background.id = "lwu-modal-bg";
+  background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
   foreground.style.cssText = 'background-color:grey;position:absolute;top:50%;left:50%;width:400px;height:100px;transform: translate(-50%, -50%);padding:1rem;';
-  foreground.id = "lwu-modal-fg";
+  foreground.id = "urbit-visor-modal-fg";
   background.appendChild(foreground)
   document.body.appendChild(background)
 }
