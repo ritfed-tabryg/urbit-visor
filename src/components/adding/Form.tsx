@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
@@ -34,6 +34,9 @@ interface AddShipFormProps {
 }
 
 export default function AddShipForm({ url, code, setUrl, setCode, getShipname, setConfirm }: AddShipFormProps) {
+  useEffect(()=> {
+    chrome.runtime.sendMessage({type: "adding"}, (res)=> setUrl(res))
+  }, []);
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -52,12 +55,10 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       .then(async res => {
         switch (res.status) {
           case 204:
+            chrome.runtime.sendMessage({type: "done adding"})
             setLoading(false);
             getShipname(url, code);
             setConfirm(true);
-            // const urbit = await setAirlock(url, code);
-            // startChannel(urbit);
-            // saveCredentials(urbit.ship, url, code, "pw");
             break;
           case 400:
             setError("Invalid +code.\nCould not connect to ship.");
@@ -76,15 +77,14 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       })
   }
 
-  function saveCredentials(ship: string, url: string, code: string, pw: string): void {
-    // storeCredentials(ship, url, code, pw);
-    history.push("/")
-  }
 
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
 
 
-  const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => setUrl(e.currentTarget.value)
+  const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => {
+    setUrl(e.currentTarget.value);
+    chrome.runtime.sendMessage({type: "please_cache", url: e.currentTarget.value});
+  }
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();

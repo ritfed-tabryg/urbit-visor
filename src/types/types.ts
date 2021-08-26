@@ -13,6 +13,8 @@ export type EncryptedShipCredentials = {
 
 export interface BackgroundController {
   locked: boolean,
+  adding: boolean,
+  cached_url: string,
   requestedPerms: PermissionRequest,
   activeShip: EncryptedShipCredentials,
   url: string,

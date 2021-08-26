@@ -28,6 +28,8 @@ openTab("popup.html")
 
 const controller: BackgroundController = {
   locked: true,
+  adding: false,
+  cached_url: "",
   requestedPerms: null,
   activeShip: null,
   url: null,
@@ -110,6 +112,17 @@ function bulkRequest(request: any, sender: any, sendResponse: any){
 function respond(request: any, sender: any, sendResponse: any): void {
   switch (request.type) {
     // saves ship data to background state
+    case "adding":
+      controller.adding = true;
+      sendResponse(controller.cached_url)
+      break;
+    case "please_cache":
+      controller.cached_url = request.url
+      break;
+    case "done adding":
+      controller.adding = false;
+      controller.cached_url = "";
+      break;
     case "selected":
       controller.url = request.url;
       controller.activeShip = request.ship
