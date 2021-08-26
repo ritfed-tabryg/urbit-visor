@@ -36,7 +36,6 @@ export default function App() {
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     // TODO automatically wipe active ship if deleted
-
     // stay in settings if individual settings changed
     if (changes.popup || changes.password && !changes.ships) return
     else setState();
