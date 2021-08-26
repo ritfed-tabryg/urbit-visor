@@ -82,6 +82,7 @@ export default function App() {
 
   function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundController) {
     if (first) history.push("/welcome");
+    else if(state.adding) history.push("/add_ship")
     else if (state.locked) {
       setPrompt("No Ship Connected");
       history.push("/ship_list");

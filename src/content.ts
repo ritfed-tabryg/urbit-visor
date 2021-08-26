@@ -14,8 +14,15 @@ function injectModal() {
   background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;';
   background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
-  foreground.style.cssText = 'background-color:grey;position:absolute;top:50%;left:50%;width:400px;height:100px;transform: translate(-50%, -50%);padding:1rem;';
   foreground.id = "urbit-visor-modal-fg";
+  foreground.style.cssText = 'background-color:grey;position:absolute;top:50px;right:50px;width:100px;height:150px;padding:0.5rem;';
+  const arrow = document.createElement("p");
+  arrow.innerText = "↑";
+  arrow.style.cssText = "font-size: 3rem; margin: 0;";
+  const message = document.createElement("p");
+  message.id = "urbit-visor-modal-text";
+  foreground.appendChild(arrow);
+  foreground.appendChild(message);
   background.appendChild(foreground)
   document.body.appendChild(background)
 }
@@ -71,6 +78,7 @@ function shouldInject(): boolean {
 }
 if (shouldInject()) {
   injectScript();
+  injectModal();
 }
 
 // listen to messages from the injected script (i.e. websites)
@@ -86,10 +94,11 @@ window.addEventListener("message", (event) => {
       // if background script response is "locked" or "noperms" inject popup into page
       if(res == "locked" || res == "noperms"){
         console.log('injecting iframe')
-        const iframe = document.querySelector('iframe');
-        console.log(iframe, "iframe exists")
-        // only inject iframe if one doesn't already exist, else they keep stacking up
-        if(!iframe) injectFrame();
+        window.postMessage(res, window.origin)
+        // const iframe = document.querySelector('iframe');
+        // console.log(iframe, "iframe exists")
+        // // only inject iframe if one doesn't already exist, else they keep stacking up
+        // if(!iframe) injectFrame();
       }else{
       // permissions exist, so relay data from background script into page
       window.postMessage(res, window.origin)
