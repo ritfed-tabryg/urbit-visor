@@ -213,3 +213,11 @@ input{
 .modal-foreground img{
   width: 120px;
 }
+.shipname{
+  font-family: monospace;
+}
+.moonname span{
+  display: block;
+  text-align: left;
+  width: 14ch;
+}

@@ -89,9 +89,8 @@ function firewall(request: any, sender: any, sendResponse: any) {
           controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
           sendResponse("noperms");
         }
-      });
+      }});
     }
-  }
   }
 };
 
