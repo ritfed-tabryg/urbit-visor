@@ -24,6 +24,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
             setError("");
             props.savePerms(pw, props.perms);
             chrome.runtime.sendMessage({ type: "dismissPerms" });
+            chrome.browserAction.setBadgeText({text: ""});
             history.push("/");
         }
         else setError("Wrong password");

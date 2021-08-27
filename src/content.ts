@@ -1,3 +1,5 @@
+import { createElement } from "react";
+
 const injectScript = () => {
   console.log("testing injection content")
   const script = document.createElement('script');
@@ -15,16 +17,24 @@ function injectModal() {
   background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
   foreground.id = "urbit-visor-modal-fg";
-  foreground.style.cssText = 'background-color:grey;position:absolute;top:50px;right:50px;width:100px;height:150px;padding:0.5rem;';
+  foreground.style.cssText = 'background-color:grey;position:absolute;top:20px;right:50px;width:200px;height:200px;padding:0.5rem;';
+  const logo = document.createElement('div');
+  logo.innerHTML = `
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="16" cy="16" r="13" fill="white" stroke="black" stroke-width="2"/>
+<path d="M22 14.0488H19.6306C19.4522 15.0976 18.9936 15.7317 18.1783 15.7317C16.7006 15.7317 15.8599 14 13.5669 14C11.3503 14 10.1783 15.3659 10 17.9756H12.3694C12.5478 16.9024 13.0064 16.2683 13.8471 16.2683C15.3248 16.2683 16.1146 18 18.4586 18C20.6242 18 21.8217 16.6341 22 14.0488Z" fill="black"/>
+</svg>
+  `
   const arrow = document.createElement("p");
   arrow.innerText = "↑";
-  arrow.style.cssText = "font-size: 3rem; margin: 0;";
+  arrow.style.cssText = "font-size: 3rem; margin: 0 auto;";
   const message = document.createElement("p");
   message.id = "urbit-visor-modal-text";
   foreground.appendChild(arrow);
   foreground.appendChild(message);
-  background.appendChild(foreground)
-  document.body.appendChild(background)
+  foreground.appendChild(logo);
+  background.appendChild(foreground);
+  document.body.appendChild(background);
 }
 
 // function injectFrame() {
@@ -92,24 +102,24 @@ window.addEventListener("message", (event) => {
     chrome.runtime.sendMessage(event.data, (res) => {
       console.log(res, 'receiving response from background script')
       // if background script response is "locked" or "noperms" inject popup into page
-      if(res == "locked" || res == "noperms"){
-        console.log('injecting iframe')
+      if (res == "locked" || res == "noperms") {
+        console.log('injecting iframe');
         window.postMessage(res, window.origin)
         // const iframe = document.querySelector('iframe');
         // console.log(iframe, "iframe exists")
         // // only inject iframe if one doesn't already exist, else they keep stacking up
         // if(!iframe) injectFrame();
-      }else{
-      // permissions exist, so relay data from background script into page
-      window.postMessage(res, window.origin)
+      } else {
+        // permissions exist, so relay data from background script into page
+        window.postMessage(res, window.origin)
       }
     });
   }
 }, false);
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) =>{
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request, "fetching sse from background at content")
-  if(request.app == "urbit-sse"){
+  if (request.app == "urbit-sse") {
     console.log("sending sse to injected script")
     window.postMessage(request, window.origin)
     sendResponse("content script sent response to background")

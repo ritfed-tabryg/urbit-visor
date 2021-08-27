@@ -116,6 +116,7 @@ export default function App() {
     }
     // send message to background script to keep the url in memory
     chrome.runtime.sendMessage({ type: "selected", ship: ship, url: url }, (res) => {
+      chrome.browserAction.setBadgeText({text: ""});
       setPrompt("");
       setState();
     });
