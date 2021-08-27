@@ -36,27 +36,8 @@ export const setStorage = (item: { [key: string]: any; }) : Promise<any> =>
 
 // setters
 export async function storeCredentials(ship: string, url: string, code: string, pw: string): Promise<any>{
-    const encryptedURL = encrypt(url, pw).toString();
-    const encryptedCode = encrypt(code, pw).toString();
-    const encryptedCredentials: EncryptedShipCredentials = {
-      shipName: ship,
-      encryptedShipURL: encryptedURL,
-      encryptedShipCode: encryptedCode,
-    }
-    const res = await getStorage("ships");
-    if (res["ships"]?.length){
-        const ships = res["ships"];
-        console.log(res.ships, "ships")
-        let new_ships;
-        if (ships.filter(sp => sp.shipName == ship).length) new_ships = ships;
-        else new_ships = [...ships, encryptedCredentials];
-        await setStorage({ ships: new_ships });
-        return encryptedCredentials;
-    } else{
-        const new_ships = [encryptedCredentials];
-        await setStorage({ ships: new_ships });
-        return encryptedCredentials;
-    }
+    const encryptedCredentials = encryptShip(ship, url, code, pw);
+    return saveShip(encryptedCredentials);
 };
 
 export function savePassword(password: string) : Promise<any>{
@@ -86,6 +67,22 @@ export async function removeShip(ship: EncryptedShipCredentials): Promise<any>{
     const res = await getStorage("ships");
     const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== ship.shipName);
     return setStorage({ships: new_ships});  
+}
+
+async function saveShip(ship: EncryptedShipCredentials): Promise<EncryptedShipCredentials>{
+    const res = await getStorage("ships");
+    if (res["ships"]?.length){
+        const ships = res["ships"];
+        console.log(res.ships, "ships")
+        const filteredShips = ships.filter(sp => sp.shipName !== ship.shipName);
+        const new_ships = [...filteredShips, ship];
+        await setStorage({ ships: new_ships });
+        return ship;
+    } else{
+        const new_ships = [ship];
+        await setStorage({ ships: new_ships });
+        return ship;
+    }
 }
 
 
@@ -138,6 +135,33 @@ export async function getSelected(): Promise<any>{
 };
 
 // encryption utils 
+
+export async function reEncryptAll(oldPassword: string, newPassword: string): Promise<void> {
+  const ships = await getShips();
+  for (const ship of ships.ships){
+    const newShip = reEncrypt(ship, oldPassword, newPassword);
+    saveShip(newShip);
+  }
+}
+
+function encryptShip(ship: string, url: string, code: string, pw: string): EncryptedShipCredentials{
+    const encryptedURL = encrypt(url, pw).toString();
+    const encryptedCode = encrypt(code, pw).toString();
+    return {
+      shipName: ship,
+      encryptedShipURL: encryptedURL,
+      encryptedShipCode: encryptedCode,
+    }
+}
+
+function reEncrypt(ship: EncryptedShipCredentials, oldPassword: string, newPassword: string): EncryptedShipCredentials{
+    return {
+        shipName: ship.shipName,
+        encryptedShipURL: encrypt(decrypt(ship.encryptedShipURL, oldPassword), newPassword),
+        encryptedShipCode: encrypt(decrypt(ship.encryptedShipCode, oldPassword), newPassword),
+    } 
+} 
+
 export function encrypt(target: string, password: string): string {
     return CryptoJS.AES.encrypt(target, password).toString();
 }
