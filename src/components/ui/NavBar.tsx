@@ -3,6 +3,9 @@ import { useOnClickOutside } from '../../hooks/hooks';
 import "./navbar.css";
 import Sigil from "./svg/Sigil"
 import logo from "../../urbit.svg";
+import RocketIcon from "../../icons/rocket";
+import SettingsIcon from "../../icons/settings";
+import AboutIcon from "../../icons/info";
 import { Link, useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { processName } from "../../utils"
@@ -77,9 +80,19 @@ function Modal(props: ModalProps) {
   useOnClickOutside(refs, handleClickOutside);
   return (
     <div ref={ref} className="navbar-modal">
-      <div onClick={gotoShips} className="modal-link">My Ships</div>
-      <div onClick={gotoSettings} className="modal-link">Settings</div>
-      <div onClick={gotoAbout} className="modal-link">About</div>
+      <div onClick={gotoShips} className="modal-link">
+        <RocketIcon />
+        <p>My Ships</p>
+      </div>
+      <div onClick={gotoSettings} className="modal-link">
+       <SettingsIcon />
+        <p>        Settings
+        </p>
+      </div>
+      <div onClick={gotoAbout} className="modal-link">
+        <AboutIcon />
+        <p>About</p>
+      </div>
     </div>
   )
 }
