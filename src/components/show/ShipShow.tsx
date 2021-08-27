@@ -7,6 +7,7 @@ import Urbit from "@urbit/http-api";
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
 import { loginToShip, fetchAllPerms } from "../../urbit";
+import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
 import "./show.css";
 import { whatShip, processName } from "../../utils"
 declare const window: any;
@@ -52,7 +53,8 @@ export default function Ship(props: ShipProps) {
       setError("Password can't be empty.")
       return
     }
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    const url = decrypt(props.ship.encryptedShipURL, pw);
+    console.log(url, "url")
     if (url.length) {
       setLoading(true);
       const airlock = new Urbit(url, "");
@@ -84,7 +86,7 @@ export default function Ship(props: ShipProps) {
   }
   async function testScry() {
     setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    const url = decrypt(props.ship.encryptedShipURL, pw);
     if (url.length) {
       setLoading(true);
       const airlock = new Urbit(url, "");
