@@ -6,7 +6,7 @@
 }
 .ship-list{
     padding: 0;
-    overflow-y: scroll;
+    overflow-y: overlay;
     /* TODO get these numbers right */
     max-height: 260px;
     min-height: 175px;
