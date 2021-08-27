@@ -38,7 +38,7 @@ function promptUnlock(){
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
   modalText.innerText = "Please open your Urbit Visor and connect to a ship.";
-  setTimeout(()=> background.style.display = "none", 2000);
+  setTimeout(()=> background.style.display = "none", 3000);
 }
 function promptPerms(){
   const background = document.getElementById("urbit-visor-modal-bg")
@@ -46,7 +46,7 @@ function promptPerms(){
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
   modalText.innerText = "Please open your Urbit Visor to grant permissions.";
-  setTimeout(()=> background.style.display = "none", 2000);
+  setTimeout(()=> background.style.display = "none", 3000);
 }
 
 
