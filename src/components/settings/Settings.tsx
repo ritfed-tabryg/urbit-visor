@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sigil from "../../components/ui/svg/Sigil"
 import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
+import ConfirmRemove  from "./ConfirmRemove";
 import "./settings.css";
 import {
   MemoryRouter as Router,
@@ -15,6 +16,7 @@ interface SettingsProps{
   ships: EncryptedShipCredentials[]
 }
 export default function Settings(props: SettingsProps) {
+  const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
   return (<div className="settings">
     <Link to="/settings/menu"><h1>Settings</h1></Link>
     <hr />
@@ -25,13 +27,16 @@ export default function Settings(props: SettingsProps) {
       <SettingsPopup />
     </Route>
     <Route path="/settings/remove_ships">
-      <SettingsRemoveShips ships={props.ships} />
+      <SettingsRemoveShips ships={props.ships} setShip={setShip}/>
     </Route>
     <Route path="/settings/change_password">
       <SettingsChangePw />
     </Route>
     <Route path="/settings/reset_app">
       <SettingsReset />
+    </Route>
+    <Route path="/settings/confirm_remove">
+      <ConfirmRemove ship={shipToRemove} />
     </Route>
   </div>)
 }
@@ -98,49 +103,30 @@ function SettingsPopup(){
     </div>
   )
 }
-function SettingsRemoveShips(props: SettingsProps){
+
+interface RemoveShipProps extends SettingsProps{
+  setShip: (ship: EncryptedShipCredentials) => void
+}
+function SettingsRemoveShips({ships, setShip}: RemoveShipProps){
+  const history = useHistory();
   const [error, setError] = useState("");
-  const [ship, setShip] = useState(null);
-  const [pw, setPw] = useState("");
   const [deleting, setDeleting] = useState(false);
   function confirm(ship: EncryptedShipCredentials){
     setShip(ship);
-    setDeleting(true);
+    history.push("/settings/confirm_remove")
   }
-  function remove(e: React.FormEvent<HTMLFormElement>){
-    e.preventDefault();
-    setError("");
-    const url = decrypt(ship.encryptedShipURL, pw);
-    if (url.length) {
-      removeShip(ship)
-      .then(res => {
-        console.log('do somethin')
-      })
-    } else {
-      setError("Wrong password.")
-    }
-  }
+  
   return(
     <div className="remove-ships-list">
-    {props.ships.map(ship => {
+    {ships.map(ship => {
      return (
-     <div className="ship-to-remove">
+     <div key={ship.shipName} className="ship-to-remove">
        <Sigil patp={ship.shipName} size={48} />
-       <p>~{ship.shipName}</p>
+       <p className="shipname">~{ship.shipName}</p>
        <button className="small-button red-bg" onClick={() => confirm(ship)}>Delete</button>
       </div>
       )
     })}
-    {deleting && 
-    <form onSubmit={remove}>
-    <label>Input your master password to confirm
-      <input onChange={(e) => setPw(e.currentTarget.value)}type="password" />
-      </label>
-      <p className="errorMessage">{error}</p>
-      <button className="small-button" type="submit">Confirm</button> 
-      <button onClick={()=> setDeleting(false)} className="small-button" type="submit">Cancel</button> 
-      </form>
-      }
     </div>
   )
 }
