@@ -34,7 +34,7 @@ function requestData(request: LWURequest, data: any = null) {
 
 function promptUnlock(){
   console.log('unlocking')
-  const background = document.getElementById("lwu-modal-bg")
+  const background = document.getElementById("urbit-visor-modal-bg")
   background.style.display = "block";
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
@@ -43,7 +43,7 @@ function promptUnlock(){
 }
 function promptPerms(){
   console.log('unlocking')
-  const background = document.getElementById("lwu-modal-bg")
+  const background = document.getElementById("urbit-visor-modal-bg")
   background.style.display = "block";
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
