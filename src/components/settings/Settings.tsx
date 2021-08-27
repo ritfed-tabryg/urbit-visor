@@ -39,10 +39,48 @@ export default function Settings(props: SettingsProps) {
 function SettingsMenu() {
   return (
     <>
-      <Link to="/settings/popup"><div className="settings-option"><p>Popup Setting</p></div></Link>
-      <Link to="/settings/remove_ships"><div className="settings-option"><p>Remove ships</p></div></Link>
-      <Link to="/settings/change_password"><div className="settings-option"><p>Change master password</p></div></Link>
-      <Link to="/settings/reset_app"><div className="settings-option"><p>Reset app</p></div></Link>
+        <div className="settings-option">
+        <Link to="/settings/popup">
+          <div className="settings-option-text">
+            <h3>Popup Setting</h3>
+            <p>Select whether Urbit Visor should use new window popups</p>
+          </div>
+          <div className="settings-option-icon">→</div>
+          </Link>
+        </div>
+        <div className="settings-option">
+        <Link to="/settings/remove_ships">
+
+          <div className="settings-option-text">
+            <h3>Remove Ships</h3>
+            <p>Remove saved ships from your Urbit Visor extension</p>
+          </div>
+          <div className="settings-option-icon">→</div>
+          </Link>
+
+        </div>
+        <div className="settings-option">
+        <Link to="/settings/change_password">
+
+          <div className="settings-option-text">
+            <h3>Change Master Password</h3>
+            <p>Update your master password which secures Urbit Visor</p>
+          </div>
+          <div className="settings-option-icon">→</div>
+          </Link>
+
+        </div>
+        <div className="settings-option">
+        <Link to="/settings/reset_app">
+
+          <div className="settings-option-text">
+            <h3>Reset App</h3>
+            <p>Reset all of your settings and start fresh</p>
+          </div>
+          <div className="settings-option-icon">→</div>
+          </Link>
+
+        </div>
     </>
   )
 }

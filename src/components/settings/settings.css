@@ -1,12 +1,24 @@
 .settings{
     width: 100%;
 }
-.settings div{
-    padding: 1rem;
-}
 
+.settings-option a{
+    cursor: pointer;
+    display: flex;
+}
 .settings-option{
-    cursor: pointer
+    padding: 0 1rem;
+    border-bottom: 1px solid grey;
+}
+.settings-option:last-of-type{
+    border-bottom: none;
+}
+.settings-option-text{
+    text-align: left;
+}
+.settings-option-icon{
+    font-size: 2rem;
+    margin: auto;
 }
 
 .change-password-form{
