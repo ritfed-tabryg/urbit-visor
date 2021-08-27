@@ -8,7 +8,7 @@ import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
 import { loginToShip, fetchAllPerms } from "../../urbit";
 import "./show.css";
-import { processName } from "../../utils"
+import { whatShip, processName } from "../../utils"
 declare const window: any;
 
 
@@ -26,6 +26,10 @@ export default function Ship(props: ShipProps) {
   const [loading, setLoading] = useState(false);
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
   const displayName = processName(props.ship.shipName);
+  const shipname = whatShip(props.ship.shipName) === "moon"
+    ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+    : <p className="shipname">~{displayName}</p>
+
 
   window.onkeypress = function (e: any) {
     if (e.key == "Enter" && props.ship?.shipName !== props.active?.shipName) connect();
@@ -40,8 +44,6 @@ export default function Ship(props: ShipProps) {
         connect();
       })
   }
-
-
 
 
   async function connect(): Promise<void> {
@@ -167,7 +169,7 @@ export default function Ship(props: ShipProps) {
     <div className="ship-show">
       <div className="ship-data">
         <Sigil size={78} patp={props.ship.shipName} />
-        <p className="shipname">~{displayName}</p>
+        {shipname}
       </div>
       <div className="buttons">
         <label>
