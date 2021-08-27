@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sigil from "../../components/ui/svg/Sigil"
-import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset } from "../../storage";
+import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
 import "./settings.css";
 import {
@@ -149,7 +149,7 @@ function SettingsRemoveShips(props: SettingsProps){
 function SettingsChangePw() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [oldpw, setOldpw] = useState("");
+  const [oldPassword, setOldpw] = useState("");
   const [pw, setPw] = useState("");
   const [confirmationpw, setConfirmation] = useState("");
 
@@ -157,13 +157,14 @@ function SettingsChangePw() {
   async function checkOld(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault();
     setError("");
-    const res = await validate(oldpw);
+    const res = await validate(oldPassword);
     if (res) proceed();
     else setError("Wrong old password")
   }
 
   function proceed() {
     if (pw === confirmationpw) {
+      reEncryptAll(oldPassword, pw);
       savePassword(pw)
         .then(res => {
           setMessage("Password changed successfully")
