@@ -20,17 +20,25 @@ export default function NavBar(props: NavBarProps) {
   const history = useHistory();
   const urbitlogo = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
-  const dummy = <Sigil size={50} patp={"sampel-palnet"} />
-  const sigil = <Sigil size={50} patp={props.active?.shipName} />
+  const wrapperClass = props.active ? "navbar-sigil-wrapper active-navbar-sigil" : "navbar-sigil-wrapper inactive-navbar-sigil";
+  const className = props.active ? "navbar-sigil" : "navbar-sigil blurry-sigil"
+  const dummy =
+    <div className={className}>
+      <Sigil size={50} patp={"sampel-palnet"} />
+    </div>
+  const sigil =
+    <div onClick={() => history.push("/ship")} className={className}>
+      <Sigil size={50} patp={props.active?.shipName} />
+    </div>
 
-  const active = props.active ? sigil : dummy
+  const displaySigil = props.active ? sigil : dummy;
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
     <Link to="/">
       <h4>Urbit Visor</h4>
     </Link>
-    <div onClick={() => history.push("/ship")} className="navbar-sigil">
-      {active}
+    <div className={wrapperClass}>
+      {displaySigil}
     </div>
     {modalOpen &&
       <Modal

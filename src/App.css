@@ -221,3 +221,13 @@ input{
   text-align: left;
   width: 14ch;
 }
+.blurry-sigil{
+  box-sizing: content-box;
+  filter: blur(2px);
+}
+.active-navbar-sigil{
+  border: 2px solid green;
+}
+.inactive-navbar-sigil{
+  border: 2px solid red;
+}

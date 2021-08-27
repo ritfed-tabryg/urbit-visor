@@ -1,5 +1,5 @@
 .navbar-sigil{
-    padding: 2px;
+    /* padding: 2px; */
 }
 .navbar-sigil:hover{
     cursor:pointer;
@@ -27,7 +27,4 @@
 
 .modal-link{
     padding: 2rem;
-}
-.dummy-sigil{
-    border: 1px solid grey;
 }

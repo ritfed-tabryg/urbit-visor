@@ -15,8 +15,7 @@ const Sigil = (props: SigilProps) => {
     else return props.patp
   }
   function setColors(patp: string): any{
-    if (props.patp == "sampel-palnet") return ["white", "red"]
-    else if(props.patp.length > 28) return ['purple', 'yellow'];
+    if(props.patp.length > 28) return ['purple', 'yellow'];
     else if(props.patp.length >  13) return ['grey', 'white'];
     else return ['black', 'white'];
   }
