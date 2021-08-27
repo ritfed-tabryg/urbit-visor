@@ -194,6 +194,7 @@ function respond(request: any, sender: any, sendResponse: any): void {
       controller.locked = true;
       sendResponse(controller);
     case "dismissPerms":
+      chrome.browserAction.setBadgeText({text: ""});
       controller.requestedPerms = null;
       break;
     case "shipName":
