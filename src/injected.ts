@@ -33,22 +33,20 @@ function requestData(request: LWURequest, data: any = null) {
 }
 
 function promptUnlock(){
-  console.log('unlocking')
   const background = document.getElementById("urbit-visor-modal-bg")
   background.style.display = "block";
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
-  modalText.innerText = "Please connect to a ship first.";
-  setTimeout(()=> background.style.display = "none", 2000);
+  modalText.innerText = "Please open your Urbit Visor and connect to a ship.";
+  setTimeout(()=> background.style.display = "none", 3000);
 }
 function promptPerms(){
-  console.log('unlocking')
   const background = document.getElementById("urbit-visor-modal-bg")
   background.style.display = "block";
   background.style.opacity = "0.8";
   const modalText = document.getElementById("urbit-visor-modal-text");
-  modalText.innerText = "Click on extension to grant permissions.";
-  setTimeout(()=> background.style.display = "none", 2000);
+  modalText.innerText = "Please open your Urbit Visor to grant permissions.";
+  setTimeout(()=> background.style.display = "none", 3000);
 }
 
 
