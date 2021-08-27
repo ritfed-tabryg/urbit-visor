@@ -1,7 +1,7 @@
 import Urbit from "@urbit/http-api";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest, LWURequest } from "./types/types";
 
-import { getAll, getSelected } from "./storage"
+import { getPreference, getSelected } from "./storage"
 import { fetchAllPerms, checkPerms, scry, thread, poke, subscribe } from "./urbit"
 
 // opens extension in a full screen tab to use devtools properly, to delete in production
@@ -30,11 +30,25 @@ const controller: BackgroundController = {
   locked: true,
   adding: false,
   cached_url: "",
+  popupPreference: "modal",
   requestedPerms: null,
   activeShip: null,
   url: null,
   permissions: {}
 }
+
+
+// load popup preferences on startup
+function loadPreferences() {
+  getPreference()
+    .then(res => controller.popupPreference = res)
+    .catch(err => console.error(err))
+}
+loadPreferences();
+// listen to changes in popup preference in storage
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+  if (changes.popup) loadPreferences();
+});
 
 // TODO sync permissions data from ship to browser storage
 
@@ -62,51 +76,70 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true
 });
 
+// Different ways to display the popup
+// window.postMessage({ app: "openModal" }, window.origin)
+// chrome.tabs.create({url : "popup.html"})
+// window.open("chrome-extension://apddmnnkhembaaebippnckmnhbgifcfl/popup.html");
+// chrome.runtime.sendMessage({type: "locked"});
+
+function openWindow() {
+  chrome.windows.create({
+    url: chrome.runtime.getURL("popup.html"),
+    type: "popup",
+    focused: true,
+    height: 600,
+    width: 357,
+    // top: 10,
+    // left: 10
+  });
+}
+
 function firewall(request: any, sender: any, sendResponse: any) {
   console.log(request, "firewall")
   if (controller.locked) {
     console.log('extension is locked')
-    // window.postMessage({ app: "openModal" }, window.origin)
-    // chrome.tabs.create({url : "popup.html"})
-    // window.open("chrome-extension://apddmnnkhembaaebippnckmnhbgifcfl/popup.html");
-    // chrome.runtime.sendMessage({type: "locked"});
     controller.locked = true;
-    sendResponse("locked")
+    if (controller.popupPreference == "window") openWindow();
+    else sendResponse("locked");
   } else {
     if (request.type == "perms") bulkRequest(request, sender, sendResponse);
     else {
-      fetchAllPerms(controller.url).then(res => {
-        console.log(res, "permissions!");
-        console.log(sender, "sender")
-        const existingPerms = res.bucket[sender.origin];
-        if (!existingPerms) {
-        controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
-        sendResponse("noperms");
-      } else {
-        if (existingPerms.includes(request.type)) {
-          respond(request, sender, sendResponse);
-        } else {
-          controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
-          sendResponse("noperms");
-        }
-      }});
+      fetchAllPerms(controller.url)
+        .then(res => {
+          console.log(res, "permissions!");
+          console.log(sender, "sender")
+          const existingPerms = res.bucket[sender.origin];
+          if (!existingPerms) {
+            controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
+            if (controller.popupPreference == "window") openWindow();
+            else sendResponse("noperms");
+          } else {
+            if (existingPerms.includes(request.type)) {
+              respond(request, sender, sendResponse);
+            } else {
+              controller.requestedPerms = { website: sender.origin, permissions: [request.type] };
+              if (controller.popupPreference == "window") openWindow();
+              else sendResponse("noperms");
+            }
+          }
+        })
     }
   }
 };
 
-function bulkRequest(request: any, sender: any, sendResponse: any){
+function bulkRequest(request: any, sender: any, sendResponse: any) {
   fetchAllPerms(controller.url)
-        .then(res => {
-        const existingPerms = res.bucket[sender.origin];
-        console.log(existingPerms, "existingperms")
-        console.log(request.data)
-        if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist") 
-        else {
-          controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
-          sendResponse("noperms")
-        }
-      })
-      .catch((err) => console.log(err, "failed to fetch"));
+    .then(res => {
+      const existingPerms = res.bucket[sender.origin];
+      console.log(existingPerms, "existingperms")
+      console.log(request.data)
+      if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist")
+      else {
+        controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
+        sendResponse("noperms")
+      }
+    })
+    .catch((err) => console.log(err, "failed to fetch"));
 }
 
 function respond(request: any, sender: any, sendResponse: any): void {
@@ -148,11 +181,6 @@ function respond(request: any, sender: any, sendResponse: any): void {
       sendResponse(controller);
     case "dismissPerms":
       controller.requestedPerms = null;
-      break;
-    case "all":
-      getAll()
-        .then(res => sendResponse({ res: res }))
-        .catch(err => sendResponse({ error: err }))
       break;
     case "shipName":
       sendResponse(controller.activeShip.shipName)

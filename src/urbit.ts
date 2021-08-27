@@ -34,7 +34,7 @@ export async function setPerms(ship: string, url: string) {
   airlock.ship = ship;
   const json = {
     "put-bucket": {
-      "bucket-key": "login-with-urbit-permissions",
+      "bucket-key": "urbit-visor-permissions",
       "bucket": {},
     }
   }
@@ -58,7 +58,7 @@ export async function grantPerms(ship: string, url: string, perms: PermissionReq
 
   const json = {
     "put-entry": {
-      "bucket-key": "login-with-urbit-permissions",
+      "bucket-key": "urbit-visor-permissions",
       "entry-key": perms.website,
       "value": value
     }
@@ -80,7 +80,7 @@ export async function revokePerms(ship: string, url: string, perms: PermissionRe
 
   const json = {
     "put-entry": {
-      "bucket-key": "login-with-urbit-permissions",
+      "bucket-key": "urbit-visor-permissions",
       "entry-key": perms.website,
       "value": value
     }
@@ -93,7 +93,7 @@ export async function deleteDomain(ship: string, url: string, domain: string){
   airlock.ship = ship;
   const json = {
     "del-entry": {
-      "bucket-key": "login-with-urbit-permissions",
+      "bucket-key": "urbit-visor-permissions",
       "entry-key": domain,
     }
   }
@@ -106,7 +106,7 @@ export async function checkPerms(url: string, domain: string) {
   return await domainPerms
 }
 export async function fetchAllPerms(url: string) {
-  const payload = { app: "settings-store", path: "/bucket/login-with-urbit-permissions" };
+  const payload = { app: "settings-store", path: "/bucket/urbit-visor-permissions" };
   return await scry(url, payload)
 }
 
@@ -115,7 +115,7 @@ export async function wipeAllPerms(ship: string, url: string) {
   airlock.ship = ship;
   const json = {
     "del-bucket": {
-      "bucket-key": "login-with-urbit-permissions",
+      "bucket-key": "urbit-visor-permissions",
     }
   }
   return await airlock.poke({ app: "settings-store", mark: "settings-event", json: json })

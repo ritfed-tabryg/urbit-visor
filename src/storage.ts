@@ -1,5 +1,5 @@
 import * as CryptoJS from "crypto-js";
-import { EncryptedShipCredentials } from "./types/types";
+import { EncryptedShipCredentials, PopupPreference } from "./types/types";
 
 interface Permission{
     thing: string
@@ -16,7 +16,7 @@ interface Storage{
 export async function validate(password: string): Promise<boolean>{
     const res = await getStorage("password");
     const string = decrypt(res.password, password);
-    if (string === "lwu") return true 
+    if (string === "urbit_visor") return true 
     else return false
 }
 export const getStorage = (key: string | string[]) : Promise<Storage> =>
@@ -60,7 +60,7 @@ export async function storeCredentials(ship: string, url: string, code: string, 
 };
 
 export function savePassword(password: string) : Promise<any>{
-    const encryptedString = encrypt("lwu", password);
+    const encryptedString = encrypt("urbit_visor", password);
     return setStorage({password: encryptedString})
 }
 
@@ -72,7 +72,6 @@ export function reset(): Promise<any>{
         });
     })
 }
-type PopupPreference = "modal" | "window";
 export function setPopupPreference(preference: PopupPreference): Promise<any>{
   return setStorage({popup: preference})
 }
@@ -109,6 +108,17 @@ export async function getShips(): Promise<any>{
         chrome.storage.local.get("ships", (res) => {
             if (res["ships"] && res["ships"].length){
                 resolve(res);
+            } else{
+                reject("data not set");
+            }
+        });
+    })
+};
+export async function getPreference(): Promise<any>{
+    return new Promise((resolve, reject) =>{
+        chrome.storage.local.get("popup", (res) => {
+            if (res["popup"]){
+                resolve(res.popup);
             } else{
                 reject("data not set");
             }

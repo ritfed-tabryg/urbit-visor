@@ -12,10 +12,10 @@ const injectScript = () => {
 function injectModal() {
   const background = document.createElement('div');
   background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;';
-  background.id = "lwu-modal-bg";
+  background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
+  foreground.id = "urbit-visor-modal-fg";
   foreground.style.cssText = 'background-color:grey;position:absolute;top:50px;right:50px;width:100px;height:150px;padding:0.5rem;';
-  foreground.id = "lwu-modal-fg";
   const arrow = document.createElement("p");
   arrow.innerText = "↑";
   arrow.style.cssText = "font-size: 3rem; margin: 0;";

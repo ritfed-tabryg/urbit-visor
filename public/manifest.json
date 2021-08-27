@@ -1,5 +1,5 @@
 {
-  "name": "Login With Urbit",
+  "name": "Urbit Visor",
   "description": "Enable Urbit Web Apps to connect to your Urbit ship.",
   "manifest_version": 2,
   "version": "1.0.0",

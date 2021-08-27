@@ -15,11 +15,14 @@ export interface BackgroundController {
   locked: boolean,
   adding: boolean,
   cached_url: string,
+  popupPreference: PopupPreference,
   requestedPerms: PermissionRequest,
   activeShip: EncryptedShipCredentials,
   url: string,
   permissions: PermissionsGraph
 }
+
+export type PopupPreference = "modal" | "window";
 
 export interface PermissionRequest {
   website: string,
