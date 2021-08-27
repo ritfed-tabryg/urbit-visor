@@ -41,8 +41,18 @@ export default function Ship(props: ShipProps) {
     setLoading(true);
     loginToShip(url, code)
       .then(res => {
+        console.log(res, "reconnect successful")
         // TODO this approach was suspiciously smooth. Keep this flag in case it breaks.
-        connect();
+        // might need more handlers for different errors
+        if (res.statusText == "missing"){
+          setError("Could not connect")
+          setLoading(false);
+        } 
+        else connect();
+      })
+      .catch(err => {
+        setError("Could not connect")
+        setLoading(false);
       })
   }
 
