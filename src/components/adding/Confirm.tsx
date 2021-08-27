@@ -23,7 +23,7 @@ export default function Confirm(props: ConfirmProps){
       getStorage("password")
       .then((res) =>{
          const string = decrypt(res.password, pw);
-         if(string === "lwu"){
+         if(string === "urbit_visor"){
            saveShip()
          }else{
            setError("Wrong password.")
