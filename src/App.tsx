@@ -11,6 +11,7 @@ import ShipShow from "./components/show/ShipShow";
 import Permissions from "./components/perms/Permissions";
 import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
+import About from "./components/ui/About";
 import { decrypt, getStorage, storeCredentials, initStorage } from "./storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 import { fetchAllPerms, grantPerms } from "./urbit";
@@ -184,79 +185,4 @@ export default function App() {
     </div>
   );
 }
-
-
-// function Welcome() {
-//   const history = useHistory();
-//   return (
-//     <div className="welcome padding flex-grow-wrapper">
-//       <div className="flex-grow">
-//       <img src={logo} className="App-logo" />
-//       </div>
-//       <button onClick={() => history.push("/setup")} className="single-button add-ship-button">Setup</button>
-//     </div>
-//   );
-// }
-// interface SetupProps {
-//   setFirst: (b: boolean) => void
-// }
-// function Setup({ setFirst }: SetupProps) {
-//   const history = useHistory();
-//   const [pw, setpw] = useState("");
-//   const [tooltip, setTooltip] = useState(false);
-//   const [confirmationpw, setconfirmation] = useState("");
-//   const [error, setError] = useState("");
-//   function showTooltip(){setTooltip(true)};
-//   function hideTooltip(){setTooltip(false)};
-//   function validate(e: React.FormEvent<HTMLFormElement>) {
-//     e.preventDefault();
-//     if (pw === confirmationpw) {
-//       setError("");
-//       initStorage(pw)
-//         .then(res => {
-//           setFirst(false)
-//           history.push("/");
-//         })
-//     } else {
-//       setError("Passwords do not match")
-//     }
-//   }
-//   return (
-//     <div className="setup flex-grow-wrapper">
-//       <p>Please set up a master password for this extension.
-//         <span 
-//           className="tooltip-trigger" 
-//           onMouseLeave={hideTooltip} 
-//           onMouseOver={showTooltip}>
-//             <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" className="iconify iconify--clarity" width="18" height="18" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path className="clr-i-solid clr-i-solid-path-1" d="M18 6a12 12 0 1 0 12 12A12 12 0 0 0 18 6zm-2 5.15a2 2 0 1 1 2 2a2 2 0 0 1-2.1-2zM23 24a1 1 0 0 1-1 1h-7a1 1 0 1 1 0-2h2v-6h-1a1 1 0 0 1 0-2h4v8h2a1 1 0 0 1 1 1z" fill="currentColor"></path></svg>
-//         </span></p>
-//       {tooltip && <div className="tooltip"><p>The password will be used to encrypt the credentials to access your Urbit ships.</p></div>}
-//       <form onSubmit={validate} className="form flex-grow">
-//         <label>Password<input onChange={(e) => setpw(e.currentTarget.value)} type="password" /></label>
-//         <label>Confirm password<input onChange={(e) => setconfirmation(e.currentTarget.value)} type="password" /></label>
-//         <p className="errorMessage">{error}</p>
-//         <button className="single-button submit-setup-button">Submit</button>
-//       </form>
-//     </div>
-//   );
-// }
-
-
-function About(){
-  return(
-    <div className="modal-background">
-      <div className="modal-foreground">
-       <div className="about-title"> 
-       <h4>Urbit Visor</h4>
-        <p>0.1.0</p></div>
-        <p>Urbit Visor is an overlay platform that merges Urbit and the web together. Its goal is to allow existing web tech to seamlessly integrate together with the novel functionality of Urbit.</p>
-        <p>Created by:</p>
-        <a href="https://dcspark.io" rel="noopener noreferrer" target="_blank">
-        <img src="/dcsparklogo.png" alt="" />
-        </a>
-      </div>
-    </div>
-  )
-}
-
 

@@ -338,3 +338,13 @@ button:hover{
   width: 100%;
   padding: 10%;
 }
+
+/* about page */
+.about div{
+  margin-top: 3rem;
+}
+.about img{
+  padding: 0.5rem;
+  width: 180px;
+  background-color: white;
+}
