@@ -187,16 +187,6 @@ input{
   text-align: left;
   width: 14ch;
 }
-.blurry-sigil{
-  box-sizing: content-box;
-  filter: blur(2px);
-}
-.active-navbar-sigil{
-  border: 2px solid green;
-}
-.inactive-navbar-sigil{
-  border: 2px solid red;
-}
 .about-title{
  display: flex;
  text-align: center;   
@@ -233,6 +223,7 @@ button{
   font-weight: 400;
   box-shadow: none;
   border-radius: 4px;
+  color: white;
 }
 .button{
   border: 0;
@@ -320,7 +311,7 @@ button:hover{
   margin-left: 10px;
 }
 .multiple-buttons{
-  color: blue
+  
 }
 .padding{
   width: 100%;
@@ -336,3 +327,5 @@ button:hover{
   width: 180px;
   background-color: white;
 }
+
+

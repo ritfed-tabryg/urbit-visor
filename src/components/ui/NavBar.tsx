@@ -26,8 +26,7 @@ export default function NavBar(props: NavBarProps) {
   const wrapperClass = props.active ? "navbar-sigil-wrapper active-navbar-sigil" : "navbar-sigil-wrapper inactive-navbar-sigil";
   const className = props.active ? "navbar-sigil" : "navbar-sigil blurry-sigil"
   const dummy =
-    <div className={className}>
-      <Sigil size={50} patp={"sampel-palnet"} />
+    <div className="dummy-sigil">
     </div>
   const sigil =
     <div onClick={() => history.push("/ship")} className={className}>
