@@ -201,7 +201,7 @@ function SettingsChangePw() {
   }
   return (
     <>
-      <form onSubmit={checkOld} className="form flex-grow-wrapper">
+      <form onSubmit={checkOld} className="form padding flex-grow-wrapper">
       <h3>Change Master Password</h3>
         <div className="flex-grow">
         <label>Old password
