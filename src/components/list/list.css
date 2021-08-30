@@ -4,12 +4,13 @@
 .dashboard p{
   font-size: 1.4rem;
 }
+.page-title{
+  margin-bottom: 0;
+}
 .ship-list{
     padding: 0;
-    overflow-y: overlay;
-    /* TODO get these numbers right */
-    max-height: 260px;
-    min-height: 175px;
+    overflow-y: scroll;
+    max-height: 315.05px;
 }
 .ship-list .ship{
     list-style: none;

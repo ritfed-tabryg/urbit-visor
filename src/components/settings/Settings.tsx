@@ -17,9 +17,8 @@ interface SettingsProps{
 }
 export default function Settings(props: SettingsProps) {
   const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
-  return (<div className="settings">
+  return (<div className="settings flex-grow-wrapper">
     <Link to="/settings/menu"><h1>Settings</h1></Link>
-    <hr />
     <Route path="/settings/menu">
       <SettingsMenu />
     </Route>
@@ -176,8 +175,11 @@ function SettingsChangePw() {
   const [oldPassword, setOldpw] = useState("");
   const [pw, setPw] = useState("");
   const [confirmationpw, setConfirmation] = useState("");
-
-
+  
+  const displayMessage = error.length > 0 
+  ? <p className="errorMessage">{error}</p>
+  : <p className="successMessage">{message}</p>
+  
   async function checkOld(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault();
     setError("");
@@ -199,15 +201,17 @@ function SettingsChangePw() {
   }
   return (
     <>
-      <form onSubmit={checkOld} className="change-password-form">
+      <form onSubmit={checkOld} className="form flex-grow-wrapper">
+      <h3>Change Master Password</h3>
+        <div className="flex-grow">
         <label>Old password
           <input onChange={(e) => setOldpw(e.currentTarget.value)} type="password" />
         </label>
         <label>New password<input onChange={(e) => setPw(e.currentTarget.value)} type="password" /></label>
         <label>Confirm new password<input onChange={(e) => setConfirmation(e.currentTarget.value)} type="password" /></label>
-        <p className="errorMessage">{error}</p>
-        <p className="successMessage">{message}</p>
-        <button className="button" type="submit">Submit</button>
+        {displayMessage}
+        </div>
+        <button className="single-button" type="submit">Submit</button>
       </form>
     </>
   )
@@ -219,10 +223,13 @@ function SettingsReset() {
     // history.push("/");
   }
   return (
-    <div className="reset-app-setting">
+    <div className="reset-app-setting padding flex-grow-wrapper">
+      <div className="flex-grow">
+      <h3>Reset Visor</h3>
       <p>Click on the button below to reset the extension to factory settings.</p>
       <p>This will delete all ships and your master password.</p>
-      <button className="button reset-button red-bg" onClick={doReset}>reset app</button>
+      </div>
+      <button className="single-button red-bg" onClick={doReset}>reset app</button>
     </div>
   )
 }

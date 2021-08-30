@@ -94,15 +94,15 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
   }
 
   return (
-    <div className="add-ship-form">
-      <form className="form" onSubmit={onSubmit}>
+      <form className="form login-form flex-grow-wrapper" onSubmit={onSubmit}>
+        <p className="form-prompt">Input the credentials for your Urbit ship</p>
+        <div className="inputs flex-grow">
         <label htmlFor="shipURL">
           URL
           <input
             type="text"
             name='shipURL'
             id='loginFormShipURL'
-            className='loginFormInput'
             value={url}
             placeholder='http://localhost'
             onChange={onChangeURL}
@@ -115,7 +115,6 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
             type="password"
             name='shipCode'
             id='loginFormShipCode'
-            className='loginFormInput'
             value={code}
             placeholder='sampel-sampel-sampel-sampel'
             onChange={onChangeCode}
@@ -123,16 +122,14 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
             required
           />
         </label>
-        <div className="buttonContainer">
-          <button disabled={code.length < 27} className="small-button" type='submit'>
-            Add Ship
-          </button>
         </div>
-        {loading && spinner}
         <div className="errorMessage">
+        {loading && <div className="spinner">{spinner}</div>}
           {error.split("\n").map((p) => <p key={p}>{p}</p>)}
         </div>
+          <button disabled={code.length < 27} className="single-button" type='submit'>
+            Add Ship
+          </button>
       </form>
-    </div>
   )
 }

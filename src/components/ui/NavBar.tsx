@@ -37,9 +37,7 @@ export default function NavBar(props: NavBarProps) {
   const displaySigil = props.active ? sigil : dummy;
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
-    <Link to="/">
       <h4>Urbit Visor</h4>
-    </Link>
     <div className={wrapperClass}>
       {displaySigil}
     </div>

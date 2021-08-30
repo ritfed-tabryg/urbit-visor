@@ -1,6 +1,11 @@
 .settings{
     width: 100%;
 }
+.settings h1{
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--foreground);
+    margin-bottom: 0;
+}
 
 .settings-option a{
     cursor: pointer;

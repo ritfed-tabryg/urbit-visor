@@ -1,53 +1,16 @@
-.add-ship-form{
-  margin: auto;
-  width: 100%;
+.form-prompt{
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: center;
 }
+
 .confirm{
   margin: auto;
 }
 
-.loginButton {
-  border: 0;
-  background-color: #1a1d22;
-  color: white;
-  padding: 5px 10px;
-  width: 100%;
-  cursor: pointer;
-}
-
-/* .buttonContainer {
-  display: flex;
-  min-width: 150px;
-  padding: 10px;
-} */
-
-
-
-.add-ship-form{
-  /* margin-top: -3rem; */
-}
-label{
-  line-height: 1.5;
-}
-input{
-  width: 100%;
-  margin: 12px 0;
-  border: 1px solid grey;
-  padding: 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  box-shadow: none;
-  display: block;
-  font-family: 'Source Code Pro', monospace;
-}
 .spinner{
+  text-align: center;
   height: 20px;
-}
-.small-button:disabled {
-  border-color: currentColor;
-  background: rgba(33,157,255,0.05);
-  pointer-events: none;
-  cursor:not-allowed
 }
 
 .confirm-shipname{
@@ -56,4 +19,7 @@ input{
 .confirm-form{
   margin: 0 !important;
   width: 100% !important;
+}
+.errorMessage p, .errorMessage .spinner{
+  margin-top: -2rem;
 }
