@@ -38,19 +38,7 @@ body{
   color: white;
   height: 600px;
 }
-.Nav-logo {
-  height: 50px;
-  cursor: pointer;
-  /* pointer-events: none; */
-}
 
-.App-navbar {
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 10px;
-}
 h4{
   font-size: 1.4rem;
 }

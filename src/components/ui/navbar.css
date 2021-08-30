@@ -1,3 +1,17 @@
+.App-navbar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+  }
+
+.Nav-logo {
+    height: 56px;
+    cursor: pointer;
+    /* pointer-events: none; */
+  }
+
 .navbar-sigil{
     /* padding: 2px; */
 }
