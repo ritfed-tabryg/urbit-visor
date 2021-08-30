@@ -1,10 +1,16 @@
-.permissions{
-    padding: 1rem;
-    width: 100%;
-}
 
-.permissions button{
-    margin: 0 1rem;
+.requesting-domain{
+    display: block;
+    font-size: 1.2rem;
+    text-align: left;
+    color: var(--foreground);
+    font-family: 'Courier New', Courier, monospace;
+}
+.align-left{
+    text-align: left;
+}
+.requesting-domain:hover{
+    text-decoration: underline;
 }
 .permslist{
     overflow-y: scroll;
@@ -34,4 +40,38 @@
   color: red;
   font-weight: 500;
   cursor: pointer;
+}
+ul{
+    margin: 2rem 0;
+    list-style: none;
+    /* padding-left: 1rem; */
+    padding-left: 0;
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chip {
+    display: inline-block;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    /* color: var(--foreground); */
+    color: black;
+    line-height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    background-color: darkgrey;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.chip p{
+    margin: 0;
+}
+.chip .close{
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    line-height: 32px;
+    padding-left: 8px;
 }
