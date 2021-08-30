@@ -118,8 +118,10 @@ function IndividualPerm({ perm, revokePerm }: IPProps) {
             {showRevoke === perm &&
                 <>
                     <p>Revoke permission?</p>
-                    <button className="small-button" onClick={revoke}> Yes</button>
+                    <div className="two-buttons">
                     <button className="small-button red-bg" onClick={() => setShowRevoke(null)} >No</button>
+                    <button className="small-button right" onClick={revoke}> Yes</button>
+                    </div>
                 </>
             }
         </>

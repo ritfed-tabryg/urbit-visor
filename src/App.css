@@ -288,20 +288,8 @@ button:hover{
 
 .small-button {
   display: block;
-  margin: auto;
-  padding: 8px 16px;
-  border-radius: 4px;
-  background: rgba(33,157,255,0.3);
-  border: 1px solid rgba(33,157,255,1);
-  cursor: pointer;
-}
-
-.loginButton {
-  border: 0;
-  background-color: #1a1d22;
-  color: white;
-  padding: 5px 10px;
   width: 100%;
+  background: rgba(33,157,255,0.3);
   cursor: pointer;
 }
 
@@ -329,11 +317,18 @@ button:hover{
 }
 .single-button{
   width: 100%;
-  background-color: rgb(3, 125, 214);
+  background: rgba(33,157,255,0.3);
   color: white;
 }
 .two-buttons{
-  color: green
+  display: flex;
+  width: 100%;
+}
+.two-buttons button{
+  color: beige;
+}
+.two-buttons .right{
+  margin-left: 10px;
 }
 .multiple-buttons{
   color: blue

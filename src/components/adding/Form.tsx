@@ -128,7 +128,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           {error.split("\n").map((p) => <p key={p}>{p}</p>)}
         </div>
           <button disabled={code.length < 27} className="single-button" type='submit'>
-            Add Ship
+            Login to Ship
           </button>
       </form>
   )
