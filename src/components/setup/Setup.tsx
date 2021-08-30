@@ -39,7 +39,7 @@ export default function Setup({ setFirst }: SetupProps) {
                 </span></p>
             {tooltip && <div className="tooltip"><p>The password will be used to encrypt the credentials to access your Urbit ships.</p></div>}
             <form onSubmit={validate} className="form flex-grow-wrapper">
-                <div className="flex-grow">
+                <div className="inputs flex-grow">
                 <label>Password<input onChange={(e) => setpw(e.currentTarget.value)} type="password" /></label>
                 <label>Confirm password<input onChange={(e) => setconfirmation(e.currentTarget.value)} type="password" /></label>
                 <p className="errorMessage">{error}</p>

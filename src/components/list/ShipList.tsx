@@ -23,17 +23,20 @@ export default function Dashboard(props: ShipListProps) {
     const inactive = props.ships.filter(s => s.shipName != props.active?.shipName);
     let ordered = [];
     ordered = props.active ? [props.active, ...inactive] : inactive;
+    const display = ordered.length
+    ? ordered.map((ship) => {
+        return (
+        <Ship active={props.active} key={ship.shipName} ship={ship} select={props.select} />
+        )
+     })
+    : <p>Please add a ship</p>
 
     return (
         <div className="dashboard flex-grow-wrapper">
             <p className="page-title">Your Ships</p>
             <p className="ships-connected-msg"> {props.message}</p>
             <div className="ship-list flex-grow">
-                {ordered.map((ship) => {
-                    return (
-                    <Ship active={props.active} key={ship.shipName} ship={ship} select={props.select} />
-                    )
-                 })}
+                {display}
             </div>
             <div className="padding">
             <button className="single-button add-more-button" onClick={()=> history.push("/add_ship")}>Add Ship</button>

@@ -94,7 +94,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
   }
 
   return (
-      <form className="form login-form flex-grow-wrapper" onSubmit={onSubmit}>
+      <form className="form padding flex-grow-wrapper" onSubmit={onSubmit}>
         <p className="form-prompt">Input the credentials for your Urbit ship</p>
         <div className="inputs flex-grow">
         <label htmlFor="shipURL">
