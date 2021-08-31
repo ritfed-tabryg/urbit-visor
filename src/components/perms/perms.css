@@ -94,7 +94,7 @@ ul{
     background: url('https://api.iconify.design/mdi:delete.svg') no-repeat center center / contain;
 }
 .minibutton:hover{
-    opacity: 1;
+    opacity: 0.5;
 }
 .perm-deletion-confirmation-prompt{
     margin-bottom: 10px;
