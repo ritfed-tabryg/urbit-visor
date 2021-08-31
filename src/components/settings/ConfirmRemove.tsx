@@ -26,24 +26,24 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         }
     }
     return (
-        <div className="ship-removal-confirmation">
-            <div className="ship">
-                <p>{ship.shipName}</p>
-            </div>
+        <div className="ship-removal-confirmation padding flex-grow-wrapper">
+            <h3>Confirm removal</h3>
+
             <div className="text">
-                <p>Confirm below to remove the ship from your Urbit Visor</p>
-                <p>You can always add the ship again any time.</p>
+                <p>Confirm below to remove</p> 
+                <p className="ship-to-delete">~{ship.shipName}</p> 
+                <p>from your Urbit Visor.</p>
             </div>
-            <form onSubmit={remove}>
-                <div className="password-input">
+            <form className="flex-grow-wrapper" onSubmit={remove}>
+                <div className="password-input flex-grow">
                     <label>Input your master password
                         <input onChange={(e) => setPw(e.currentTarget.value)} type="password" />
                     </label>
                     <p className="errorMessage">{error}</p>
                 </div>
-                <div className="buttons">
-                    <button type="button" onClick={() => history.push("/settings/remove_ships")}>Cancel</button>
-                    <button type="submit">Remove</button>
+                <div className="two-buttons">
+                    <button className="cancel-button" type="button" onClick={() => history.push("/settings/remove_ships")}>Cancel</button>
+                    <button className="red-bg right" type="submit">Remove</button>
                 </div>
             </form>
         </div>

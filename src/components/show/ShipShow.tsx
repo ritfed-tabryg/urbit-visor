@@ -177,7 +177,7 @@ export default function Ship(props: ShipProps) {
   }
 
   return (
-    <div className="ship-show">
+    <div className="ship-show small-padding">
       <div className="ship-data">
         <Sigil size={78} patp={props.ship.shipName} />
         {shipname}

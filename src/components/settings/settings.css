@@ -39,6 +39,22 @@
 .ship-to-remove{
     display: flex;
     justify-content: space-between;
+    padding: 10px;
+}
+.ship-to-remove p span{
+    width: 100%;
+    /* flex-grow: 1; */
+}
+.ship-to-remove button{
+    width: 30px;
+    height: 30px;
+}
+.mini-sigil-wrapper{
+    margin: auto 0;
+}
+.ship-to-delete{
+    font-weight: 700;
+    font-family:'Courier New', Courier, monospace;
 }
 
 /* toggle */

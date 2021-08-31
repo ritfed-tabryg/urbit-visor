@@ -3,6 +3,7 @@ import Sigil from "../../components/ui/svg/Sigil"
 import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
+import { whatShip, processName } from "../../utils"
 import "./settings.css";
 import {
   MemoryRouter as Router,
@@ -159,18 +160,35 @@ function SettingsRemoveShips({ ships, setShip }: RemoveShipProps) {
     setShip(ship);
     history.push("/settings/confirm_remove")
   }
+ 
 
   return (
     <div className="remove-ships-list">
-      {ships.map(ship => {
-        return (
-          <div key={ship.shipName} className="ship-to-remove">
-            <Sigil patp={ship.shipName} size={48} />
-            <p className="shipname">~{ship.shipName}</p>
-            <button className="small-button red-bg" onClick={() => confirm(ship)}>Delete</button>
-          </div>
-        )
-      })}
+      <h3>Remove Ships</h3>
+      {ships.map(ship => <ShipToRemove key={ship.shipName} confirm={confirm} ship={ship} />)}
+    </div>
+  )
+}
+interface STRProps {
+  ship: EncryptedShipCredentials
+  confirm: (ship: EncryptedShipCredentials) => void
+}
+function ShipToRemove({ ship, confirm }: STRProps) {
+  
+  const displayName = processName(ship.shipName);
+
+  const shipname = whatShip(ship.shipName) === "moon"
+  ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+  : <p className="shipname">~{displayName}</p>
+
+
+  return (
+    <div key={ship.shipName} className="ship-to-remove">
+      <div className="mini-sigil-wrapper">
+        <Sigil patp={ship.shipName} size={48} />
+      </div>
+      {shipname}
+      <button className="minibutton red-bg" onClick={() => confirm(ship)} />
     </div>
   )
 }

@@ -78,7 +78,7 @@ interface ChipProps{
     destroyPerm?: (perm: Permission) => void,
     type: chipType
 }
-function Chip(props: ChipProps){
+export function Chip(props: ChipProps){
     function destroy(){
         console.log(props.perm)
         props.destroyPerm(props.perm);
