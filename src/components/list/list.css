@@ -18,7 +18,7 @@
     height: 85px;
     width: 100%;
     margin: auto;
-    padding: 0 10px;    
+    padding: 0 10px;
     border-bottom: 1px solid white;
     border-top: 1px solid white;
 
@@ -42,7 +42,7 @@
     cursor: pointer;
 }
 .add-more{
-    
+
 }
 .sigil-wrapper{
   margin: auto 5px;

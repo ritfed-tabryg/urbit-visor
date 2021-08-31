@@ -2,9 +2,10 @@
     width: 100%;
 }
 .settings h1{
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--foreground);
     margin-bottom: 0;
+    padding-top: 0;
 }
 .padding h3{
     margin-top: -1rem;
