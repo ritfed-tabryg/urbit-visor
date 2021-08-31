@@ -93,70 +93,11 @@ export default function Ship(props: ShipProps) {
   async function disconnect(): Promise<void> {
     props.save(null, null)
   }
-  async function testScry() {
-    setError("");
-    const url = decrypt(props.ship.encryptedShipURL, pw);
-    if (url.length) {
-      setLoading(true);
-      const airlock = new Urbit(url, "");
-      const res = await airlock.scry({ app: "graph-store", path: "/keys" });
-      console.log(res);
-      setLoading(false);
-    } else {
-      setError("wrong password")
-    }
 
-  }
-  async function testPoke() {
-    setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
-    if (url.length) {
-      setLoading(true);
-      const airlock = new Urbit(url, "");
-      console.log(airlock)
-      airlock.ship = props.ship.shipName;
-      airlock.verbose = true;
-      const poke = await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
-      console.log(poke);
-      setLoading(false);
-    } else {
-      setError("wrong password")
-    }
+  const connectButton = <button onClick={connect} className="single-button connect-button">Connect</button>;
+  const disconnectButton = <button onClick={disconnect} className="single-button  connect-button red-bg">Disconnect</button>;
+  const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton;
 
-  }
-  async function testSubscribe() {
-    setError("");
-    console.log('subscribing')
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
-    if (url.length) {
-      setLoading(true);
-      const airlock = new Urbit(url, "");
-      console.log(airlock)
-      airlock.ship = props.ship.shipName;
-      airlock.verbose = true;
-      const res = await airlock.subscribe({ app: "graph-store", path: "/updates" });
-      console.log(res);
-      setLoading(false);
-    } else {
-      setError("Wrong password.")
-    }
-  }
-  async function testPerms() {
-    setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
-    if (url.length) {
-      setLoading(true);
-      const res = await fetchAllPerms(url)
-      console.log(res);
-      setLoading(false);
-    } else{
-      setError("Wrong password.")
-    }
-  }
-
-  const connectButton = <div onClick={connect} className="button">Connect</div>;
-  const disconnectButton = <div onClick={disconnect} className="button red-bg">disconnect</div>
-  const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton
   function gotoLandscape() {
     setError("");
     const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
@@ -175,30 +116,31 @@ export default function Ship(props: ShipProps) {
       setError("Wrong password.")
     }
   }
+  function gotoDashboard() {chrome.tabs.create({url: "https://dashboard.urbitvisor.com"})}
+  function gotoUrbitLive() {chrome.tabs.create({url: `https://urbit.live/${props.ship.shipName}`})}
 
   return (
-    <div className="ship-show small-padding">
+    <div className="ship-show small-padding flex-grow-wrapper">
       <div className="ship-data">
         <Sigil size={78} patp={props.ship.shipName} />
         {shipname}
       </div>
-      <div className="buttons">
+      <div className="inputs flex-grow">
         <label>
           Input your master password.
         <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
         </label>
-        {/* <button onClick={testScry}>Test Scry</button>
-        <button onClick={testPoke}>Test Poke</button>
-        <button onClick={testSubscribe}>Test Subscribe</button>
-        <button onClick={testPerms}>Test Permissions</button> */}
         <div className="spinner">
           {loading && spinner}
           <p className="errorMessage">{error}</p>
         </div>
+        {connectionButton}
       </div>
-      {connectionButton}
-      <button onClick={gotoLandscape} className="button multiple-buttons">Landscape</button>
-      <button onClick={gotoPerms} className="button multiple-buttons">Perms</button>
+      <button onClick={gotoPerms} className="single-button cancel-button">Permissions</button>
+      <div className="two-buttons second-row">
+      <button onClick={gotoDashboard} className="cancel-button">Dashboard</button>
+      <button onClick={gotoLandscape} className="cancel-button right">Landscape</button>
+      </div>
     </div>
   )
 }

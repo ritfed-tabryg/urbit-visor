@@ -13,3 +13,9 @@
 .ship-show .buttons{
     padding: 0 1rem;
 }
+.ship-show .spinner{
+    margin-bottom: 10px;
+}
+.second-row{
+    margin-top: 10px;
+}
