@@ -9,7 +9,7 @@
 }
 .ship-list{
     padding: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 315.05px;
 }
 .ship-list .ship{
