@@ -16,6 +16,12 @@
     overflow-y: scroll;
     text-align: left;
 }
+.perms-flex-grow-wrapper {
+    display: inline;
+    overflow: auto;
+    flex-direction: column;
+    flex-grow: 1;
+}
 .domain{
     display: flex;
     justify-content: space-between;
@@ -94,7 +100,7 @@ ul{
     background: url('https://api.iconify.design/mdi:delete.svg') no-repeat center center / contain;
 }
 .minibutton:hover{
-    opacity: 1;
+    opacity: 0.5;
 }
 .perm-deletion-confirmation-prompt{
     margin-bottom: 10px;

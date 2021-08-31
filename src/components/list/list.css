@@ -4,9 +4,13 @@
 .dashboard p{
   font-size: 1.4rem;
 }
-.page-title{
-  margin-bottom: 0;
+
+.ship-list-title h1{
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 1rem;
 }
+
 .ship-list{
     padding: 0;
     overflow-y: auto;
@@ -18,15 +22,17 @@
     height: 85px;
     width: 100%;
     margin: auto;
-    padding: 0 10px;    
+    padding: 0 10px;
     border-bottom: 1px solid white;
+    border-top: 1px solid white;
 
 }
 .ship-list .ship:nth-last-child(1){
   /* border-bottom: 1px solid white; */
 }
 .ship-list .ship:nth-last-child(1){
-  border-bottom: none;
+  border-top: none;
+  /* border-bottom: none; */
 }
 .shipname{
   color: white;
@@ -40,7 +46,7 @@
     cursor: pointer;
 }
 .add-more{
-    
+
 }
 .sigil-wrapper{
   margin: auto 5px;

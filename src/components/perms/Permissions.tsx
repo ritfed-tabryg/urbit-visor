@@ -30,13 +30,13 @@ export default function Permissions(props: PermissionsProps) {
 
 
     return (
-        <div className="permissions small-padding flex-grow-wrapper">
+        <div className="permissions small-padding perms-flex-grow-wrapper">
             <div className="ship-data">
                 <Sigil size={78} patp={props.ship.shipName} />
                 {shipname}
             </div>
             <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
-            <div className="permslist flex-grow-wrapper">
+            <div className="permslist perms-flex-grow-wrapper">
                 {!domains.length
                     ? <p>No permissions granted</p>
                     : !query.length
@@ -89,7 +89,7 @@ function Domain({ ship, shipURL, domain, perms, setThemPerms }: DomainProps) {
         setRevoking(perm);
     }
     return (
-        <div className="domain-wrapper flex-grow-wrapper">
+        <div className="domain-wrapper perms-flex-grow-wrapper">
             <div className="domain">
                 <p onClick={() => uncollapse(domain)} className="domain-text">{domain}</p>
                 <button className="minibutton red-bg" onClick={promptDelete} ></button>

@@ -188,11 +188,11 @@ input{
   width: 14ch;
 }
 .about-title{
- display: flex;
+ display: block;
  text-align: center;   
 }
 .about-title h4{
-  margin: 0.2rem 0.2rem 0 25%;
+  /* margin: 0.2rem 0.2rem 0 25%; */
 }
 .about-title p{
   margin: 0.7rem 0 0 0.2rem;
@@ -202,29 +202,33 @@ input{
 /* buttons */
 
 button{
-  display: inline-flex;
-  outline: 0;
-  position: relative;
-  align-items: center;
-  user-select: none;
-  justify-content: center;
-  text-decoration: none;
-  box-sizing: border-box;
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  line-height: 1.75;
-  letter-spacing: 0.02857em;
-  text-transform: uppercase;
-  padding: 8px 22px;
-  font-size: 0.9375rem;
-  opacity: 0.5;
-  cursor: pointer;
-  margin-top: 15px;
-  font-weight: 400;
-  box-shadow: none;
-  border-radius: 4px;
-  color: white;
+    display: flex;
+    flex-direction: row;
+    -webkit-box-pack: center;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 14px 0px;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 19px;
+    font-weight: 600;
+    color: white;
+    pointer-events: auto;
+    border: none;
+    outline-color: transparent;
+    outline-style: none;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+button:hover{
+  opacity: 0.5;
+}
+
 .button{
   border: 0;
   margin: 0.2rem auto;
@@ -255,9 +259,6 @@ button{
   font-weight: 400;
   box-shadow: none;
   border-radius: 4px;
-}
-button:hover{
-  opacity: 1;
 }
 
 .submit-setup-button{

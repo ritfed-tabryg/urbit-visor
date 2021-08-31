@@ -33,8 +33,8 @@ export default function Dashboard(props: ShipListProps) {
 
     return (
         <div className="dashboard flex-grow-wrapper">
-            <p className="page-title">Your Ships</p>
-            <p className="ships-connected-msg"> {props.message}</p>
+            <div className="ship-list-title"><h1>Your Ships</h1></div>
+            {/* <p className="ships-connected-msg"> {props.message}</p> */}
             <div className="ship-list flex-grow">
                 {display}
             </div>
