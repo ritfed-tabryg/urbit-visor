@@ -188,11 +188,11 @@ input{
   width: 14ch;
 }
 .about-title{
- display: flex;
+ display: block;
  text-align: center;   
 }
 .about-title h4{
-  margin: 0.2rem 0.2rem 0 25%;
+  /* margin: 0.2rem 0.2rem 0 25%; */
 }
 .about-title p{
   margin: 0.7rem 0 0 0.2rem;
