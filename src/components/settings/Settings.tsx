@@ -108,7 +108,9 @@ function SettingsPopup() {
   }, [])
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
-    setSetting(e.currentTarget.value);
+    const value = setting === "modal" ? "window" : "modal"
+    setSetting(value);
+    // setSetting(e.currentTarget.value);
     setButton("Save");
     setDisabled(false);
   }
@@ -131,7 +133,7 @@ function SettingsPopup() {
           <p> Show Modal in Page
           </p>
           <input className="toggle" name="popup" type="radio" id="modal" value="modal" checked={setting == "modal"}
-            onChange={handleChange}
+            onClick={handleChange}
           />
         </div>
         <div className="option">
@@ -139,7 +141,7 @@ function SettingsPopup() {
 
           </p>
           <input className="toggle" name="popup" type="radio" id="window" value="window" checked={setting == "window"}
-            onChange={handleChange}
+            onClick={handleChange}
           />
         </div>
         <p className="errorMessage">{error}</p>
