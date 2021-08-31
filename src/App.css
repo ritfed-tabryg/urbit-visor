@@ -307,6 +307,9 @@ button:hover{
 .two-buttons button{
   width: 100%;
 }
+.flex-end{
+  align-self: flex-end;
+}
 .two-buttons .right{
   background-color: rgb(3, 125, 214, 0.5);
   margin-left: 10px;
