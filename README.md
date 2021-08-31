@@ -1,6 +1,7 @@
-# Login With Urbit
+# Urbit Visor
 
-A web extension which enables Urbit Web Apps to securely connect to your Urbit ship.
+Urbit Visor is an overlay platform (as a web browser extension) that merges Urbit and the web together. Its goal is to allow existing web tech to seamlessly integrate together with the novel functionality of Urbit. 
+
 
 ## Getting started
 
