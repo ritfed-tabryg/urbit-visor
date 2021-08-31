@@ -16,6 +16,12 @@
     overflow-y: scroll;
     text-align: left;
 }
+.perms-flex-grow-wrapper {
+    display: inline;
+    overflow: auto;
+    flex-direction: column;
+    flex-grow: 1;
+}
 .domain{
     display: flex;
     justify-content: space-between;
