@@ -4,9 +4,13 @@
 .dashboard p{
   font-size: 1.4rem;
 }
-.page-title{
-  margin-bottom: 0;
+
+.ship-list-title h1{
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 1rem;
 }
+
 .ship-list{
     padding: 0;
     overflow-y: auto;
