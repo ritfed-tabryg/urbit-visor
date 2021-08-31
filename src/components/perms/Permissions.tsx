@@ -5,7 +5,8 @@ import { validate } from "../../storage";
 import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
 import "./perms.css";
 import Sigil from "../ui/svg/Sigil"
-import { processName } from "../../utils"
+import { Chip } from "./PermissionsPrompt";
+import { whatShip, processName } from "../../utils"
 import { EncryptedShipCredentials, PermissionRequest, Permission } from "../../types/types"
 
 interface PermissionsProps {
@@ -22,17 +23,20 @@ export default function Permissions(props: PermissionsProps) {
     const domains = Object.keys(props.perms).sort();
     console.log(props.perms, "perms list")
     const displayName = processName(props.ship.shipName);
+    const shipname = whatShip(props.ship.shipName) === "moon"
+        ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+        : <p className="shipname">~{displayName}</p>
 
 
 
     return (
-        <div className="permissions">
+        <div className="permissions small-padding flex-grow-wrapper">
             <div className="ship-data">
                 <Sigil size={78} patp={props.ship.shipName} />
-                <p className="shipname">~{displayName}</p>
+                {shipname}
             </div>
             <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
-            <div className="permslist">
+            <div className="permslist flex-grow-wrapper">
                 {!domains.length
                     ? <p>No permissions granted</p>
                     : !query.length
@@ -61,41 +65,51 @@ function Domain({ ship, shipURL, domain, perms, setThemPerms }: DomainProps) {
             .catch(err => console.log(err))
     }
     const [toDisplay, display] = useState("");
-    const displayterms = toDisplay == domain ? <DisplayPerms revokePerm={revokePerm} perms={perms} /> : <div />
+    const [deleting, setDeleting] = useState(false);
+    const [revokingPerm, setRevoking] = useState<Permission>(null);
+    const displayterms = toDisplay == domain ? <DisplayPerms promptRevokePerm={(perm: Permission) => promptRevoke(perm)} perms={perms} /> : <div />
 
     function uncollapse(domain: string) {
         if (toDisplay == domain) display("")
         else display(domain)
     }
-    function eraseDomain(){
-      deleteDomain(ship.shipName, shipURL, domain)
-      .then(res => {
-        if (typeof(res) === "number") setThemPerms(shipURL)
-       })
-      .catch(err => console.log(err))
+    function eraseDomain() {
+        deleteDomain(ship.shipName, shipURL, domain)
+            .then(res => {
+                if (typeof (res) === "number") setThemPerms(shipURL)
+            })
+            .catch(err => console.log(err))
+    }
+    function promptDelete(){
+        setRevoking(null);
+        setDeleting(true);
+    }
+    function promptRevoke(perm: Permission){
+        setDeleting(false);
+        setRevoking(perm);
     }
     return (
-        <>
+        <div className="domain-wrapper flex-grow-wrapper">
             <div className="domain">
-                <p className="domain-text">{domain}</p>
-                <button onClick={() => uncollapse(domain)} >Show</button>
-                <button onClick={eraseDomain} >Delete </button>
+                <p onClick={() => uncollapse(domain)} className="domain-text">{domain}</p>
+                <button className="minibutton red-bg" onClick={promptDelete} ></button>
             </div>
             {displayterms}
-        </>
+            {deleting && <ConfirmationPrompt message={"Delete domain?"} cancel={() => setDeleting(false)} revoke={eraseDomain} />}
+            {revokingPerm && <ConfirmationPrompt message={`Revoke ${revokingPerm} permission?`} cancel={() => setRevoking(null)} revoke={() => revokePerm(revokingPerm)} />}
+        </div>
 
     )
 }
 
 interface DPProps {
     perms: Permission[],
-    revokePerm: (perm: Permission) => void
+    promptRevokePerm: (perm: Permission) => void
 }
-function DisplayPerms({ perms, revokePerm }: DPProps) {
+function DisplayPerms({ perms, promptRevokePerm }: DPProps) {
     if (perms.length) return (
-        <div className="grantedperms">
-            {perms.map((perm) => <IndividualPerm key={perm} revokePerm={revokePerm} perm={perm} />)}
-
+        <div className="grantedperms flex-grow">
+            {perms.map((perm) => <IndividualPerm key={perm} promptRevokePerm={promptRevokePerm} perm={perm} />)}
         </div>
     )
     else return (
@@ -104,24 +118,31 @@ function DisplayPerms({ perms, revokePerm }: DPProps) {
 }
 interface IPProps {
     perm: Permission
-    revokePerm: (perm: Permission) => void
+    promptRevokePerm: (perm: Permission) => void
 }
-function IndividualPerm({ perm, revokePerm }: IPProps) {
-    const [showRevoke, setShowRevoke] = useState(null);
-    function promptRevoke() {
-        showRevoke === perm ? setShowRevoke(null) : setShowRevoke(perm)
-    };
-    const revoke = () => revokePerm(perm);
+function IndividualPerm({ perm, promptRevokePerm }: IPProps) {
+    const revoke = () => promptRevokePerm(perm);
     return (
         <>
-            <p onClick={promptRevoke} className="permission-string" key={perm}>{perm}</p>
-            {showRevoke === perm &&
-                <>
-                    <p>Revoke permission?</p>
-                    <button className="small-button" onClick={revoke}> Yes</button>
-                    <button className="small-button red-bg" onClick={() => setShowRevoke(null)} >No</button>
-                </>
-            }
+            <div onClick={revoke} className="permission-string" key={perm}>
+                <Chip type={"old"} perm={perm} />
+            </div>
         </>
+    )
+}
+interface ConfirmationProps {
+    message: string,
+    cancel: () => void
+    revoke: () => void
+}
+function ConfirmationPrompt({ message, cancel, revoke }: ConfirmationProps) {
+    return (
+        <div className="perm-deletion-confirmation-prompt">
+            <p>{message}</p>
+            <div className="two-buttons">
+                <button className="small-button red-bg" onClick={cancel} >No</button>
+                <button className="small-button right" onClick={revoke}> Yes</button>
+            </div>
+        </div>
     )
 }

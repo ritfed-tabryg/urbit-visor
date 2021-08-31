@@ -43,16 +43,20 @@ export default function Confirm(props: ConfirmProps){
       })
     };
     return(
-      <div className="confirm">
+      <div className="confirm padding flex-grow-wrapper">
       <p>Connection successful to:</p>
       <p className="confirm-shipname">~{props.ship} </p>
       <p>Please confirm your master password.</p>
-      <form onSubmit={addShip} className="form confirm-form">
+      <form onSubmit={addShip} className="form confirm-form flex-grow-wrapper">
+      <div className="flex-grow">
       <input value={pw} onChange={(e)=> setPw(e.currentTarget.value)} type="password" />
       {loading && spinner}
       <p className="errorMessage">{error}</p>
-      <button type="submit" className="small-button loginButton">Submit</button>
-      <button className="small-button loginButton red-bg" onClick={props.goBack}>Cancel</button>
+      </div>
+      <div className="two-buttons">
+      <button className="small-button red-bg" onClick={props.goBack}>Cancel</button>
+      <button type="submit" className="small-button right">Submit</button>
+      </div>
       </form>
       </div>
     )

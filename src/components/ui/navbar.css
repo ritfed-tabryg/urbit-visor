@@ -1,3 +1,17 @@
+.App-navbar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+  }
+
+.Nav-logo {
+    height: 56px;
+    cursor: pointer;
+    /* pointer-events: none; */
+  }
+
 .navbar-sigil{
     /* padding: 2px; */
 }
@@ -41,3 +55,21 @@
   font-style: normal;
   font-weight: 600;
 }
+
+.dummy-sigil{
+    height: 46px;
+    width: 46px;
+    background-color: var(--background);
+}
+.blurry-sigil{
+    box-sizing: content-box;
+    filter: blur(2px);
+  }
+  .active-navbar-sigil{
+    /* border: 2px solid green; */
+  }
+  .inactive-navbar-sigil{
+    box-sizing: content-box;
+    border: 2px solid rgb(109, 0, 0);
+  }
+  

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Sigil from "../../components/ui/svg/Sigil"
 import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
-import ConfirmRemove  from "./ConfirmRemove";
+import ConfirmRemove from "./ConfirmRemove";
+import { whatShip, processName } from "../../utils"
 import "./settings.css";
 import {
   MemoryRouter as Router,
@@ -12,14 +13,13 @@ import {
   Redirect,
   useHistory
 } from "react-router-dom";
-interface SettingsProps{
+interface SettingsProps {
   ships: EncryptedShipCredentials[]
 }
 export default function Settings(props: SettingsProps) {
   const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
-  return (<div className="settings">
+  return (<div className="settings flex-grow-wrapper">
     <Link to="/settings/menu"><h1>Settings</h1></Link>
-    <hr />
     <Route path="/settings/menu">
       <SettingsMenu />
     </Route>
@@ -27,7 +27,7 @@ export default function Settings(props: SettingsProps) {
       <SettingsPopup />
     </Route>
     <Route path="/settings/remove_ships">
-      <SettingsRemoveShips ships={props.ships} setShip={setShip}/>
+      <SettingsRemoveShips ships={props.ships} setShip={setShip} />
     </Route>
     <Route path="/settings/change_password">
       <SettingsChangePw />
@@ -44,16 +44,16 @@ export default function Settings(props: SettingsProps) {
 function SettingsMenu() {
   return (
     <>
-        <div className="settings-option">
+      <div className="settings-option">
         <Link to="/settings/popup">
           <div className="settings-option-text">
             <h3>Popup Setting</h3>
             <p>Select whether Urbit Visor should use new window popups</p>
           </div>
           <div className="settings-option-icon">→</div>
-          </Link>
-        </div>
-        <div className="settings-option">
+        </Link>
+      </div>
+      <div className="settings-option">
         <Link to="/settings/remove_ships">
 
           <div className="settings-option-text">
@@ -61,10 +61,10 @@ function SettingsMenu() {
             <p>Remove saved ships from your Urbit Visor extension</p>
           </div>
           <div className="settings-option-icon">→</div>
-          </Link>
+        </Link>
 
-        </div>
-        <div className="settings-option">
+      </div>
+      <div className="settings-option">
         <Link to="/settings/change_password">
 
           <div className="settings-option-text">
@@ -72,10 +72,10 @@ function SettingsMenu() {
             <p>Update your master password which secures Urbit Visor</p>
           </div>
           <div className="settings-option-icon">→</div>
-          </Link>
+        </Link>
 
-        </div>
-        <div className="settings-option">
+      </div>
+      <div className="settings-option">
         <Link to="/settings/reset_app">
 
           <div className="settings-option-text">
@@ -83,88 +83,112 @@ function SettingsMenu() {
             <p>Reset all of your settings and start fresh</p>
           </div>
           <div className="settings-option-icon">→</div>
-          </Link>
+        </Link>
 
-        </div>
+      </div>
     </>
   )
 }
 
-function SettingsPopup(){
+function SettingsPopup() {
   const [error, setError] = useState("");
   const [setting, setSetting] = useState(null);
   const [buttonString, setButton] = useState("Save");
   const [disabled, setDisabled] = useState(false);
-  async function readStorage(){
+  async function readStorage() {
     const res = await getStorage("popup");
-    if (res){
+    if (res) {
       setSetting(res.popup);
       console.log(setting)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     readStorage();
-  },[])
+  }, [])
 
-  function handleChange(e:React.FormEvent<HTMLInputElement>){
+  function handleChange(e: React.FormEvent<HTMLInputElement>) {
     setSetting(e.currentTarget.value);
     setButton("Save");
     setDisabled(false);
   }
-  function saveSetting(){
+  function saveSetting() {
     setPopupPreference(setting)
       .then(res => {
         if (res) {
           setButton("Saved")
           setDisabled(true)
-        } else{
+        } else {
           setError("Error")
         }
       })
   }
-  return(
-    <div className="popup-settings-page">
-    <p></p>
-    <label> Show Modal in Page
-      <input name="popup" type="radio" id="modal" value="modal" checked={setting == "modal"} 
-       onChange={handleChange}
-      />
-    </label>
-    <label> Open Popup Window
-      <input name="popup" type="radio" id="window" value="window" checked={setting == "window"} 
-      onChange={handleChange}
-      />
-    </label>
-    <p className="errorMessage">{error}</p>
-    <button className="small-button" disabled={disabled} onClick={saveSetting}>{buttonString}</button>
+  return (
+    <div className="popup-settings-page padding flex-grow-wrapper">
+      <h3>Popup Display Settings</h3>
+      <div className="popup-settings flex-grow">
+        <div className="option">
+          <p> Show Modal in Page
+          </p>
+          <input className="toggle" name="popup" type="radio" id="modal" value="modal" checked={setting == "modal"}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="option">
+          <p> Open Popup Window
+
+          </p>
+          <input className="toggle" name="popup" type="radio" id="window" value="window" checked={setting == "window"}
+            onChange={handleChange}
+          />
+        </div>
+        <p className="errorMessage">{error}</p>
+      </div>
+      <button className="small-button" disabled={disabled} onClick={saveSetting}>{buttonString}</button>
     </div>
   )
 }
 
-interface RemoveShipProps extends SettingsProps{
+interface RemoveShipProps extends SettingsProps {
   setShip: (ship: EncryptedShipCredentials) => void
 }
-function SettingsRemoveShips({ships, setShip}: RemoveShipProps){
+function SettingsRemoveShips({ ships, setShip }: RemoveShipProps) {
   const history = useHistory();
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
-  function confirm(ship: EncryptedShipCredentials){
+  function confirm(ship: EncryptedShipCredentials) {
     setShip(ship);
     history.push("/settings/confirm_remove")
   }
-  
-  return(
+ 
+
+  return (
     <div className="remove-ships-list">
-    {ships.map(ship => {
-     return (
-     <div key={ship.shipName} className="ship-to-remove">
-       <Sigil patp={ship.shipName} size={48} />
-       <p className="shipname">~{ship.shipName}</p>
-       <button className="small-button red-bg" onClick={() => confirm(ship)}>Delete</button>
+      <h3>Remove Ships</h3>
+      {ships.map(ship => <ShipToRemove key={ship.shipName} confirm={confirm} ship={ship} />)}
+    </div>
+  )
+}
+interface STRProps {
+  ship: EncryptedShipCredentials
+  confirm: (ship: EncryptedShipCredentials) => void
+}
+function ShipToRemove({ ship, confirm }: STRProps) {
+  
+  const displayName = processName(ship.shipName);
+
+  const shipname = whatShip(ship.shipName) === "moon"
+  ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+  : <p className="shipname">~{displayName}</p>
+
+
+  return (
+    <div key={ship.shipName} className="ship-to-remove">
+      <div className="mini-sigil-wrapper">
+        <Sigil patp={ship.shipName} size={48} />
       </div>
-      )
-    })}
+      {shipname}
+      <button className="minibutton red-bg" onClick={() => confirm(ship)} />
     </div>
   )
 }
@@ -177,8 +201,11 @@ function SettingsChangePw() {
   const [pw, setPw] = useState("");
   const [confirmationpw, setConfirmation] = useState("");
 
+  const displayMessage = error.length > 0
+    ? <p className="errorMessage">{error}</p>
+    : <p className="successMessage">{message}</p>
 
-  async function checkOld(e: React.FormEvent<HTMLFormElement>){
+  async function checkOld(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     const res = await validate(oldPassword);
@@ -199,15 +226,17 @@ function SettingsChangePw() {
   }
   return (
     <>
-      <form onSubmit={checkOld} className="change-password-form">
-        <label>Old password
-          <input onChange={(e) => setOldpw(e.currentTarget.value)} type="password" />
-        </label>
-        <label>New password<input onChange={(e) => setPw(e.currentTarget.value)} type="password" /></label>
-        <label>Confirm new password<input onChange={(e) => setConfirmation(e.currentTarget.value)} type="password" /></label>
-        <p className="errorMessage">{error}</p>
-        <p className="successMessage">{message}</p>
-        <button className="button" type="submit">Submit</button>
+      <form onSubmit={checkOld} className="form padding flex-grow-wrapper">
+        <h3>Change Master Password</h3>
+        <div className="flex-grow">
+          <label>Old password
+            <input onChange={(e) => setOldpw(e.currentTarget.value)} type="password" />
+          </label>
+          <label>New password<input onChange={(e) => setPw(e.currentTarget.value)} type="password" /></label>
+          <label>Confirm new password<input onChange={(e) => setConfirmation(e.currentTarget.value)} type="password" /></label>
+          {displayMessage}
+        </div>
+        <button className="single-button" type="submit">Submit</button>
       </form>
     </>
   )
@@ -219,10 +248,13 @@ function SettingsReset() {
     // history.push("/");
   }
   return (
-    <div className="reset-app-setting">
-      <p>Click on the button below to reset the extension to factory settings.</p>
-      <p>This will delete all ships and your master password.</p>
-      <button className="button reset-button red-bg" onClick={doReset}>reset app</button>
+    <div className="reset-app-setting padding flex-grow-wrapper">
+      <div className="flex-grow">
+        <h3>Reset Visor</h3>
+        <p>Click on the button below to reset the extension to factory settings.</p>
+        <p>This will delete all ships and your master password.</p>
+      </div>
+      <button className="single-button red-bg" onClick={doReset}>reset app</button>
     </div>
   )
 }

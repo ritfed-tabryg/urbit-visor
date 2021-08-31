@@ -56,7 +56,6 @@ export default function Ship(props: ShipProps) {
       })
   }
 
-
   async function connect(): Promise<void> {
     setError("");
     if (pw === "") {
@@ -178,7 +177,7 @@ export default function Ship(props: ShipProps) {
   }
 
   return (
-    <div className="ship-show">
+    <div className="ship-show small-padding">
       <div className="ship-data">
         <Sigil size={78} patp={props.ship.shipName} />
         {shipname}
@@ -198,8 +197,8 @@ export default function Ship(props: ShipProps) {
         </div>
       </div>
       {connectionButton}
-      <button onClick={gotoLandscape} className="button">Landscape</button>
-      <button onClick={gotoPerms} className="button">Perms</button>
+      <button onClick={gotoLandscape} className="button multiple-buttons">Landscape</button>
+      <button onClick={gotoPerms} className="button multiple-buttons">Perms</button>
     </div>
   )
 }

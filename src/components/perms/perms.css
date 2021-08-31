@@ -1,10 +1,16 @@
-.permissions{
-    padding: 1rem;
-    width: 100%;
-}
 
-.permissions button{
-    margin: 0 1rem;
+.requesting-domain{
+    display: block;
+    font-size: 1.2rem;
+    text-align: left;
+    color: var(--foreground);
+    font-family: 'Courier New', Courier, monospace;
+}
+.align-left{
+    text-align: left;
+}
+.requesting-domain:hover{
+    text-decoration: underline;
 }
 .permslist{
     overflow-y: scroll;
@@ -12,20 +18,27 @@
 }
 .domain{
     display: flex;
+    justify-content: space-between;
     padding: 0.5rem;
     border-top: 1px solid grey;
 }
-.domain p{
-    margin: 0;
+.domain-text{
+    margin: auto 0;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    width: 90%;
+    word-wrap: break-word;
+}
+.domain-text:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }
 .domain:last-of-type{
     border-bottom: 1px solid grey;
 }
 
-.domain:hover{
-    cursor: pointer;
-    text-decoration: underline;
-}
+
 .permission-string{
     padding: 0.5rem;
     margin: 0.3rem;
@@ -34,4 +47,55 @@
   color: red;
   font-weight: 500;
   cursor: pointer;
+}
+ul{
+    margin: 2rem 0;
+    list-style: none;
+    /* padding-left: 1rem; */
+    padding-left: 0;
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chip {
+    display: inline-block;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    /* color: var(--foreground); */
+    color: black;
+    line-height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    background-color: darkgrey;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.chip p{
+    margin: 0;
+}
+.chip .close{
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    line-height: 32px;
+    padding-left: 8px;
+}
+.minibutton{
+    margin: auto 0;
+    width: 30px;
+    font-size: 0.7rem;
+    height: 1.5rem;
+    padding: 8px;
+    text-transform: none;
+    /* background-color: rgb(3, 125, 214, 0.5); */
+    /* todo need a way to have different colors here */
+    background: url('https://api.iconify.design/mdi:delete.svg') no-repeat center center / contain;
+}
+.minibutton:hover{
+    opacity: 1;
+}
+.perm-deletion-confirmation-prompt{
+    margin-bottom: 10px;
 }

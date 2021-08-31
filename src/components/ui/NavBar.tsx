@@ -26,8 +26,7 @@ export default function NavBar(props: NavBarProps) {
   const wrapperClass = props.active ? "navbar-sigil-wrapper active-navbar-sigil" : "navbar-sigil-wrapper inactive-navbar-sigil";
   const className = props.active ? "navbar-sigil" : "navbar-sigil blurry-sigil"
   const dummy =
-    <div className={className}>
-      <Sigil size={50} patp={"sampel-palnet"} />
+    <div className="dummy-sigil">
     </div>
   const sigil =
     <div onClick={() => history.push("/ship")} className={className}>
@@ -37,9 +36,7 @@ export default function NavBar(props: NavBarProps) {
   const displaySigil = props.active ? sigil : dummy;
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
-    <Link to="/">
       <h4>Urbit Visor</h4>
-    </Link>
     <div className={wrapperClass}>
       {displaySigil}
     </div>

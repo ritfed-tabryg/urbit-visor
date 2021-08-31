@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 import UrbitLogo from "./components/ui/svg/UrbitLogo";
 import logo from "./urbit.svg";
 import NavBar from "./components/ui/NavBar";
+import Welcome from "./components/setup/Welcome";
+import Setup from "./components/setup/Setup";
 import AddShip from "./components/adding/AddShip"
 import ShipList from "./components/list/ShipList";
 import ShipShow from "./components/show/ShipShow";
 import Permissions from "./components/perms/Permissions";
 import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
+import About from "./components/ui/About";
 import { decrypt, getStorage, storeCredentials, initStorage } from "./storage";
 import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
 import { fetchAllPerms, grantPerms } from "./urbit";
@@ -182,104 +185,4 @@ export default function App() {
     </div>
   );
 }
-
-
-
-function DoAddShip() {
-  let history = useHistory();
-  return (
-    <div className="">
-      <button onClick={() => history.push("/")} className="add-ship-button">go back</button>
-    </div>
-  );
-}
-
-function Welcome() {
-  const history = useHistory();
-  return (
-    <div className="welcome">
-      <img src={logo} className="App-logo" />
-      <button onClick={() => history.push("/setup")} className="button add-ship-button">Setup</button>
-    </div>
-  );
-}
-interface SetupProps {
-  setFirst: (b: boolean) => void
-}
-function Setup({ setFirst }: SetupProps) {
-  const history = useHistory();
-  const [pw, setpw] = useState("");
-  const [tooltip, setTooltip] = useState(false);
-  const [confirmationpw, setconfirmation] = useState("");
-  const [error, setError] = useState("");
-  function showTooltip(){setTooltip(true)};
-  function hideTooltip(){setTooltip(false)};
-  function validate(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (pw === confirmationpw) {
-      setError("");
-      initStorage(pw)
-        .then(res => {
-          setFirst(false)
-          history.push("/");
-        })
-    } else {
-      setError("Passwords do not match")
-    }
-  }
-  return (
-    <div className="setup">
-      <p>Please set up a master password
-        <span 
-          className="tooltip-trigger" 
-          onMouseLeave={hideTooltip} 
-          onMouseOver={showTooltip}>
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" className="iconify iconify--clarity" width="18" height="18" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path className="clr-i-solid clr-i-solid-path-1" d="M18 6a12 12 0 1 0 12 12A12 12 0 0 0 18 6zm-2 5.15a2 2 0 1 1 2 2a2 2 0 0 1-2.1-2zM23 24a1 1 0 0 1-1 1h-7a1 1 0 1 1 0-2h2v-6h-1a1 1 0 0 1 0-2h4v8h2a1 1 0 0 1 1 1z" fill="currentColor"></path></svg>
-        </span> for this extension.</p>
-      {tooltip && <div className="tooltip"><p>The password will be used to encrypt the credentials to access your Urbit ships.</p></div>}
-      <form onSubmit={validate} className="form">
-        <label>Password<input onChange={(e) => setpw(e.currentTarget.value)} type="password" /></label>
-        <label>Confirm password<input onChange={(e) => setconfirmation(e.currentTarget.value)} type="password" /></label>
-        <p className="errorMessage">{error}</p>
-        <button className="button submit-setup-button">Submit</button>
-      </form>
-    </div>
-  );
-}
-function Welcome2() {
-  let history = useHistory();
-  return (
-    <div className="welcome">
-      <img src={logo} className="App-logo" />
-      <button onClick={() => history.push("/add_ship")} className="button add-ship-button">Add your Ship</button>
-    </div>
-  );
-}
-
-function ShipAdded() {
-  return (
-    <div className="">
-      <img src={logo} className="App-logo" alt="logo" />
-      <h4>
-        Ship Added Successfully
-      </h4>
-    </div>
-  );
-}
-
-function About(){
-  return(
-    <div className="modal-background">
-      <div className="modal-foreground">
-        <p>Urbit Visor</p>
-        <p>1.0.0</p>
-        <p>Created by:</p>
-        <img src="/dcsparklogo.png" alt="" />
-        <p>Supported by a grant from</p>
-        <p>Urbit Foundation</p>
-      </div>
-    </div>
-  )
-}
-
 
