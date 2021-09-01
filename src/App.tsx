@@ -126,9 +126,9 @@ export default function App() {
 
   };
 
-  function savePerms(pw: string, perms: PermissionRequest): void {
+  async function savePerms(pw: string, perms: PermissionRequest): Promise<any> {
     const url = decrypt(active.encryptedShipURL, pw);
-    grantPerms(active.shipName, url, perms)
+    return grantPerms(active.shipName, url, perms)
   }
 
   async function setThemPerms(shipURL: string) {
