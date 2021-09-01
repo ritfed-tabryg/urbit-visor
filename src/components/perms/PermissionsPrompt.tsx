@@ -9,7 +9,7 @@ import { PermissionRequest, Permission } from "../../types/types"
 
 interface PermissionsProps {
     perms: PermissionRequest
-    savePerms: (pw: string, perms: PermissionRequest) => void
+    savePerms: (pw: string, perms: PermissionRequest) => Promise<any>
 }
 export default function PermissionsPrompt(props: PermissionsProps) {
     console.log(props.perms, "perms")
@@ -28,10 +28,13 @@ export default function PermissionsPrompt(props: PermissionsProps) {
         if (valid) {
             setError("");
             const request = {website: props.perms.website, permissions: perms}
-            props.savePerms(pw, request);
-            chrome.runtime.sendMessage({ type: "dismissPerms" });
-            history.push("/");
-            window.close();
+            props.savePerms(pw, request)
+              .then((res) => {
+                chrome.runtime.sendMessage({ type: "dismissPerms" });
+                history.push("/");
+                window.close();
+              })
+              .catch(err => setError("Connection error"))
         }
         else setError("Wrong password");
     }
