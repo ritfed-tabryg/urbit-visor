@@ -14,9 +14,10 @@
 .ship-list{
     padding: 0;
     overflow-y: auto;
-    max-height: 315.05px;
+    max-height: 65%;
 }
 .ship-list .ship{
+    cursor: pointer;
     list-style: none;
     display: flex;
     height: 85px;
@@ -43,7 +44,6 @@
 }
 .ship p{
     margin: auto auto auto 1.2rem;
-    cursor: pointer;
 }
 .add-more{
 

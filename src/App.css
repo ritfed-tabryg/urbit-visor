@@ -307,15 +307,23 @@ button:hover{
 .two-buttons button{
   width: 100%;
 }
-.two-buttons .right{
+.flex-end{
+  align-self: flex-end;
+}
+.blue-button{
   background-color: rgb(3, 125, 214, 0.5);
+}
+.two-buttons .right{
   margin-left: 10px;
+}
+.connect-button{
+  margin-top: 5px;
 }
 .cancel-button{
   background-color: rgb(45, 45, 45);
 }
 .multiple-buttons{
-  
+  margin: 0.5rem 0;
 }
 .padding{
   width: 100%;

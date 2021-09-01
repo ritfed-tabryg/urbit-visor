@@ -38,7 +38,7 @@ export default function Dashboard(props: ShipListProps) {
             <div className="ship-list flex-grow">
                 {display}
             </div>
-            <div className="padding">
+            <div className="padding flex-end">
             <button className="single-button add-more-button" onClick={()=> history.push("/add_ship")}>Add Ship</button>
             </div>
         </div>
