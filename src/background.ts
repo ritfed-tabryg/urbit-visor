@@ -99,6 +99,7 @@ function firewall(request: any, sender: any, sendResponse: any) {
   if (controller.locked) {
     console.log('extension is locked')
     controller.locked = true;
+    console.log(controller, "hey")
     if (controller.popupPreference == "window") openWindow();
     else {
       chrome.browserAction.setBadgeText({ text: "1" });
@@ -148,9 +149,12 @@ function bulkRequest(request: any, sender: any, sendResponse: any) {
       if (existingPerms && request.data.every((el: LWURequest) => existingPerms.includes(el))) sendResponse("perms exist")
       else {
         controller.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
-        chrome.browserAction.setBadgeText({text: "1"});
-        chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
-        sendResponse("noperms")
+        if (controller.popupPreference == "window") openWindow();
+        else {
+          chrome.browserAction.setBadgeText({ text: "1" });
+          chrome.browserAction.setBadgeBackgroundColor({ color: "#FF0000" });
+          sendResponse("noperms")
+        }
       }
     })
     .catch((err) => console.log(err, "failed to fetch"));
@@ -194,7 +198,7 @@ function respond(request: any, sender: any, sendResponse: any): void {
       controller.locked = true;
       sendResponse(controller);
     case "dismissPerms":
-      chrome.browserAction.setBadgeText({text: ""});
+      chrome.browserAction.setBadgeText({ text: "" });
       controller.requestedPerms = null;
       break;
     case "shipName":
