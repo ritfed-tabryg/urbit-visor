@@ -13,6 +13,11 @@
     /* pointer-events: none; */
   }
 
+.navbar-sigil-wrapper{
+    margin-right: 0.24em;
+    /* padding: 2px; */
+}
+
 .navbar-sigil{
     /* padding: 2px; */
 }
