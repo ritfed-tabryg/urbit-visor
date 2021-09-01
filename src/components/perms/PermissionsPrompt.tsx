@@ -31,12 +31,14 @@ export default function PermissionsPrompt(props: PermissionsProps) {
             props.savePerms(pw, request);
             chrome.runtime.sendMessage({ type: "dismissPerms" });
             history.push("/");
+            window.close();
         }
         else setError("Wrong password");
     }
     async function deny() {
         chrome.runtime.sendMessage({ type: "dismissPerms" });
-        history.push("/")
+        history.push("/");
+        window.close();
     }
     return (
         <div className="permissions padding flex-grow-wrapper">

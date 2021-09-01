@@ -14,13 +14,30 @@
 *{
   box-sizing: border-box;
 }
+
+
 body{
   margin: 0;
   width: 357px;
+  height: 600px;
   font-size: 16px;
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 600px){
+  body{
+    margin: 20px auto;
+    width: 500px;
+    height: 840px;
+    box-shadow: 5px 3px 8px 0px rgb(150, 150, 150, 0.5);
+    background-color: var(--background);  
+    /* box-shadow: 0 0 7px 0 rgb(0 0 0 / 8%); */
+    font-family: Inter, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
   .App-content   { 
     background-color: var(--background);
@@ -30,13 +47,9 @@ body{
     background-color: rgb(10, 10, 10);
   }
 
-
-
-
 .App {
   text-align: center;
   color: white;
-  height: 600px;
 }
 
 h4{
