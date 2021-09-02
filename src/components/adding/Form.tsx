@@ -29,7 +29,7 @@ interface AddShipFormProps {
   code: string,
   setUrl: (v: string) => void,
   setCode: (v: string) => void,
-  getShipname: (url: string, code: string) => void,
+  getShipname: (url: string) => void,
   setConfirm: (v: boolean) => void,
 }
 
@@ -57,7 +57,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           case 204:
             chrome.runtime.sendMessage({type: "done adding"})
             setLoading(false);
-            getShipname(url, code);
+            getShipname(url);
             setConfirm(true);
             break;
           case 400:
