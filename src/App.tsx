@@ -13,8 +13,9 @@ import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
 import About from "./components/ui/About";
 import { decrypt, getStorage, storeCredentials, initStorage } from "./storage";
-import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "./types/types";
+import { EncryptedShipCredentials, BackgroundState, PermissionRequest } from "./types/types";
 import { fetchAllPerms, grantPerms } from "./urbit";
+import { Messaging } from "./messaging";
 import {
   MemoryRouter as Router,
   Switch,
@@ -36,6 +37,7 @@ export default function App() {
   const [prompt, setPrompt] = useState(null);
   const [perms, setPerms] = useState(null);
   const [shipURL, setShipURL] = useState(null);
+  const [cachedURL, setCachedURL] = useState("http://localhost")
 
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     // TODO automatically wipe active ship if deleted
@@ -50,20 +52,19 @@ export default function App() {
     return await getStorage(["ships", "password"])
   }
   async function readState(): Promise<any> {
-    return new Promise((res, rej) => {
-      chrome.runtime.sendMessage({ type: "active" }, state => {
-        res(state)
-      })
-    })
+    return Messaging.sendToBackground({app: "urbit-visor-internal", action: "state"});
   };
 
   async function setState() {
     const storage = await readStorage();
+    console.log(storage, "storage read")
     const state = await readState();
+    console.log(state, "state read")
     const f = !("password" in storage);
     setFirst(f);
     const s = storage.ships || []
     setShips(s);
+    if (state.cached_url?.length > 0) setCachedURL(state.cached_url)
     if (state.activeShip) {
       setSelected(state.activeShip);
       setActive(state.activeShip);
@@ -82,9 +83,9 @@ export default function App() {
   }
 
 
-  function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundController) {
+  function route(first: boolean, ships: EncryptedShipCredentials[], state: BackgroundState) {
     if (first) history.push("/welcome");
-    else if(state.adding) history.push("/add_ship")
+    else if (state.cached_url?.length > 0) history.push("/add_ship")
     else if (state.locked) {
       setPrompt("No Ship Connected");
       history.push("/ship_list");
@@ -118,12 +119,11 @@ export default function App() {
       history.push("/ship_list");
     }
     // send message to background script to keep the url in memory
-    chrome.runtime.sendMessage({ type: "selected", ship: ship, url: url }, (res) => {
-      chrome.browserAction.setBadgeText({text: ""});
-      setPrompt("");
-      setState();
-    });
-
+    Messaging.sendToBackground({app: "urbit-visor-internal", action: "connected", data: {ship: ship, url: url}})
+      .then(res =>{ 
+         setPrompt("");
+         setState();
+      });
   };
 
   async function savePerms(pw: string, perms: PermissionRequest): Promise<any> {
@@ -160,7 +160,7 @@ export default function App() {
             <Setup setFirst={setFirst} />
           </Route>
           <Route path="/add_ship">
-            <AddShip add={saveShip} />
+            <AddShip add={saveShip} cachedURL={cachedURL}/>
           </Route>
           <Route path="/ship_list">
             <ShipList active={active} message={prompt} ships={ships} select={(ship) => setSelected(ship)} />
