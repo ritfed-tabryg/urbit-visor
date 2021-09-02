@@ -220,7 +220,7 @@ function SettingsChangePw() {
       reEncryptAll(oldPassword, pw);
       savePassword(pw)
         .then(res => {
-          setMessage("Password changed successfully")
+          setMessage("")
         })
     } else {
       setError("Passwords do not match")

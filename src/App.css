@@ -98,8 +98,14 @@ a{
   text-decoration: none;
   color: white;
 }
-
-.errorMessage, .successMessage{
+.successMessage{
+  font-size: 1rem;
+  height: 1rem;
+  color: rgb(3, 125, 214);
+  text-align: center;
+  margin: 0;
+}
+.errorMessage{
   font-size: 1rem;
   height: 1rem;
   color: red;
