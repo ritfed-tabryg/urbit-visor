@@ -57,6 +57,9 @@
     font-weight: 700;
     font-family:'Courier New', Courier, monospace;
 }
+.sigil-wrap{
+    margin: 1rem auto;
+}
 
 /* toggle */
 .popup-settings{
