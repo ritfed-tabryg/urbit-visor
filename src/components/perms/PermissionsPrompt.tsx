@@ -61,7 +61,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
             </div>
             <div className="two-buttons">
             <button className="red-bg" onClick={deny} type="submit">Deny</button>
-            <button className="right" onClick={grant} type="submit">Grant</button>
+            <button className="blue-button right" onClick={grant} type="submit">Grant</button>
             </div>
         </div>
     )
