@@ -26,6 +26,32 @@ body{
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+
+.App-navbar{
+  background-color: rgb(10, 10, 10);
+}
+
+
+.App {
+  text-align: center;
+  color: white;
+}
+
+h4{
+  font-size: 1.4rem;
+}
+
+.App-content {
+  background-color: var(--background);
+  color: var(--foreground);
+  width: 100%;
+  height: 530px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 @media (min-width: 600px){
   body{
     margin: 20px auto;
@@ -38,30 +64,11 @@ body{
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-}
   .App-content   { 
     background-color: var(--background);
     color: var(--foreground);
+    height: 770px;
   }
-  .App-navbar{
-    background-color: rgb(10, 10, 10);
-  }
-
-.App {
-  text-align: center;
-  color: white;
-}
-
-h4{
-  font-size: 1.4rem;
-}
-
-.App-content {
-  width: 100%;
-  height: 530px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -78,6 +85,7 @@ h4{
     transform: rotate(360deg);
   }
 }
+
 
 
 
