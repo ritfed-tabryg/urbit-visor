@@ -26,6 +26,7 @@
 }
 .settings-option-text{
     text-align: left;
+    flex-grow: 1;
 }
 .settings-option-icon{
     font-size: 2rem;
