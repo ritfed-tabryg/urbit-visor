@@ -11,7 +11,7 @@ interface AddShipFormProps {
   code: string,
   setUrl: (v: string) => void,
   setCode: (v: string) => void,
-  getShipname: (url: string, code: string) => void,
+  getShipname: (url: string) => void,
   setConfirm: (v: boolean) => void,
 }
 
@@ -35,7 +35,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           case 204:
             Messaging.sendToBackground({app: "urbit-visor-internal", action: "cache_form_url", data: {url: ""}});
             setLoading(false);
-            getShipname(url, code);
+            getShipname(url);
             setConfirm(true);
             break;
           case 400:

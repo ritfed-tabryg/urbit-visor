@@ -1,9 +1,13 @@
-import { getSelected } from "./storage";
 import Urbit from "@urbit/http-api";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
-import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials, PermissionRequest } from "./types/types";
 
+
+export async function fetchShipname(url: string): Promise<string>{
+  const res = await fetch(url.replace(/\/$/g, '') + "/who.json");
+  const json = await res.json();
+  return await json.who;
+}
 
 export async function loginToShip(url: string, code: string): Promise<any>{
   const controller = new AbortController()
