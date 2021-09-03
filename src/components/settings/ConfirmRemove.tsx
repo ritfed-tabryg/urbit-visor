@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Sigil from "../ui/svg/Sigil";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { decrypt, removeShip, } from "../../storage";
@@ -28,11 +29,12 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
     return (
         <div className="ship-removal-confirmation padding flex-grow-wrapper">
             <h3>Confirm removal</h3>
-
+            <div className="sigil-wrap">
+              <Sigil size={120} patp={ship.shipName} />
+            </div>
             <div className="text">
-                <p>Confirm below to remove</p> 
                 <p className="ship-to-delete">~{ship.shipName}</p> 
-                <p>from your Urbit Visor.</p>
+                <p>The above ship will be removed from Urbit Visor.</p>
             </div>
             <form className="flex-grow-wrapper" onSubmit={remove}>
                 <div className="password-input flex-grow">
