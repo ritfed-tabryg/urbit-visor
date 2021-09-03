@@ -14,7 +14,7 @@
 .ship-list{
     padding: 0;
     overflow-y: auto;
-    max-height: 65%;
+    max-height: 50%;
 }
 .ship-list .ship{
     cursor: pointer;

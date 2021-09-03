@@ -28,7 +28,7 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
     }
     return (
         <div className="ship-removal-confirmation padding flex-grow-wrapper">
-            <h3>Confirm removal</h3>
+            <h3 className="no-margin">Confirm removal</h3>
             <div className="sigil-wrap">
               <Sigil size={120} patp={ship.shipName} />
             </div>

@@ -7,11 +7,15 @@
     margin-bottom: 0;
     padding-top: 0;
 }
+
 .padding h3{
     margin-top: -1rem;
     margin-bottom: 2rem;
     text-align: center;
 }
+.no-margin{
+    margin-bottom: 0 !important;
+  }
 
 .settings-option a{
     cursor: pointer;
