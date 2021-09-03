@@ -15,11 +15,15 @@
   box-sizing: border-box;
 }
 
+div#popup {
+    overflow: hidden;
+}
 
 body{
   margin: 0;
   width: 357px;
   height: 600px;
+  overflow-y: hidden;
   font-size: 16px;
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
