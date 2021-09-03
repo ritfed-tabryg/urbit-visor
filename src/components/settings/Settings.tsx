@@ -79,7 +79,7 @@ function SettingsMenu() {
         <Link to="/settings/reset_app">
 
           <div className="settings-option-text">
-            <h3>Reset App</h3>
+            <h3>Reset Urbit Visor</h3>
             <p>Reset all of your settings and start fresh</p>
           </div>
           <div className="settings-option-icon">→</div>
@@ -253,11 +253,11 @@ function SettingsReset() {
   return (
     <div className="reset-app-setting padding flex-grow-wrapper">
       <div className="flex-grow">
-        <h3>Reset Visor</h3>
+        <h3>Reset Urbit Visor</h3>
         <p>Click on the button below to reset the extension to factory settings.</p>
         <p>This will delete all ships and your master password.</p>
       </div>
-      <button className="single-button red-bg" onClick={doReset}>reset app</button>
+      <button className="single-button red-bg" onClick={doReset}>Reset</button>
     </div>
   )
 }
