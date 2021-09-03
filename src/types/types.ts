@@ -1,3 +1,4 @@
+import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
 
 export type DecryptedShipCredentials = {
   shipName: string;
@@ -11,9 +12,8 @@ export type EncryptedShipCredentials = {
   encryptedShipCode: string;
 };
 
-export interface BackgroundController {
+export interface BackgroundState {
   locked: boolean,
-  adding: boolean,
   cached_url: string,
   popupPreference: PopupPreference,
   requestedPerms: PermissionRequest,
@@ -34,4 +34,24 @@ export interface PermissionsGraph {
   [key: string] : Permission
 }
 
-export type LWURequest = "all" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
+export type UrbitVisorAction = "all" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
+export type UrbitVisorInternalAction = "state" | "connected" | "cache_form_url" | "end_url_caching" | "dismiss_perms";
+type UrbitVisorRequestType = Scry | Thread<any> | Poke<any> | SubscriptionRequestInterface | UrbitVisorAction[]
+
+export interface UrbitVisorRequest{
+  app: "urbitVisor",
+  action: UrbitVisorAction,
+  data?: UrbitVisorRequestType
+}
+export interface UrbitVisorResponse{
+  id: string,
+  status: "locked" | "noperms" | "ok"
+  response?: any
+  error?: any
+}
+
+export interface UrbitVisorInternalComms {
+  app: "urbit-visor-internal",
+  action: UrbitVisorInternalAction,
+  data?: any
+}

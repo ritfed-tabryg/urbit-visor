@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sigil from "../../components/ui/svg/Sigil"
 import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
-import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
+import { EncryptedShipCredentials, PermissionRequest } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
 import { whatShip, processName } from "../../utils"
 import "./settings.css";
