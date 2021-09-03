@@ -4,7 +4,8 @@ import { useHistory } from "react-router";
 import { AES } from "crypto-js";
 import { validate } from "../../storage";
 import "./perms.css";
-import { PermissionRequest, Permission } from "../../types/types"
+import { PermissionRequest, Permission } from "../../types/types";
+import { Messaging } from "../../messaging";
 
 
 interface PermissionsProps {
@@ -30,7 +31,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
             const request = {website: props.perms.website, permissions: perms}
             props.savePerms(pw, request)
               .then((res) => {
-                chrome.runtime.sendMessage({ type: "dismissPerms" });
+                Messaging.sendToBackground({ app: "urbit-visor-internal", action: "dismiss_perms" });
                 history.push("/");
                 window.close();
               })
@@ -39,7 +40,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
         else setError("Wrong password");
     }
     async function deny() {
-        chrome.runtime.sendMessage({ type: "dismissPerms" });
+        Messaging.sendToBackground({ app: "urbit-visor-internal", action: "dismiss_perms" });
         history.push("/");
         window.close();
     }
@@ -61,7 +62,7 @@ export default function PermissionsPrompt(props: PermissionsProps) {
             </div>
             <div className="two-buttons">
             <button className="red-bg" onClick={deny} type="submit">Deny</button>
-            <button className="right" onClick={grant} type="submit">Grant</button>
+            <button className="blue-button right" onClick={grant} type="submit">Grant</button>
             </div>
         </div>
     )

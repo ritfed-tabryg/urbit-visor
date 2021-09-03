@@ -8,7 +8,8 @@ import { storeCredentials } from "../../storage";
 import { useHistory } from "react-router";
 
 interface AddShipProps{
-  add: (ship: string, url: string, code: string, pw: string) => void
+  add: (ship: string, url: string, code: string, pw: string) => void,
+  cachedURL: string
 }
 
 
@@ -22,7 +23,7 @@ export default function AddShip(props: AddShipProps) {
     props.add(ship, url, code, pw);
   }
 
-  const [url, setUrl] = useState("http://localhost");
+  const [url, setUrl] = useState(props.cachedURL);
   const [ship, setShip] = useState(null);
   const [code, setCode] = useState("hatlen-samnex-faswyl-maclex");
   const [confirm, setConfirm] = useState(false);

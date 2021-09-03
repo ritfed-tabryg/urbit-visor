@@ -26,6 +26,7 @@
 }
 .settings-option-text{
     text-align: left;
+    flex-grow: 1;
 }
 .settings-option-icon{
     font-size: 2rem;
@@ -56,6 +57,9 @@
 .ship-to-delete{
     font-weight: 700;
     font-family:'Courier New', Courier, monospace;
+}
+.sigil-wrap{
+    margin: 1rem auto;
 }
 
 /* toggle */

@@ -4,10 +4,9 @@ import Sigil from "../ui/svg/Sigil"
 import { useHistory } from "react-router-dom";
 import Spinner from "../ui/svg/Spinner";
 import Urbit from "@urbit/http-api";
-import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials } from "../../types/types";
 import { loginToShip, fetchAllPerms } from "../../urbit";
-import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
+import { decrypt } from "../../storage";
 import "./show.css";
 import { whatShip, processName } from "../../utils"
 declare const window: any;
@@ -21,7 +20,6 @@ interface ShipProps {
 }
 
 export default function Ship(props: ShipProps) {
-  const history = useHistory();
   const [pw, setPw] = useState("");
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false);
@@ -37,7 +35,7 @@ export default function Ship(props: ShipProps) {
   }
 
   async function reconnect(url: string): Promise<void> {
-    const code = CryptoJS.AES.decrypt(props.ship.encryptedShipCode, pw).toString(CryptoJS.enc.Utf8);
+    const code = decrypt(props.ship.encryptedShipCode, pw);
     setLoading(true);
     loginToShip(url, code)
       .then(res => {
@@ -63,7 +61,6 @@ export default function Ship(props: ShipProps) {
       return
     }
     const url = decrypt(props.ship.encryptedShipURL, pw);
-    console.log(url, "url")
     if (url.length) {
       setLoading(true);
       const airlock = new Urbit(url, "");
@@ -100,7 +97,7 @@ export default function Ship(props: ShipProps) {
 
   function gotoLandscape() {
     setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    const url = decrypt(props.ship.encryptedShipURL, pw);
     if (url.length) {
       chrome.tabs.create({url: url})
     } else{
@@ -109,7 +106,7 @@ export default function Ship(props: ShipProps) {
   }
   function gotoPerms() {
     setError("");
-    const url = CryptoJS.AES.decrypt(props.ship.encryptedShipURL, pw).toString(CryptoJS.enc.Utf8);
+    const url = decrypt(props.ship.encryptedShipURL, pw);
     if (url.length) {
       props.setThemPerms(url);
     } else{
@@ -117,7 +114,6 @@ export default function Ship(props: ShipProps) {
     }
   }
   function gotoDashboard() {chrome.tabs.create({url: "https://dashboard.urbitvisor.com"})}
-  function gotoUrbitLive() {chrome.tabs.create({url: `https://urbit.live/${props.ship.shipName}`})}
 
   return (
     <div className="ship-show small-padding flex-grow-wrapper">

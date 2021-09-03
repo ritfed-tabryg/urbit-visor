@@ -3,26 +3,8 @@ import { useState, useEffect } from "react";
 import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
+import { Messaging } from "../../messaging";
 import "./adding.css"
-declare const window: any;
-
-
-
-
-// async function startChannel(airlock: Urbit): Promise<any> {
-//   try {
-//     const validated = await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
-//     console.log(validated)
-//     console.log(JSON.parse(JSON.stringify(airlock)), "validating")
-//     return validated
-//   } catch (e) {
-//     console.log(e, "oops")
-//     console.log(JSON.parse(JSON.stringify(airlock)))
-//     return "ng";
-//   }
-// }
-
-
 
 interface AddShipFormProps {
   url: string,
@@ -34,10 +16,6 @@ interface AddShipFormProps {
 }
 
 export default function AddShipForm({ url, code, setUrl, setCode, getShipname, setConfirm }: AddShipFormProps) {
-  useEffect(()=> {
-    chrome.runtime.sendMessage({type: "adding"}, (res)=> setUrl(res))
-  }, []);
-  const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,7 +33,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       .then(async res => {
         switch (res.status) {
           case 204:
-            chrome.runtime.sendMessage({type: "done adding"})
+            Messaging.sendToBackground({app: "urbit-visor-internal", action: "cache_form_url", data: {url: ""}});
             setLoading(false);
             getShipname(url);
             setConfirm(true);
@@ -83,7 +61,8 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
 
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => {
     setUrl(e.currentTarget.value);
-    chrome.runtime.sendMessage({type: "please_cache", url: e.currentTarget.value});
+    console.log(e.currentTarget.value, "caching url")
+    Messaging.sendToBackground({app: "urbit-visor-internal", action: "cache_form_url", data: {url: e.currentTarget.value}});
   }
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {

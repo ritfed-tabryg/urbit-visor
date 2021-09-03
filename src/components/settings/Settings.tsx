@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sigil from "../../components/ui/svg/Sigil"
 import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
-import { EncryptedShipCredentials, BackgroundController, PermissionRequest } from "../../types/types";
+import { EncryptedShipCredentials, PermissionRequest } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
 import { whatShip, processName } from "../../utils"
 import "./settings.css";
@@ -47,7 +47,7 @@ function SettingsMenu() {
       <div className="settings-option">
         <Link to="/settings/popup">
           <div className="settings-option-text">
-            <h3>Popup Setting</h3>
+            <h3>Permission Confirmation Settings</h3>
             <p>Select whether Urbit Visor should use new window popups</p>
           </div>
           <div className="settings-option-icon">→</div>
@@ -127,7 +127,8 @@ function SettingsPopup() {
   }
   return (
     <div className="popup-settings-page padding flex-grow-wrapper">
-      <h3>Popup Display Settings</h3>
+      <h3>Permission Confirmation Settings</h3>
+      <p>Choose whether your Urbit Visor will create a new page popup when requesting permission.</p>
       <div className="popup-settings flex-grow">
         <div className="option">
           <p> Show Modal in Page
@@ -220,7 +221,7 @@ function SettingsChangePw() {
       reEncryptAll(oldPassword, pw);
       savePassword(pw)
         .then(res => {
-          setMessage("Password changed successfully")
+          setMessage("")
         })
     } else {
       setError("Passwords do not match")
