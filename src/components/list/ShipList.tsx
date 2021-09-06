@@ -1,32 +1,31 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import Ship from "./Ship"
-import { EncryptedShipCredentials } from "../../types/types";
 import { useHistory } from "react-router-dom";
+import { EncryptedShipCredentials } from "../../types/types";
 import "./list.css";
-import {reset} from "../../storage";
+import {useStore} from "../../store";
+import { Messaging } from "../../messaging";
 
-
-interface ShipListProps {
+interface ShipListProps{
     active: EncryptedShipCredentials
-    ships: EncryptedShipCredentials[]
-    select:  (ship: EncryptedShipCredentials) => void
-    message: string
 }
-
-export default function Dashboard(props: ShipListProps) {
-    async function doReset(){
-        await reset();
-        history.push("/");
-      }
+export default function ShipList({active}: ShipListProps) {
+    useEffect(()=>{
+      Messaging.sendToBackground({action: "get_ships"}).then(res => setShips(res.ships));
+    }, [])
     const history = useHistory();
-    const inactive = props.ships.filter(s => s.shipName != props.active?.shipName);
+    const [ships, setShips] = useState([]);
+
+    const inactive = ships.filter(s => s.shipName != active?.shipName);
+
+    const message = active ? "" : "No ship connected";
     let ordered = [];
-    ordered = props.active ? [props.active, ...inactive] : inactive;
+    ordered = active ? [active, ...inactive] : inactive;
     const display = ordered.length
     ? ordered.map((ship) => {
         return (
-        <Ship active={props.active} key={ship.shipName} ship={ship} select={props.select} />
+        <Ship active={active} key={ship.shipName} ship={ship}/>
         )
      })
     : <p>Please add a ship</p>
@@ -34,7 +33,7 @@ export default function Dashboard(props: ShipListProps) {
     return (
         <div className="dashboard flex-grow-wrapper">
             <div className="ship-list-title"><h1>Your Ships</h1></div>
-            <p className="ships-connected-msg"> {props.message}</p>
+            <p className="ships-connected-msg"> {message}</p>
             <div className="ship-list flex-grow">
                 {display}
             </div>

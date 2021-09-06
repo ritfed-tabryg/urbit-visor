@@ -2,12 +2,11 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { initStorage } from "../../storage";
+import { useStore } from "../../store";
+import { Messaging } from "../../messaging";
 
-
-interface SetupProps {
-    setFirst: (b: boolean) => void
-}
-export default function Setup({ setFirst }: SetupProps) {
+export default function Setup() {
+    // const setMasterPassword = useStore(state => state.setMasterPassword);
     const history = useHistory();
     const [pw, setpw] = useState("");
     const [tooltip, setTooltip] = useState(false);
@@ -19,9 +18,8 @@ export default function Setup({ setFirst }: SetupProps) {
         e.preventDefault();
         if (pw === confirmationpw) {
             setError("");
-            initStorage(pw)
+            Messaging.sendToBackground({action: "set_master_password", data: {password: pw}})
                 .then(res => {
-                    setFirst(false)
                     history.push("/");
                 })
         } else {
@@ -40,9 +38,9 @@ export default function Setup({ setFirst }: SetupProps) {
             {tooltip && <div className="tooltip"><p>The password will be used to encrypt the credentials to access your Urbit ships.</p></div>}
             <form onSubmit={validate} className="form flex-grow-wrapper">
                 <div className="inputs flex-grow">
-                <label>Password<input onChange={(e) => setpw(e.currentTarget.value)} type="password" /></label>
-                <label>Confirm password<input onChange={(e) => setconfirmation(e.currentTarget.value)} type="password" /></label>
-                <p className="errorMessage">{error}</p>
+                    <label>Password<input onChange={(e) => setpw(e.currentTarget.value)} type="password" /></label>
+                    <label>Confirm password<input onChange={(e) => setconfirmation(e.currentTarget.value)} type="password" /></label>
+                    <p className="errorMessage">{error}</p>
                 </div>
                 <button className="single-button submit-setup-button">Submit</button>
             </form>

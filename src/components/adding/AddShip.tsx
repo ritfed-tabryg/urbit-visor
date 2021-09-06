@@ -1,29 +1,33 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Form from "./Form";
 import Confirm from "./Confirm"
-import Urbit from "@urbit/http-api";
 import { fetchShipname } from "../../urbit";
-import { storeCredentials } from "../../storage";
 import { useHistory } from "react-router";
-
-interface AddShipProps{
-  add: (ship: string, url: string, code: string, pw: string) => void,
-  cachedURL: string
-}
+import { Messaging } from "../../messaging";
 
 
-export default function AddShip(props: AddShipProps) {
+export default function AddShip() {
+  useEffect(()=>{
+    let isMounted = true;
+    Messaging.sendToBackground({action: "get_cached_url"})
+      .then(res => {
+        if (isMounted) setURL(res.cached_url)
+      })
+      return () => { isMounted = false }; 
+  }, [])
+  const history = useHistory();
 
   async function getShipname(url: string) : Promise<void>{
     const shipname = await fetchShipname(url);
     setShip(shipname);
   }
   async function save(url: string, code: string, pw: string): Promise<any> {
-    props.add(ship, url, code, pw);
+    Messaging.sendToBackground({action: "add_ship", data: {ship: ship, url: url, code: code, pw: pw}})
+      .then(res => history.push("/ship"));
   }
 
-  const [url, setUrl] = useState(props.cachedURL);
+  const [url, setURL] = useState("http://localhost");
   const [ship, setShip] = useState(null);
   const [code, setCode] = useState("hatlen-samnex-faswyl-maclex");
   const [confirm, setConfirm] = useState(false);
@@ -39,7 +43,7 @@ export default function AddShip(props: AddShipProps) {
       : <Form
         url={url}
         code={code}
-        setUrl={setUrl}
+        setUrl={setURL}
         setCode={setCode}
         getShipname={getShipname}
         setConfirm={setConfirm}

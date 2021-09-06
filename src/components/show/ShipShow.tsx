@@ -1,41 +1,56 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect  } from "react";
+import { Route, useHistory } from "react-router";
 import Sigil from "../ui/svg/Sigil"
-import { useHistory } from "react-router-dom";
 import Spinner from "../ui/svg/Spinner";
-import Urbit from "@urbit/http-api";
 import { EncryptedShipCredentials } from "../../types/types";
-import { loginToShip, fetchAllPerms } from "../../urbit";
+import { loginToShip, connectToShip } from "../../urbit";
 import { decrypt } from "../../storage";
 import "./show.css";
 import { whatShip, processName } from "../../utils"
+import { Messaging } from "../../messaging";
+import Permissions from "../perms/Permissions";
 declare const window: any;
 
 
 interface ShipProps {
-  ship: EncryptedShipCredentials,
   active: EncryptedShipCredentials,
-  save: (ship: EncryptedShipCredentials, url: string) => void,
-  setThemPerms: (pw: string) => void;
+  setActive: (ship: EncryptedShipCredentials) => void,
+  saveActive?: (ship: EncryptedShipCredentials, url: string) => void,
+  setThemPerms?: (pw: string) => void;
 }
 
-export default function Ship(props: ShipProps) {
+export default function ShipShow({active, setActive, ...props}: ShipProps) {
+
+  const dummyShip : EncryptedShipCredentials = {shipName: "~sampel-palnet", encryptedShipCode: "", encryptedShipURL: "http://localhost"};
+  const history = useHistory();
+  const [ship, setShip] = useState(dummyShip);
+  const [shipURL, setURL] = useState("");
+
   const [pw, setPw] = useState("");
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false);
   const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
-  const displayName = processName(props.ship.shipName);
-  const shipname = whatShip(props.ship.shipName) === "moon"
+  const displayName = processName(ship.shipName);
+  const shipname = whatShip(ship.shipName) === "moon"
     ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
     : <p className="shipname">~{displayName}</p>
 
+    useEffect(()=>{
+      Messaging.sendToBackground({action: "get_selected"})
+        .then(res => {
+          setShip(res.selected)
+          history.push("/ship/index")
+        });
+    }, []);
+
 
   window.onkeypress = function (e: any) {
-    if (e.key == "Enter" && props.ship?.shipName !== props.active?.shipName) connect();
+    if (e.key == "Enter" && ship.shipName !== active?.shipName) connect();
   }
 
   async function reconnect(url: string): Promise<void> {
-    const code = decrypt(props.ship.encryptedShipCode, pw);
+    const code = decrypt(ship.encryptedShipCode, pw);
     setLoading(true);
     loginToShip(url, code)
       .then(res => {
@@ -60,16 +75,13 @@ export default function Ship(props: ShipProps) {
       setError("Password can't be empty.")
       return
     }
-    const url = decrypt(props.ship.encryptedShipURL, pw);
+    const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
       setLoading(true);
-      const airlock = new Urbit(url, "");
-      airlock.ship = props.ship.shipName;
-      airlock.verbose = true;
-      airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
+      Messaging.sendToBackground({action: "connect_ship", data: {url: url, ship: ship}})
         .then(res => {
           setLoading(false);
-          props.save(props.ship, url);
+          setActive(ship);
         })
         .catch(err => {
           if (err.message == 'Failed to PUT channel') reconnect(url)
@@ -78,26 +90,25 @@ export default function Ship(props: ShipProps) {
             setLoading(false);
           }
         })
-      // const time = new Promise((res) => setTimeout(() => res("p1"), 5000));
-      // Promise.race([time, poke])
-      // .then(value => {
-      //   console.log(value, "promise race")
-      // })
     } else {
       setError("Wrong password.")
     }
   }
-  async function disconnect(): Promise<void> {
-    props.save(null, null)
+  function disconnect(): void {
+    Messaging.sendToBackground({action: "disconnect_ship"})
+      .then(res => {
+        setActive(null);
+        history.push("/ship_list");
+      });
   }
 
   const connectButton = <button onClick={connect} className="single-button connect-button">Connect</button>;
   const disconnectButton = <button onClick={disconnect} className="single-button  connect-button red-bg">Disconnect</button>;
-  const connectionButton = props.ship?.shipName == props.active?.shipName ? disconnectButton : connectButton;
+  const connectionButton = ship?.shipName == active?.shipName ? disconnectButton : connectButton;
 
   function gotoLandscape() {
     setError("");
-    const url = decrypt(props.ship.encryptedShipURL, pw);
+    const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
       chrome.tabs.create({url: url})
     } else{
@@ -106,9 +117,10 @@ export default function Ship(props: ShipProps) {
   }
   function gotoPerms() {
     setError("");
-    const url = decrypt(props.ship.encryptedShipURL, pw);
+    const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
-      props.setThemPerms(url);
+      setURL(url);
+      history.push("/ship/perms");
     } else{
       setError("Wrong password.")
     }
@@ -116,9 +128,11 @@ export default function Ship(props: ShipProps) {
   function gotoDashboard() {chrome.tabs.create({url: "https://dashboard.urbitvisor.com"})}
 
   return (
+    <>
+    <Route path="/ship/index">
     <div className="ship-show small-padding flex-grow-wrapper">
       <div className="ship-data">
-        <Sigil size={78} patp={props.ship.shipName} />
+        <Sigil size={78} patp={ship.shipName} />
         {shipname}
       </div>
       <div className="inputs flex-grow">
@@ -138,5 +152,10 @@ export default function Ship(props: ShipProps) {
       <button onClick={gotoLandscape} className="cancel-button right">Landscape</button>
       </div>
     </div>
+    </Route>
+    <Route path="/ship/perms">
+      <Permissions ship={ship} shipURL={shipURL} />
+    </Route>
+    </>
   )
 }

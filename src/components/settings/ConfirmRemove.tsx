@@ -3,6 +3,8 @@ import Sigil from "../ui/svg/Sigil";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { decrypt, removeShip, } from "../../storage";
+import { Messaging } from "../../messaging";
+
 
 
 interface ConfirmRemoveProps {
@@ -18,9 +20,9 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         setError("");
         const url = decrypt(ship.encryptedShipURL, pw);
         if (url.length) {
-            removeShip(ship)
+            Messaging.sendToBackground({action: "remove_ship", data: {ship: ship}})
                 .then(res => {
-                    console.log('ok')
+                    history.push("/ship_list");
                 })
         } else {
             setError("Wrong password")

@@ -5,6 +5,7 @@ import { getStorage, decrypt } from "../../storage";
 import Spinner from "../ui/svg/Spinner";
 
 
+
 interface ConfirmProps {
   url: string,
   code: string,
@@ -20,6 +21,7 @@ export default function Confirm(props: ConfirmProps) {
 
   function addShip(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log('here')
     getStorage("password")
       .then((res) => {
         const string = decrypt(res.password, pw);
