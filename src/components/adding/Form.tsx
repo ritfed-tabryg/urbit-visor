@@ -4,6 +4,7 @@ import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { Messaging } from "../../messaging";
+import { useStore } from "../../store";
 import "./adding.css"
 
 interface AddShipFormProps {
@@ -33,7 +34,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       .then(async res => {
         switch (res.status) {
           case 204:
-            Messaging.sendToBackground({app: "urbit-visor-internal", action: "cache_form_url", data: {url: ""}});
+            Messaging.sendToBackground({action: "cache_form_url", data: {url: ""}});
             setLoading(false);
             getShipname(url);
             setConfirm(true);
@@ -61,8 +62,8 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
 
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => {
     setUrl(e.currentTarget.value);
-    console.log(e.currentTarget.value, "caching url")
-    Messaging.sendToBackground({app: "urbit-visor-internal", action: "cache_form_url", data: {url: e.currentTarget.value}});
+    console.log(e.currentTarget.value, "caching url");
+    Messaging.sendToBackground({ action: "cache_form_url", data: {url: e.currentTarget.value}});
   }
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {

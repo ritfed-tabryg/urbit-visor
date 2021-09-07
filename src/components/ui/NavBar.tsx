@@ -1,41 +1,43 @@
 import React, { useState, useRef } from "react";
 import { useOnClickOutside } from '../../hooks/hooks';
+import { useStore } from "../../store";
 import "./navbar.css";
 import Sigil from "./svg/Sigil"
 import logo from "../../urbit.svg";
 import RocketIcon from "../../icons/rocket";
 import SettingsIcon from "../../icons/settings";
 import AboutIcon from "../../icons/info";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
-import { processName } from "../../utils"
 
-
-
-interface NavBarProps {
-  ships: EncryptedShipCredentials[],
-  selected: EncryptedShipCredentials,
-  active: EncryptedShipCredentials,
-  switchShip: (s: EncryptedShipCredentials) => void;
+interface NavbarProps{
+  active: EncryptedShipCredentials
+  interacting: boolean
 }
-
-export default function NavBar(props: NavBarProps) {
+export default function NavBar({interacting, active}: NavbarProps) {
+  console.log(interacting, "interacting")
   const history = useHistory();
   const urbitlogo = useRef(null);
   const [modalOpen, toggleModal] = useState(false);
-  const wrapperClass = props.active ? "navbar-sigil-wrapper active-navbar-sigil" : "navbar-sigil-wrapper inactive-navbar-sigil";
-  const className = props.active ? "navbar-sigil" : "navbar-sigil blurry-sigil"
+  const wrapperClass = active ? "navbar-sigil-wrapper active-navbar-sigil" : "navbar-sigil-wrapper inactive-navbar-sigil";
+  const className = active ? "navbar-sigil" : "navbar-sigil blurry-sigil"
   const dummy =
     <div className="dummy-sigil">
     </div>
   const sigil =
-    <div onClick={() => history.push("/ship")} className={className}>
-      <Sigil size={50} patp={props.active?.shipName} />
+    <div onClick={gotoSigil} className={className}>
+      <Sigil size={50} patp={active?.shipName} />
     </div>
+  function openMenu(){
+    if (!interacting) toggleModal(!modalOpen)
+  };
+  function gotoSigil(){
+    if (!interacting) history.push("/ship")
+  };
 
-  const displaySigil = props.active ? sigil : dummy;
+  const displaySigil = active ? sigil : dummy;
   return (<nav className="App-navbar">
-    <img ref={urbitlogo} onClick={() => toggleModal(!modalOpen)} src={logo} className="Nav-logo" />
+    <img ref={urbitlogo} onClick={openMenu} src={logo} className="Nav-logo" />
       <h4>Urbit Visor</h4>
     <div className={wrapperClass}>
       {displaySigil}
@@ -44,34 +46,31 @@ export default function NavBar(props: NavBarProps) {
       <Modal
         parent={urbitlogo}
         hide={() => toggleModal(!modalOpen)}
-        select={(s: EncryptedShipCredentials) => props.switchShip(s)}
-        {...props}
       />
     }
   </nav>);
 }
 
-interface ModalProps extends NavBarProps {
+interface ModalProps{
   parent: any,
   hide: () => void,
-  select: (s: EncryptedShipCredentials) => void
 }
 
-function Modal(props: ModalProps) {
+function Modal({parent, hide}: ModalProps) {
   const history = useHistory();
   const ref = useRef(null);
-  const refs = [ref, props.parent];
-  const handleClickOutside = () => props.hide();
+  const refs = [ref, parent];
+  const handleClickOutside = () => hide();
   function gotoShips() {
-    props.hide();
+    hide();
     history.push("/ship_list");
   };
   function gotoSettings() {
-    props.hide();
+    hide();
     history.push("/settings/menu");
   }
   function gotoAbout() {
-    props.hide();
+    hide();
     history.push("/about");
   }
   useOnClickOutside(refs, handleClickOutside);

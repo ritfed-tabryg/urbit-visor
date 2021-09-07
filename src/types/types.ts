@@ -12,14 +12,33 @@ export type EncryptedShipCredentials = {
   encryptedShipCode: string;
 };
 
-export interface BackgroundState {
-  locked: boolean,
+
+export interface UrbitVisorState{
+  first: boolean,
+  ships: EncryptedShipCredentials[],
   cached_url: string,
   popupPreference: PopupPreference,
   requestedPerms: PermissionRequest,
+  selectedShip: EncryptedShipCredentials,
   activeShip: EncryptedShipCredentials,
   url: string,
-  permissions: PermissionsGraph
+  permissions: PermissionsGraph,
+  init: () => Promise<void>,
+  setMasterPassword: (password: string) => Promise<void>,
+  addShip: (ship: string, url: string, code: string, pw: string) => Promise<void>,
+  cacheURL: (string: string) => void,
+  removeShip: (ship: EncryptedShipCredentials) => Promise<void>,
+  selectShip: (ship: EncryptedShipCredentials) => void,
+  connectShip: (url: string, ship: EncryptedShipCredentials) => Promise<void>,
+  disconnectShip: () => void,
+  grantPerms: (perms: PermissionRequest) => Promise<void>,
+  denyPerms: () => void,
+  removeWholeDomain: (domain: string) => void,
+  revokePerm: (ship: EncryptedShipCredentials, url: string, perms: PermissionRequest) => Promise<void>,
+  loadPerms: (permissions: PermissionsGraph) => void,
+  changePopupPreference: (preference: PopupPreference) => Promise<void>,
+  changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>
+  resetApp: () => Promise<void>,
 }
 
 export type PopupPreference = "modal" | "window";
@@ -31,7 +50,7 @@ export interface PermissionRequest {
 }
 export type Permission = "shipName" | "shipURL" | "scry" | "thread" | "poke" | "subscribe"
 export interface PermissionsGraph {
-  [key: string] : Permission
+  [key: string] : Permission[]
 }
 
 export type UrbitVisorAction = "all" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread" | "isLocked";
@@ -51,7 +70,6 @@ export interface UrbitVisorResponse{
 }
 
 export interface UrbitVisorInternalComms {
-  app: "urbit-visor-internal",
-  action: UrbitVisorInternalAction,
+  action: UrbitVisorInternalAction | string,
   data?: any
 }

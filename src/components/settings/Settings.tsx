@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useStore } from "../../store";
 import Sigil from "../../components/ui/svg/Sigil"
-import { getStorage, validate, decrypt, savePassword, setPopupPreference, removeShip, reset, reEncryptAll } from "../../storage";
+import { validate, decrypt, savePassword, reEncryptAll } from "../../storage";
 import { EncryptedShipCredentials, PermissionRequest } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
-import { whatShip, processName } from "../../utils"
+import { whatShip, processName } from "../../utils";
+import { Messaging } from "../../messaging";
 import "./settings.css";
 import {
-  MemoryRouter as Router,
-  Switch,
   Route,
   Link,
-  Redirect,
   useHistory
 } from "react-router-dom";
-interface SettingsProps {
-  ships: EncryptedShipCredentials[]
-}
-export default function Settings(props: SettingsProps) {
+
+export default function Settings() {  
   const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
   return (<div className="settings flex-grow-wrapper">
     <Link to="/settings/menu"><h1>Settings</h1></Link>
@@ -27,7 +24,7 @@ export default function Settings(props: SettingsProps) {
       <SettingsPopup />
     </Route>
     <Route path="/settings/remove_ships">
-      <SettingsRemoveShips ships={props.ships} setShip={setShip} />
+      <SettingsRemoveShips setShip={setShip} />
     </Route>
     <Route path="/settings/change_password">
       <SettingsChangePw />
@@ -95,16 +92,12 @@ function SettingsPopup() {
   const [setting, setSetting] = useState(null);
   const [buttonString, setButton] = useState("Save");
   const [disabled, setDisabled] = useState(false);
-  async function readStorage() {
-    const res = await getStorage("popup");
-    if (res) {
-      setSetting(res.popup);
-      console.log(setting)
-    }
-  }
-
+  
   useEffect(() => {
-    readStorage();
+    Messaging.sendToBackground({action: "get_settings"})
+      .then(res => 
+        {console.log(res)
+      setSetting(res.popupPreference)});
   }, [])
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
@@ -115,7 +108,7 @@ function SettingsPopup() {
     setDisabled(false);
   }
   function saveSetting() {
-    setPopupPreference(setting)
+    Messaging.sendToBackground({action: "change_popup_preference", data: {preference: setting}})
       .then(res => {
         if (res) {
           setButton("Saved")
@@ -134,7 +127,7 @@ function SettingsPopup() {
           <p> Show Modal in Page
           </p>
           <input className="toggle" name="popup" type="radio" id="modal" value="modal" checked={setting == "modal"}
-            onClick={handleChange}
+            onChange={handleChange}
           />
         </div>
         <div className="option">
@@ -142,7 +135,7 @@ function SettingsPopup() {
 
           </p>
           <input className="toggle" name="popup" type="radio" id="window" value="window" checked={setting == "window"}
-            onClick={handleChange}
+            onChange={handleChange}
           />
         </div>
         <p className="errorMessage">{error}</p>
@@ -152,10 +145,15 @@ function SettingsPopup() {
   )
 }
 
-interface RemoveShipProps extends SettingsProps {
+interface RemoveShipsProps{
   setShip: (ship: EncryptedShipCredentials) => void
 }
-function SettingsRemoveShips({ ships, setShip }: RemoveShipProps) {
+function SettingsRemoveShips({setShip}: RemoveShipsProps) {
+  useEffect(()=>{
+    Messaging.sendToBackground({ action: "get_ships" })
+    .then(response => setShips(response.ships));
+  }, []);
+  const [ships, setShips] = useState([]);
   const history = useHistory();
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -172,11 +170,11 @@ function SettingsRemoveShips({ ships, setShip }: RemoveShipProps) {
     </div>
   )
 }
-interface STRProps {
+interface ShipToRemoveProps {
   ship: EncryptedShipCredentials
   confirm: (ship: EncryptedShipCredentials) => void
 }
-function ShipToRemove({ ship, confirm }: STRProps) {
+function ShipToRemove({ ship, confirm }: ShipToRemoveProps) {
   
   const displayName = processName(ship.shipName);
 
@@ -198,6 +196,7 @@ function ShipToRemove({ ship, confirm }: STRProps) {
 
 
 function SettingsChangePw() {
+  const history = useHistory();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [oldPassword, setOldpw] = useState("");
@@ -218,10 +217,10 @@ function SettingsChangePw() {
 
   function proceed() {
     if (pw === confirmationpw) {
-      reEncryptAll(oldPassword, pw);
-      savePassword(pw)
+      Messaging.sendToBackground({action: "change_master_password", data: {oldPw: oldPassword, newPw: pw}})
         .then(res => {
           setMessage("")
+          history.push("/ship_list")
         })
     } else {
       setError("Passwords do not match")
@@ -246,9 +245,11 @@ function SettingsChangePw() {
 }
 
 function SettingsReset() {
+  const history = useHistory();
+  const resetApp = useStore(state => state.resetApp);
   async function doReset() {
-    await reset();
-    // history.push("/");
+    Messaging.sendToBackground({action: "reset_app"})
+      .then((res: any) =>  history.push("/welcome"));
   }
   return (
     <div className="reset-app-setting padding flex-grow-wrapper">

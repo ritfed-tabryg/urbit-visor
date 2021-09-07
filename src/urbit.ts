@@ -9,6 +9,13 @@ export async function fetchShipname(url: string): Promise<string>{
   return await json.who;
 }
 
+export async function connectToShip(url: string, shipName: string): Promise<any>{
+  const airlock = new Urbit(url, "");
+    airlock.ship = shipName;
+    // airlock.verbose = true;
+    return airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
+}
+
 export async function loginToShip(url: string, code: string): Promise<any>{
   const controller = new AbortController()
   setTimeout(() => { controller.abort() }, 5000)

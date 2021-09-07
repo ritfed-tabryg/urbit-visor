@@ -1,13 +1,20 @@
-import { UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse, BackgroundState, UrbitVisorInternalComms } from "./types/types";
+import { UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse, UrbitVisorState, UrbitVisorInternalComms } from "./types/types";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types";
 
 
 
 
 export const Messaging = {
-    sendToBackground: async function (request: UrbitVisorInternalComms): Promise<any>{
+    sendToPopup: async function (message: { state: UrbitVisorState }): Promise<void> {
         return new Promise((res, rej) =>
-            chrome.runtime.sendMessage(request, (response) => res(response))
+            chrome.runtime.sendMessage(message, (response) => res(response))
+        );
+    },
+    sendToBackground: async function (request: UrbitVisorInternalComms): Promise<any> {
+        return new Promise((res, rej) =>
+            chrome.runtime.sendMessage({
+                ...request, app: "urbit-visor-internal",
+            }, (response) => res(response))
         );
     },
     relayToBackground: async function (request: UrbitVisorRequest): Promise<UrbitVisorResponse> {

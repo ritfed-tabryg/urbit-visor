@@ -1,5 +1,5 @@
 import * as CryptoJS from "crypto-js";
-import { EncryptedShipCredentials, PopupPreference } from "./types/types";
+import { EncryptedShipCredentials, PopupPreference, PermissionsGraph } from "./types/types";
 
 interface Permission{
     thing: string
@@ -7,10 +7,9 @@ interface Permission{
 
 interface Storage{
     ships?: EncryptedShipCredentials[],
-    selected?: EncryptedShipCredentials,
     password?: string,
     popup?: PopupPreference,
-    permissions?: Permission[]
+    permissions?: PermissionsGraph
 }
 
 export async function validate(password: string): Promise<boolean>{
@@ -45,7 +44,7 @@ export function savePassword(password: string) : Promise<any>{
     return setStorage({password: encryptedString})
 }
 
-export function reset(): Promise<any>{
+export function resetApp(): Promise<any>{
     return new Promise((resolve, reject) => {
         chrome.storage.local.clear(()=>{
             if (chrome.runtime.lastError) reject(undefined);
@@ -63,7 +62,6 @@ export async function initStorage(password: string): Promise<any>{
 }
 
 export async function removeShip(ship: EncryptedShipCredentials): Promise<any>{
-    // TODO error handling?
     const res = await getStorage("ships");
     const new_ships = res["ships"].filter((el: EncryptedShipCredentials) => el.shipName !== ship.shipName);
     return setStorage({ships: new_ships});  
@@ -73,7 +71,6 @@ async function saveShip(ship: EncryptedShipCredentials): Promise<EncryptedShipCr
     const res = await getStorage("ships");
     if (res["ships"]?.length){
         const ships = res["ships"];
-        console.log(res.ships, "ships")
         const filteredShips = ships.filter(sp => sp.shipName !== ship.shipName);
         const new_ships = [...filteredShips, ship];
         await setStorage({ ships: new_ships });
@@ -89,17 +86,7 @@ async function saveShip(ship: EncryptedShipCredentials): Promise<EncryptedShipCr
 
 // getters
 
-export async function getAll():Promise<any>{
-    return new Promise((resolve, reject) =>{
-        chrome.storage.local.get(["ships", "selected"], (res) => {
-            if (res["ships"] && res["ships"].length){
-                resolve(res);
-            } else{
-                reject("data not set");
-            }
-        });
-    })
-};
+
 export async function getShips(): Promise<any>{
     return new Promise((resolve, reject) =>{
         chrome.storage.local.get("ships", (res) => {
@@ -118,17 +105,6 @@ export async function getPreference(): Promise<any>{
                 resolve(res.popup);
             } else{
                 reject("data not set");
-            }
-        });
-    })
-};
-export async function getSelected(): Promise<any>{
-    return new Promise((resolve, reject) =>{
-        chrome.storage.local.get("selected", (res) => {
-            if (res){
-                resolve(res);
-            } else{
-                reject("No ship selected");
             }
         });
     })
@@ -160,12 +136,20 @@ function reEncrypt(ship: EncryptedShipCredentials, oldPassword: string, newPassw
         encryptedShipURL: encrypt(decrypt(ship.encryptedShipURL, oldPassword), newPassword),
         encryptedShipCode: encrypt(decrypt(ship.encryptedShipCode, oldPassword), newPassword),
     } 
-} 
+};
 
 export function encrypt(target: string, password: string): string {
     return CryptoJS.AES.encrypt(target, password).toString();
-}
+};
 export function decrypt(target: string, password: string): string {
+    console.log(target, "string to decrypt");
+    console.log(password, "password")
     if (password === "") return ""
-    return CryptoJS.AES.decrypt(target, password).toString(CryptoJS.enc.Utf8);
-}
+    const decrypted = CryptoJS.AES.decrypt(target, password);
+    try {
+        return decrypted.toString(CryptoJS.enc.Utf8);
+    }
+    catch {
+      return ""
+    }
+};
