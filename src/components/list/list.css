@@ -1,20 +1,20 @@
 .dashboard{
     width: 100%;
 }
+.dashboard h1{
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--foreground);
+  margin-bottom: 0;
+  padding-top: 0;
+}
 .dashboard p{
   font-size: 1.4rem;
-}
-
-.ship-list-title h1{
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 1rem;
 }
 
 .ship-list{
     padding: 0;
     overflow-y: auto;
-    max-height: 50%;
+    max-height: 65%;
 }
 .ship-list .ship{
     cursor: pointer;
@@ -24,12 +24,10 @@
     width: 100%;
     margin: auto;
     padding: 0 10px;
-    border-top: 1px solid white;
+    border-bottom: 1px solid white;
 
 }
-.ship-list .ship:last-child{
-  border-bottom: 1px solid white;
-}
+
 .shipname{
   color: white;
   text-decoration: none;
