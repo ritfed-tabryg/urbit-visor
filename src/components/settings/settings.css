@@ -42,6 +42,10 @@
     padding: 1rem;
     margin: auto;
 }
+.remove-ships-list{
+    padding: 0;
+    overflow-y: auto;
+}
 .ship-to-remove{
     display: flex;
     justify-content: space-between;
