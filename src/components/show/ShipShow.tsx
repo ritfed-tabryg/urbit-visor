@@ -21,7 +21,6 @@ interface ShipProps {
 }
 
 export default function ShipShow({active, setActive, ...props}: ShipProps) {
-
   const dummyShip : EncryptedShipCredentials = {shipName: "~sampel-palnet", encryptedShipCode: "", encryptedShipURL: "http://localhost"};
   const history = useHistory();
   const [ship, setShip] = useState(dummyShip);
@@ -36,13 +35,17 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
     ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
     : <p className="shipname">~{displayName}</p>
 
-    useEffect(()=>{
+    useEffect(()=>{  
+      let isMounted = true;
       Messaging.sendToBackground({action: "get_selected"})
         .then(res => {
-          setShip(res.selected)
-          history.push("/ship/index")
+          if (isMounted){
+            setShip(res.selected)
+            history.push("/ship/index")
+          }
         });
-    }, []);
+        return () => {isMounted = false};
+    });
 
 
   window.onkeypress = function (e: any) {
