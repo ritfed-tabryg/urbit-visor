@@ -9,7 +9,7 @@ import SettingsIcon from "../../icons/settings";
 import AboutIcon from "../../icons/info";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
-
+import { Messaging } from "../../messaging";
 interface NavbarProps{
   active: EncryptedShipCredentials
   interacting: boolean
@@ -32,10 +32,13 @@ export default function NavBar({interacting, active}: NavbarProps) {
     if (!interacting) toggleModal(!modalOpen)
   };
   function gotoSigil(){
-    if (!interacting) history.push("/ship")
+    if (!interacting) {
+      Messaging.sendToBackground({ action: "select_ship", data: { ship: active } })
+            .then(res => history.push("/ship"))
+    }
   };
-
   const displaySigil = active ? sigil : dummy;
+
   return (<nav className="App-navbar">
     <img ref={urbitlogo} onClick={openMenu} src={logo} className="Nav-logo" />
       <h4>Urbit Visor</h4>
