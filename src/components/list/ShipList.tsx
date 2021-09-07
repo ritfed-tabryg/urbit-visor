@@ -32,11 +32,11 @@ export default function ShipList({active}: ShipListProps) {
 
     return (
         <div className="dashboard flex-grow-wrapper">
-            <div className="ship-list-title"><h1>Your Ships</h1></div>
-            <p className="ships-connected-msg"> {message}</p>
+            <h1>Your Ships</h1>
             <div className="ship-list flex-grow">
                 {display}
             </div>
+            <p className="ships-connected-msg"> {message}</p>
             <div className="padding flex-end">
             <button className="single-button add-more-button" onClick={()=> history.push("/add_ship")}>Add Ship</button>
             </div>
