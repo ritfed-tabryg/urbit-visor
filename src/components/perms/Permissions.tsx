@@ -1,15 +1,12 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { useStore } from "../../store";
-import { useHistory } from "react-router";
-import { validate } from "../../storage";
 import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
 import "./perms.css";
-import Sigil from "../ui/svg/Sigil"
+import Sigil from "../ui/svg/Sigil";
 import { Chip } from "./PermissionsPrompt";
-import { whatShip, processName } from "../../utils"
-import { EncryptedShipCredentials, PermissionRequest, PermissionsGraph, Permission } from "../../types/types"
-import { Messaging } from "../../messaging";
+import { whatShip, processName } from "../../utils";
+import { motion } from "framer-motion";
+import { EncryptedShipCredentials, PermissionsGraph, Permission } from "../../types/types"
 interface PermissionsProps {
     ship: EncryptedShipCredentials,
     shipURL: string,
@@ -21,9 +18,12 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
     const [perms, setPerms] = useState<PermissionsGraph>({});
 
     useEffect(() => {
-        fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+        let isMounted = true;
+        fetchAllPerms(shipURL).then(res => {
+            if (isMounted) setPerms(res.bucket)
+        });
+        return () => { isMounted = false }; 
     }, []);
-    console.log(perms, "perms")
 
     const [query, search] = useState("");
     const domains = Object.keys(perms).sort();
@@ -51,7 +51,11 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
 
 
     return (
-        <div className="permissions small-padding perms-flex-grow-wrapper">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="permissions small-padding perms-flex-grow-wrapper">
             <div className="ship-data">
                 <Sigil size={78} patp={ship.shipName} />
                 {shipname}
@@ -65,7 +69,7 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
                         : domains.filter((d) => d.includes(query)).map((domain) => <Domain shipURL={shipURL} ship={ship} key={domain} domain={domain} perms={perms[domain]} deleteDomain={doDeleteDomain} revokePerm={revokePerm} />)
                 }
             </div>
-        </div>
+        </motion.div>
     )
 }
 

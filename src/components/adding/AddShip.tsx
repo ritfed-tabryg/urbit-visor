@@ -5,6 +5,8 @@ import Confirm from "./Confirm"
 import { fetchShipname } from "../../urbit";
 import { useHistory } from "react-router";
 import { Messaging } from "../../messaging";
+import { motion } from "framer-motion";
+
 
 
 export default function AddShip() {
@@ -49,8 +51,12 @@ export default function AddShip() {
         setConfirm={setConfirm}
       />
   return (
-    <>
+    <motion.div
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    exit={{opacity: 0}}
+    >
       {component}
-    </>
+    </motion.div>
   )
 }

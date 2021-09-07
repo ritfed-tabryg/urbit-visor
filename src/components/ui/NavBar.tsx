@@ -34,7 +34,7 @@ export default function NavBar({interacting, active}: NavbarProps) {
   function gotoSigil(){
     if (!interacting) {
       Messaging.sendToBackground({ action: "select_ship", data: { ship: active } })
-            .then(res => history.push("/ship"))
+            .then(res => history.push(`/ship/${active.shipName}`))
     }
   };
   const displaySigil = active ? sigil : dummy;

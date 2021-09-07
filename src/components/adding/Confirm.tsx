@@ -3,6 +3,8 @@ import { useState } from "react";
 import { initPerms } from "../../urbit";
 import { getStorage, decrypt } from "../../storage";
 import Spinner from "../ui/svg/Spinner";
+import { motion } from "framer-motion";
+
 
 
 
@@ -46,7 +48,11 @@ export default function Confirm(props: ConfirmProps) {
   };
   const hidden = {display: "none"};
   return (
-    <div className="confirm padding flex-grow-wrapper">
+    <motion.div 
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    exit={{opacity: 0}}
+    className="confirm padding flex-grow-wrapper">
       <p>Connection successful to:</p>
       <p className="confirm-shipname">~{props.ship} </p>
       <p>Please confirm your master password.</p>
@@ -62,6 +68,6 @@ export default function Confirm(props: ConfirmProps) {
           <button type="submit" className="small-button right">Submit</button>
         </div>
       </form>
-    </div>
+    </motion.div>
   )
 }

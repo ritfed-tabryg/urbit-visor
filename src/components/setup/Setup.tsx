@@ -1,9 +1,9 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router";
-import { initStorage } from "../../storage";
-import { useStore } from "../../store";
 import { Messaging } from "../../messaging";
+import { motion } from "framer-motion";
+
 
 export default function Setup() {
     // const setMasterPassword = useStore(state => state.setMasterPassword);
@@ -18,7 +18,7 @@ export default function Setup() {
         e.preventDefault();
         if (pw === confirmationpw) {
             setError("");
-            Messaging.sendToBackground({action: "set_master_password", data: {password: pw}})
+            Messaging.sendToBackground({ action: "set_master_password", data: { password: pw } })
                 .then(res => {
                     history.push("/");
                 })
@@ -27,7 +27,11 @@ export default function Setup() {
         }
     }
     return (
-        <div className="setup padding flex-grow-wrapper">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="setup padding flex-grow-wrapper">
             <p>Please set up a master password for this extension.
                 <span
                     className="tooltip-trigger"
@@ -44,6 +48,6 @@ export default function Setup() {
                 </div>
                 <button className="single-button submit-setup-button">Submit</button>
             </form>
-        </div>
+        </motion.div>
     );
 }

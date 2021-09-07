@@ -1,15 +1,16 @@
 import * as React from "react";
-import { useState, useEffect  } from "react";
-import { Route, useHistory } from "react-router";
+import { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router";
 import Sigil from "../ui/svg/Sigil"
 import Spinner from "../ui/svg/Spinner";
 import { EncryptedShipCredentials } from "../../types/types";
-import { loginToShip, connectToShip } from "../../urbit";
+import { loginToShip } from "../../urbit";
 import { decrypt } from "../../storage";
 import "./show.css";
 import { whatShip, processName } from "../../utils"
 import { Messaging } from "../../messaging";
 import Permissions from "../perms/Permissions";
+import { motion } from "framer-motion";
 declare const window: any;
 
 
@@ -20,11 +21,13 @@ interface ShipProps {
   setThemPerms?: (pw: string) => void;
 }
 
-export default function ShipShow({active, setActive, ...props}: ShipProps) {
-  const dummyShip : EncryptedShipCredentials = {shipName: "~sampel-palnet", encryptedShipCode: "", encryptedShipURL: "http://localhost"};
+export default function ShipShow({ active, setActive, ...props }: ShipProps) {
+  const dummyShip: EncryptedShipCredentials = { shipName: "~sampel-palnet", encryptedShipCode: "", encryptedShipURL: "http://localhost" };
   const history = useHistory();
   const [ship, setShip] = useState(dummyShip);
   const [shipURL, setURL] = useState("");
+  const [showPerms, setShowPerms] = useState(false);
+  const {patp}: any = useParams();
 
   const [pw, setPw] = useState("");
   const [error, setError] = useState("")
@@ -34,18 +37,28 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
   const shipname = whatShip(ship.shipName) === "moon"
     ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
     : <p className="shipname">~{displayName}</p>
-
-    useEffect(()=>{  
-      let isMounted = true;
-      Messaging.sendToBackground({action: "get_selected"})
-        .then(res => {
-          if (isMounted){
-            setShip(res.selected)
-            history.push("/ship/index")
-          }
-        });
-        return () => {isMounted = false};
-    });
+  useEffect(()=>{
+    let isMounted = true;
+    Messaging.sendToBackground({ action: "get_ships" })
+      .then(res => {
+        if (isMounted) {
+          setShowPerms(false);
+          const s = res.ships.find((ur: EncryptedShipCredentials) => ur.shipName == patp);
+          setShip(s);
+        }
+      });
+    return () => { isMounted = false };
+  },[patp])
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   Messaging.sendToBackground({ action: "get_selected" })
+  //     .then(res => {
+  //       if (isMounted) {
+  //         setShip(res.selected);
+  //       }
+  //     });
+  //   return () => { isMounted = false };
+  // });
 
 
   window.onkeypress = function (e: any) {
@@ -60,10 +73,10 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
         console.log(res, "reconnect successful")
         // TODO this approach was suspiciously smooth. Keep this flag in case it breaks.
         // might need more handlers for different errors
-        if (res.statusText == "missing"){
+        if (res.statusText == "missing") {
           setError("Could not connect")
           setLoading(false);
-        } 
+        }
         else connect();
       })
       .catch(err => {
@@ -81,7 +94,7 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
     const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
       setLoading(true);
-      Messaging.sendToBackground({action: "connect_ship", data: {url: url, ship: ship}})
+      Messaging.sendToBackground({ action: "connect_ship", data: { url: url, ship: ship } })
         .then(res => {
           setLoading(false);
           setActive(ship);
@@ -98,7 +111,7 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
     }
   }
   function disconnect(): void {
-    Messaging.sendToBackground({action: "disconnect_ship"})
+    Messaging.sendToBackground({ action: "disconnect_ship" })
       .then(res => {
         setActive(null);
         history.push("/ship_list");
@@ -113,8 +126,8 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
     setError("");
     const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
-      chrome.tabs.create({url: url})
-    } else{
+      chrome.tabs.create({ url: url })
+    } else {
       setError("Wrong password.")
     }
   }
@@ -123,42 +136,40 @@ export default function ShipShow({active, setActive, ...props}: ShipProps) {
     const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
       setURL(url);
-      history.push("/ship/perms");
-    } else{
-      setError("Wrong password.")
+      setShowPerms(true);
+      console.log("here??")
+    } else {
+      setError("Wrong password")
     }
   }
-  function gotoDashboard() {chrome.tabs.create({url: "https://dashboard.urbitvisor.com"})}
-
-  return (
-    <>
-    <Route path="/ship/index">
-    <div className="ship-show small-padding flex-grow-wrapper">
-      <div className="ship-data">
-        <Sigil size={78} patp={ship.shipName} />
-        {shipname}
-      </div>
-      <div className="inputs flex-grow">
-        <label>
-          Input your master password.
-        <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
-        </label>
-        <div className="spinner">
-          {loading && spinner}
-          <p className="errorMessage">{error}</p>
-        </div>
-        {connectionButton}
-      </div>
-      <button onClick={gotoPerms} className="single-button cancel-button">Permissions</button>
-      <div className="two-buttons second-row">
-      <button onClick={gotoDashboard} className="cancel-button">Dashboard</button>
-      <button onClick={gotoLandscape} className="cancel-button right">Landscape</button>
-      </div>
-    </div>
-    </Route>
-    <Route path="/ship/perms">
-      <Permissions ship={ship} shipURL={shipURL} />
-    </Route>
-    </>
+  function gotoDashboard() { chrome.tabs.create({ url: "https://dashboard.urbitvisor.com" }) }
+if (!showPerms) return (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="ship-show small-padding flex-grow-wrapper">
+          <div className="ship-data">
+            <Sigil size={78} patp={ship.shipName} />
+            {shipname}
+          </div>
+          <div className="inputs flex-grow">
+            <label>
+              Input your master password.
+              <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
+            </label>
+            <div className="spinner">
+              {loading && spinner}
+              <p className="errorMessage">{error}</p>
+            </div>
+            {connectionButton}
+          </div>
+          <button onClick={gotoPerms} className="single-button cancel-button">Permissions</button>
+          <div className="two-buttons second-row">
+            <button onClick={gotoDashboard} className="cancel-button">Dashboard</button>
+            <button onClick={gotoLandscape} className="cancel-button right">Landscape</button>
+          </div>
+        </motion.div>
   )
+  else return <Permissions ship={ship} shipURL={shipURL} />
 }
