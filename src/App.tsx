@@ -40,23 +40,11 @@ export default function App() {
         route(state);
       })
   }, [])
-  // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  //   console.log(message, "message received!")
-  //   if (message.state) setState(message.state);
-  // // });
-  // const [first, setFirst] = useState(true);
   const [active, setActive] = useState<EncryptedShipCredentials>(null);
   const [interacting, setInteracting] = useState(false);
   const [ships, setShips] = useState([]);
   const [first, setFirst] = useState(false);
   const [permsRequest, setPermsRequest] = useState(null);
-  console.log(permsRequest, "perm request")
-  // const [cachedURL, setCachedURL] = useState("http://localhost");
-  // const [requested, setRequestedInput] = useState(null);
-  // const first = useStore(state => state.first);
-  // console.log(first, "first")
-  // const active = useStore(state => state.activeShip);
-  // const ships = useStore(state => state.ships);
 
   const history = useHistory();
 

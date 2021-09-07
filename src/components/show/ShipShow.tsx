@@ -49,16 +49,6 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
       });
     return () => { isMounted = false };
   },[patp])
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   Messaging.sendToBackground({ action: "get_selected" })
-  //     .then(res => {
-  //       if (isMounted) {
-  //         setShip(res.selected);
-  //       }
-  //     });
-  //   return () => { isMounted = false };
-  // });
 
 
   window.onkeypress = function (e: any) {

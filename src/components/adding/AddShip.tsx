@@ -26,7 +26,7 @@ export default function AddShip() {
   }
   async function save(url: string, code: string, pw: string): Promise<any> {
     Messaging.sendToBackground({action: "add_ship", data: {ship: ship, url: url, code: code, pw: pw}})
-      .then(res => history.push("/ship"));
+      .then(res => history.push(`/ship/${ship}`));
   }
 
   const [url, setURL] = useState("http://localhost");

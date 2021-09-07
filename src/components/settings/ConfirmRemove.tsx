@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { decrypt, removeShip, } from "../../storage";
 import { Messaging } from "../../messaging";
+import { motion } from "framer-motion";
 
 
 
@@ -20,7 +21,7 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         setError("");
         const url = decrypt(ship.encryptedShipURL, pw);
         if (url.length) {
-            Messaging.sendToBackground({action: "remove_ship", data: {ship: ship}})
+            Messaging.sendToBackground({ action: "remove_ship", data: { ship: ship } })
                 .then(res => {
                     history.push("/ship_list");
                 })
@@ -29,13 +30,18 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         }
     }
     return (
-        <div className="ship-removal-confirmation padding flex-grow-wrapper">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+
+            className="ship-removal-confirmation padding flex-grow-wrapper">
             <h3 className="no-margin">Confirm removal</h3>
             <div className="sigil-wrap">
-              <Sigil size={120} patp={ship.shipName} />
+                <Sigil size={120} patp={ship.shipName} />
             </div>
             <div className="text">
-                <p className="ship-to-delete">~{ship.shipName}</p> 
+                <p className="ship-to-delete">~{ship.shipName}</p>
                 <p>The above ship will be removed from Urbit Visor.</p>
             </div>
             <form className="flex-grow-wrapper" onSubmit={remove}>
@@ -50,7 +56,7 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
                     <button className="red-bg right" type="submit">Remove</button>
                 </div>
             </form>
-        </div>
+        </motion.div>
     )
 }
 
