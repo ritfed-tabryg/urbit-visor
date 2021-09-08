@@ -5,6 +5,8 @@ import { validate } from "../../storage";
 import "./perms.css";
 import { PermissionRequest, Permission } from "../../types/types";
 import { Messaging } from "../../messaging";
+import { motion } from "framer-motion";
+
 
 interface PermissionsPromptProps {
     perms: PermissionRequest
@@ -51,7 +53,11 @@ export default function PermissionsPrompt(props: PermissionsPromptProps) {
             });
     }
     return (
-        <div className="permissions padding flex-grow-wrapper">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="permissions padding flex-grow-wrapper">
             <h3>Permissions Requested</h3>
             <div className="flex-grow">
                 <a href={perms.website} rel="noopener noreferrer" target="_blank" className="requesting-domain">{perms.website}</a>
@@ -70,7 +76,7 @@ export default function PermissionsPrompt(props: PermissionsPromptProps) {
                 <button className="red-bg" onClick={deny} type="submit">Deny</button>
                 <button className="blue-button right" onClick={grant} type="submit">Grant</button>
             </div>
-        </div>
+        </motion.div>
     )
 }
 interface ExistingProps {

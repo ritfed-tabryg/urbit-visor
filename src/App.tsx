@@ -9,6 +9,7 @@ import ShipShow from "./components/show/ShipShow";
 import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
 import About from "./components/ui/About";
+import { AnimatePresence } from "framer-motion";
 import { EncryptedShipCredentials, UrbitVisorState, PermissionRequest } from "./types/types";
 import { Messaging } from "./messaging";
 import {
@@ -39,23 +40,11 @@ export default function App() {
         route(state);
       })
   }, [])
-  // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  //   console.log(message, "message received!")
-  //   if (message.state) setState(message.state);
-  // // });
-  // const [first, setFirst] = useState(true);
   const [active, setActive] = useState<EncryptedShipCredentials>(null);
   const [interacting, setInteracting] = useState(false);
   const [ships, setShips] = useState([]);
   const [first, setFirst] = useState(false);
   const [permsRequest, setPermsRequest] = useState(null);
-  console.log(permsRequest, "perm request")
-  // const [cachedURL, setCachedURL] = useState("http://localhost");
-  // const [requested, setRequestedInput] = useState(null);
-  // const first = useStore(state => state.first);
-  // console.log(first, "first")
-  // const active = useStore(state => state.activeShip);
-  // const ships = useStore(state => state.ships);
 
   const history = useHistory();
 
@@ -69,7 +58,7 @@ export default function App() {
     else if (state.requestedPerms) history.push("/ask_perms")
     else if (state.activeShip)  {
       Messaging.sendToBackground({action: "select_ship", data: {ship: state.activeShip}})
-        .then(res => history.push("/ship"))
+        .then(res => history.push(`/ship/${state.activeShip.shipName}`))
     }
     else if (state.ships.length)  history.push("/ship_list")
     else  history.push("/add_ship")
@@ -88,6 +77,7 @@ export default function App() {
     <div className="App">
       <NavBar active={active} interacting={interacting}/>
       <div className="App-content">
+        <AnimatePresence>
         <Switch>
           <Route exact path="/">
             <Redirect to={redirect()} />
@@ -104,7 +94,7 @@ export default function App() {
           <Route path="/ship_list">
             <ShipList active={active}/>
           </Route>
-          <Route path="/ship">
+          <Route key={Date.now()} path="/ship/:patp">
             <ShipShow active={active} setActive={setActive}/>
           </Route>
           <Route path="/ask_perms">
@@ -117,6 +107,7 @@ export default function App() {
             <About />
           </Route>
         </Switch>
+        </AnimatePresence>
       </div>
     </div>
   );

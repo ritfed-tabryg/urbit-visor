@@ -25,7 +25,7 @@ export default function Ship(props: ShipProps) {
 
     function select(): void {
         Messaging.sendToBackground({ action: "select_ship", data: { ship: props.ship } })
-            .then(res => history.push("/ship"))
+            .then(res => history.push(`/ship/${props.ship.shipName}`))
     };
 
     return (

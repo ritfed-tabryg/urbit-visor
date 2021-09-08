@@ -6,6 +6,7 @@ import { EncryptedShipCredentials, PermissionRequest } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
 import { whatShip, processName } from "../../utils";
 import { Messaging } from "../../messaging";
+import { motion } from "framer-motion";
 import "./settings.css";
 import {
   Route,
@@ -13,34 +14,44 @@ import {
   useHistory
 } from "react-router-dom";
 
-export default function Settings() {  
+export default function Settings() {
   const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
-  return (<div className="settings flex-grow-wrapper">
-    <Link to="/settings/menu"><h1>Settings</h1></Link>
-    <Route path="/settings/menu">
-      <SettingsMenu />
-    </Route>
-    <Route path="/settings/popup">
-      <SettingsPopup />
-    </Route>
-    <Route path="/settings/remove_ships">
-      <SettingsRemoveShips setShip={setShip} />
-    </Route>
-    <Route path="/settings/change_password">
-      <SettingsChangePw />
-    </Route>
-    <Route path="/settings/reset_app">
-      <SettingsReset />
-    </Route>
-    <Route path="/settings/confirm_remove">
-      <ConfirmRemove ship={shipToRemove} />
-    </Route>
-  </div>)
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+
+      className="settings flex-grow-wrapper">
+      <Link to="/settings/menu"><h1>Settings</h1></Link>
+      <Route path="/settings/menu">
+        <SettingsMenu />
+      </Route>
+      <Route path="/settings/popup">
+        <SettingsPopup />
+      </Route>
+      <Route path="/settings/remove_ships">
+        <SettingsRemoveShips setShip={setShip} />
+      </Route>
+      <Route path="/settings/change_password">
+        <SettingsChangePw />
+      </Route>
+      <Route path="/settings/reset_app">
+        <SettingsReset />
+      </Route>
+      <Route path="/settings/confirm_remove">
+        <ConfirmRemove ship={shipToRemove} />
+      </Route>
+    </motion.div>)
 }
 
 function SettingsMenu() {
   return (
-    <>
+    <motion.div
+    initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
+    >
       <div className="settings-option">
         <Link to="/settings/popup">
           <div className="settings-option-text">
@@ -83,7 +94,7 @@ function SettingsMenu() {
         </Link>
 
       </div>
-    </>
+    </motion.div>
   )
 }
 
@@ -92,12 +103,13 @@ function SettingsPopup() {
   const [setting, setSetting] = useState(null);
   const [buttonString, setButton] = useState("Save");
   const [disabled, setDisabled] = useState(false);
-  
+
   useEffect(() => {
-    Messaging.sendToBackground({action: "get_settings"})
-      .then(res => 
-        {console.log(res)
-      setSetting(res.popupPreference)});
+    Messaging.sendToBackground({ action: "get_settings" })
+      .then(res => {
+        console.log(res)
+        setSetting(res.popupPreference)
+      });
   }, [])
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
@@ -108,7 +120,7 @@ function SettingsPopup() {
     setDisabled(false);
   }
   function saveSetting() {
-    Messaging.sendToBackground({action: "change_popup_preference", data: {preference: setting}})
+    Messaging.sendToBackground({ action: "change_popup_preference", data: { preference: setting } })
       .then(res => {
         if (res) {
           setButton("Saved")
@@ -119,7 +131,11 @@ function SettingsPopup() {
       })
   }
   return (
-    <div className="popup-settings-page padding flex-grow-wrapper">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="popup-settings-page padding flex-grow-wrapper">
       <h3>Permission Confirmation Settings</h3>
       <p>Choose whether your Urbit Visor will create a new page popup when requesting permission.</p>
       <div className="popup-settings flex-grow">
@@ -141,17 +157,17 @@ function SettingsPopup() {
         <p className="errorMessage">{error}</p>
       </div>
       <button className="small-button" disabled={disabled} onClick={saveSetting}>{buttonString}</button>
-    </div>
+    </motion.div>
   )
 }
 
-interface RemoveShipsProps{
+interface RemoveShipsProps {
   setShip: (ship: EncryptedShipCredentials) => void
 }
-function SettingsRemoveShips({setShip}: RemoveShipsProps) {
-  useEffect(()=>{
+function SettingsRemoveShips({ setShip }: RemoveShipsProps) {
+  useEffect(() => {
     Messaging.sendToBackground({ action: "get_ships" })
-    .then(response => setShips(response.ships));
+      .then(response => setShips(response.ships));
   }, []);
   const [ships, setShips] = useState([]);
   const history = useHistory();
@@ -161,13 +177,17 @@ function SettingsRemoveShips({setShip}: RemoveShipsProps) {
     setShip(ship);
     history.push("/settings/confirm_remove")
   }
- 
+
 
   return (
-    <div className="remove-ships-list">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="remove-ships-list">
       <h3>Remove Ships</h3>
       {ships.map(ship => <ShipToRemove key={ship.shipName} confirm={confirm} ship={ship} />)}
-    </div>
+    </motion.div>
   )
 }
 interface ShipToRemoveProps {
@@ -175,12 +195,12 @@ interface ShipToRemoveProps {
   confirm: (ship: EncryptedShipCredentials) => void
 }
 function ShipToRemove({ ship, confirm }: ShipToRemoveProps) {
-  
+
   const displayName = processName(ship.shipName);
 
   const shipname = whatShip(ship.shipName) === "moon"
-  ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
-  : <p className="shipname">~{displayName}</p>
+    ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+    : <p className="shipname">~{displayName}</p>
 
 
   return (
@@ -217,7 +237,7 @@ function SettingsChangePw() {
 
   function proceed() {
     if (pw === confirmationpw) {
-      Messaging.sendToBackground({action: "change_master_password", data: {oldPw: oldPassword, newPw: pw}})
+      Messaging.sendToBackground({ action: "change_master_password", data: { oldPw: oldPassword, newPw: pw } })
         .then(res => {
           setMessage("")
           history.push("/ship_list")
@@ -227,7 +247,11 @@ function SettingsChangePw() {
     }
   }
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <form onSubmit={checkOld} className="form padding flex-grow-wrapper">
         <h3>Change Master Password</h3>
         <div className="flex-grow">
@@ -240,7 +264,7 @@ function SettingsChangePw() {
         </div>
         <button className="single-button" type="submit">Submit</button>
       </form>
-    </>
+    </motion.div>
   )
 }
 
@@ -248,17 +272,21 @@ function SettingsReset() {
   const history = useHistory();
   const resetApp = useStore(state => state.resetApp);
   async function doReset() {
-    Messaging.sendToBackground({action: "reset_app"})
-      .then((res: any) =>  history.push("/welcome"));
+    Messaging.sendToBackground({ action: "reset_app" })
+      .then((res: any) => history.push("/welcome"));
   }
   return (
-    <div className="reset-app-setting padding flex-grow-wrapper">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="reset-app-setting padding flex-grow-wrapper">
       <div className="flex-grow">
         <h3>Reset Urbit Visor</h3>
         <p>Click on the button below to reset the extension to factory settings.</p>
         <p>This will delete all ships and your master password.</p>
       </div>
       <button className="single-button red-bg" onClick={doReset}>Reset</button>
-    </div>
+    </motion.div>
   )
 }

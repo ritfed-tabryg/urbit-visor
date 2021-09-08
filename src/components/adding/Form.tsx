@@ -5,7 +5,9 @@ import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
 import { Messaging } from "../../messaging";
 import { useStore } from "../../store";
-import "./adding.css"
+import "./adding.css";
+import { motion } from "framer-motion";
+
 
 interface AddShipFormProps {
   url: string,
@@ -34,7 +36,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       .then(async res => {
         switch (res.status) {
           case 204:
-            Messaging.sendToBackground({action: "cache_form_url", data: {url: ""}});
+            Messaging.sendToBackground({ action: "cache_form_url", data: { url: "" } });
             setLoading(false);
             getShipname(url);
             setConfirm(true);
@@ -63,7 +65,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => {
     setUrl(e.currentTarget.value);
     console.log(e.currentTarget.value, "caching url");
-    Messaging.sendToBackground({ action: "cache_form_url", data: {url: e.currentTarget.value}});
+    Messaging.sendToBackground({ action: "cache_form_url", data: { url: e.currentTarget.value } });
   }
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -74,42 +76,48 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
   }
 
   return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <form className="form padding flex-grow-wrapper" onSubmit={onSubmit}>
         <p className="form-prompt">Input the credentials for your Urbit ship</p>
         <div className="inputs flex-grow">
-        <label htmlFor="shipURL">
-          URL
-          <input
-            type="text"
-            name='shipURL'
-            id='loginFormShipURL'
-            value={url}
-            placeholder='http://localhost'
-            onChange={onChangeURL}
-            required
-          />
-        </label>
-        <label htmlFor="shipCode">
-          +code
-          <input
-            type="password"
-            name='shipCode'
-            id='loginFormShipCode'
-            value={code}
-            placeholder='sampel-sampel-sampel-sampel'
-            onChange={onChangeCode}
-            maxLength={27}
-            required
-          />
-        </label>
+          <label htmlFor="shipURL">
+            URL
+            <input
+              type="text"
+              name='shipURL'
+              id='loginFormShipURL'
+              value={url}
+              placeholder='http://localhost'
+              onChange={onChangeURL}
+              required
+            />
+          </label>
+          <label htmlFor="shipCode">
+            +code
+            <input
+              type="password"
+              name='shipCode'
+              id='loginFormShipCode'
+              value={code}
+              placeholder='sampel-sampel-sampel-sampel'
+              onChange={onChangeCode}
+              maxLength={27}
+              required
+            />
+          </label>
         </div>
         <div className="errorMessage">
-        {loading && <div className="spinner">{spinner}</div>}
+          {loading && <div className="spinner">{spinner}</div>}
           {error.split("\n").map((p) => <p key={p}>{p}</p>)}
         </div>
-          <button disabled={code.length < 27} className="single-button" type='submit'>
-            Login to Ship
-          </button>
+        <button disabled={code.length < 27} className="single-button" type='submit'>
+          Login to Ship
+        </button>
       </form>
+    </motion.div>
   )
 }
