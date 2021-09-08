@@ -170,15 +170,16 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
+  console.log(request, "request for perms")
   fetchAllPerms(state.url)
     .then(res => {
       console.log(res, "perms")
       const existingPerms = res.bucket[sender.origin];
-      if (!existingPerms || !existingPerms.includes(request.action)) {
+      if (request.action === "perms") bulkRequest(state, existingPerms, request, sender, sendResponse)
+      else if (!existingPerms || !existingPerms.includes(request.action)) {
         state.requestedPerms = { website: sender.origin, permissions: [request.action], existing: existingPerms };
         requirePerm(state, "noperms", sendResponse);
       }
-      else if (request.action === "perms") bulkRequest(state, existingPerms, request, sender, sendResponse)
       else respond(state, request, sender, sendResponse);
     })
 };
