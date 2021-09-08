@@ -20,6 +20,3 @@
   margin: 0 !important;
   width: 100% !important;
 }
-.errorMessage p, .errorMessage .spinner{
-  margin-top: -2rem;
-}

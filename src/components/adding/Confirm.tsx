@@ -17,7 +17,8 @@ export default function Confirm(props: ConfirmProps) {
   const [loading, setLoading] = useState(false);
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
-  const spinner = <Spinner width="24" height="24" innerColor="white" outerColor="black" />
+  const spinner = 
+  <div className="spinner"><Spinner width="24" height="24" innerColor="white" outerColor="black" /></div>
 
   function addShip(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
