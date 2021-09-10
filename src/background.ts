@@ -41,6 +41,13 @@ function deletedWasActive(activeShip: EncryptedShipCredentials, newShips: Encryp
   else return false
 }
 
+function messageListener() {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.app == "urbit-visor-internal") handleInternalMessage(request, sender, sendResponse);
+    else if (request.app == "urbitVisor") handleVisorCall(request, sender, sendResponse);
+    return true
+  });
+}
 
 function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, sendResponse: any) {
   const state = useStore.getState();
@@ -139,16 +146,6 @@ function handleVisorCall(request: any, sender: any, sendResponse: any) {
   else checkPerms(state, request, sender, sendResponse);
 }
 
-function messageListener() {
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.app == "urbit-visor-internal") handleInternalMessage(request, sender, sendResponse);
-    else if (request.app == "urbitVisor") handleVisorCall(request, sender, sendResponse);
-    return true
-  });
-}
-
-
-
 
 function openWindow() {
   chrome.windows.create({
@@ -173,8 +170,10 @@ function checkPerms(state: UrbitVisorState, request: any, sender: any, sendRespo
   fetchAllPerms(state.url)
     .then(res => {
       console.log(res, "perms")
+      console.log(request, "request")
       const existingPerms = res.bucket[sender.origin];
-      if (!existingPerms || !existingPerms.includes(request.action)) {
+      if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
+      else if (!existingPerms || !existingPerms.includes(request.action)) {
         state.requestedPerms = { website: sender.origin, permissions: [request.action], existing: existingPerms };
         requirePerm(state, "noperms", sendResponse);
       }
@@ -226,7 +225,9 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;
-    default: break;
+    default: 
+      sendResponse("invalid_request")
+      break;
   }
 }
 
