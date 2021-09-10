@@ -80,9 +80,10 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      className="full-size"
     >
       <form className="form padding flex-grow-wrapper" onSubmit={onSubmit}>
-        <p className="form-prompt">Input the credentials for your Urbit ship</p>
+        <p className="form-prompt">Input Your Urbit Ship Credentials</p>
         <div className="inputs flex-grow">
           <label htmlFor="shipURL">
             URL
@@ -115,7 +116,7 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           {error.split("\n").map((p) => <p key={p}>{p}</p>)}
         </div>
         <button disabled={code.length < 27} className="single-button" type='submit'>
-          Login to Ship
+          Add Ship
         </button>
       </form>
     </motion.div>

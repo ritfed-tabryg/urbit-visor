@@ -55,6 +55,7 @@ export default function AddShip() {
     initial={{opacity: 0}}
     animate={{opacity: 1}}
     exit={{opacity: 0}}
+    className="full-size"
     >
       {component}
     </motion.div>

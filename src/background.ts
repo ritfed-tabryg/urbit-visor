@@ -167,6 +167,7 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
+  console.log(request, "request for perms")
   fetchAllPerms(state.url)
     .then(res => {
       console.log(res, "perms")
