@@ -29,8 +29,20 @@ async function requestData(action: UrbitVisorAction, data: any = null): Promise<
   })
 };
 
+async function checkConnection(): Promise<boolean>{
+  const response = await Messaging.callVisor({app: "urbitVisor", action: "shipName"});
+  if (response.status === "locked") return false
+  else return true
+}
+async function checkPermissions(): Promise<any>{
+  const response = await Messaging.callVisor({app: "urbitVisor", action: "check_perms"})
+  return response
+}
+
 
 (window as any).urbitVisor = {
+  isConnected: () => checkConnection(),
+  authorizedPermissions: () => checkPermissions(),
   getShip: () => requestData("shipName"),
   getURL: () => requestData("shipURL"),
   requestPermissions: (permissions: UrbitVisorAction[]) => requestData("perms", permissions),
