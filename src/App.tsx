@@ -29,7 +29,6 @@ export default function App() {
   useEffect(() => {
     Messaging.sendToBackground({ action: "get_initial_state" })
       .then(state => {
-        console.log(state, "state")
         setFirst(state.first);
         setShips(state.ships)
         setActive(state.activeShip);
@@ -66,7 +65,6 @@ export default function App() {
 
 
   function redirect(): LocationDescriptor {
-    console.log(first, "routing");
     if (first) return "/welcome"
     else if (active) return "/ship"
     else if (ships.length) return "/ship_list"

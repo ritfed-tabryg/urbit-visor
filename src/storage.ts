@@ -142,8 +142,6 @@ export function encrypt(target: string, password: string): string {
     return CryptoJS.AES.encrypt(target, password).toString();
 };
 export function decrypt(target: string, password: string): string {
-    console.log(target, "string to decrypt");
-    console.log(password, "password")
     if (password === "") return ""
     const decrypted = CryptoJS.AES.decrypt(target, password);
     try {

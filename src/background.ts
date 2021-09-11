@@ -5,9 +5,7 @@ import { useStore } from "./store";
 
 async function init() {
   const state = useStore.getState();
-  console.log(state, "state1")
   await state.init();
-  console.log(useStore.getState(), "state2")
   // listen to changes in popup preference in storage
   storageListener();
   messageListener();
@@ -17,22 +15,18 @@ init();
 function storageListener() {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     const state = useStore.getState();
-    console.log(state, "storage reacting to state")
     if (changes.popup) state.changePopupPreference(changes.popup.newValue);
     if (changes.permissions) state.loadPerms(changes.permissions.newValue);
     if (changes.ships) {
       if (state.activeShip && deletedWasActive(state.activeShip, changes.ships.newValue, changes.ships.oldValue)) {
         state.disconnectShip();
       }
-      state.init().then(res => console.log(state))
+      state.init().then(res => console.log("visor state initialized"))
     }
   });
 }
 
 function deletedWasActive(activeShip: EncryptedShipCredentials, newShips: EncryptedShipCredentials[], oldShips: EncryptedShipCredentials[]) {
-  console.log(activeShip, "activeShip")
-  console.log(newShips, "newships")
-  console.log(oldShips, "oldships")
   if (newShips.length < oldShips.length) {
     const deletedShip = oldShips.find(ship => !newShips.map(newships => newships.shipName).includes(ship.shipName));
     if (activeShip.shipName == deletedShip.shipName) return true
@@ -167,11 +161,8 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
-  console.log(request, "request for perms")
   fetchAllPerms(state.url)
     .then(res => {
-      console.log(res, "perms")
-      console.log(request, "request")
       const existingPerms = res.bucket[sender.origin];
       if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
       else if (!existingPerms || !existingPerms.includes(request.action)) {
@@ -236,7 +227,6 @@ function handlePokeSuccess() {
   window.postMessage({ app: "urbitVisor-sse", poke: "ok" }, window.origin)
 }
 function handleEvent(event: any, tab_id: number) {
-  console.log(event, "event handled")
   chrome.tabs.sendMessage(tab_id, { app: "urbitVisor-sse", event: event })
 }
 function handleError(error: any) {

@@ -2,21 +2,20 @@ import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-ap
 import {UrbitVisorAction, UrbitVisorRequest} from "./types/types";
 import {Messaging} from "./messaging";
 
-function promptUnlock(){
+function showPopup(text: string){
   const background = document.getElementById("urbit-visor-modal-bg");
   background.style.display = "block";
-  background.style.opacity = "0.8";
+  background.style.opacity = "0.9";
   const modalText = document.getElementById("urbit-visor-modal-text");
-  modalText.innerText = "Please open your Urbit Visor and connect to a ship.";
+  modalText.innerText = text;
   setTimeout(()=> background.style.display = "none", 3000);
 }
+
+function promptUnlock(){
+  showPopup("Connect to a ship with your Urbit Visor");
+}
 function promptPerms(){
-  const background = document.getElementById("urbit-visor-modal-bg");
-  background.style.display = "block";
-  background.style.opacity = "0.8";
-  const modalText = document.getElementById("urbit-visor-modal-text");
-  modalText.innerText = "Please open your Urbit Visor to grant permissions.";
-  setTimeout(()=> background.style.display = "none", 3000);
+  showPopup("Open your Urbit Visor to grant permissions.");
 }
 
 async function requestData(action: UrbitVisorAction, data: any = null): Promise<any>{

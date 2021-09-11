@@ -127,7 +127,6 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
     if (url.length) {
       setURL(url);
       setShowPerms(true);
-      console.log("here??")
     } else {
       setError("Wrong password")
     }

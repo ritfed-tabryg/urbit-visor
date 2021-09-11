@@ -1,7 +1,6 @@
 import {Messaging} from "./messaging";
 
 const injectScript = () => {
-  console.log("testing injection content")
   const script = document.createElement('script');
   script.async = false;
   script.src = chrome.runtime.getURL('injected.js');
@@ -9,15 +8,16 @@ const injectScript = () => {
     (this as any).remove();
   };
   (document.head || document.documentElement).appendChild(script);
+  console.log("urbit visor injected")
 };
 
 function injectModal() {
   const background = document.createElement('div');
-  background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;';
+  background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;z-index:2147483646';
   background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
   foreground.id = "urbit-visor-modal-fg";
-  foreground.style.cssText = 'background-color:black;border:3px solid red;position:absolute;top:20px;right:50px;width:200px;height:200px;padding:0.5rem;text-align:center;font-weight:700;';
+  foreground.style.cssText = 'color:white;background-color:black;border:3px solid red;position:absolute;top:20px;right:50px;width:200px;height:200px;padding:0.5rem;text-align:center;font-weight:700;z-index:2147483647';
   const logo = document.createElement('div');
   logo.style.cssText = "margin: auto"
   logo.innerHTML = `
@@ -30,6 +30,7 @@ function injectModal() {
   arrow.innerText = "↑";
   arrow.style.cssText = "font-size: 3rem; margin: 0";
   const message = document.createElement("p");
+  message.style.cssText = "margin-top: 0;"
   message.id = "urbit-visor-modal-text";
   foreground.appendChild(arrow);
   foreground.appendChild(message);
