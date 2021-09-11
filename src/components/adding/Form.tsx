@@ -64,7 +64,6 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
 
   const onChangeURL = (e: React.FormEvent<HTMLInputElement>) => {
     setUrl(e.currentTarget.value);
-    console.log(e.currentTarget.value, "caching url");
     Messaging.sendToBackground({ action: "cache_form_url", data: { url: e.currentTarget.value } });
   }
   const onChangeCode = (e: React.FormEvent<HTMLInputElement>) => setCode(e.currentTarget.value)

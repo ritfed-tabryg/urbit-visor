@@ -107,7 +107,6 @@ function SettingsPopup() {
   useEffect(() => {
     Messaging.sendToBackground({ action: "get_settings" })
       .then(res => {
-        console.log(res)
         setSetting(res.popupPreference)
       });
   }, [])

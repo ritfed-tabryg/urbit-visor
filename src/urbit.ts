@@ -59,8 +59,6 @@ export async function grantPerms(ship: string, url: string, perms: PermissionReq
   let value;
   const existing = await checkPerms(url, perms.website);
   const set = new Set(existing);
-  console.log(url, "requesting url")
-  console.log(perms, "requested perms")
   if (existing) {
     for (let p of perms.permissions) set.add(p);
     value = Array.from(set);
@@ -158,7 +156,6 @@ export async function subscribe(ship: string, url: string, payload: Subscription
   const airlock = new Urbit(url, "");
   airlock.ship = ship;
   const res = await airlock.subscribe(payload);
-  console.log(airlock, "airlock after request")
   return await res
 }
 export async function unsubscribe(ship: string, url: string, subscription: number) {

@@ -19,7 +19,6 @@ export default function PermissionsPrompt(props: PermissionsPromptProps) {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        console.log(perms, 'checking')
         if (!perms.permissions.length) deny();
     }, [perms]);
 
@@ -100,7 +99,6 @@ interface ChipProps {
 }
 export function Chip(props: ChipProps) {
     function destroy() {
-        console.log(props.perm, "destroying perm")
         props.destroyPerm(props.perm);
     }
     return (

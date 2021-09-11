@@ -24,7 +24,6 @@ export default function Confirm(props: ConfirmProps) {
 
   function addShip(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log('here')
     getStorage("password")
       .then((res) => {
         const string = decrypt(res.password, pw);

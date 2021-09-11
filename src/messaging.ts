@@ -27,7 +27,6 @@ export const Messaging = {
             const requestId = Math.random().toString(36).substr(2, 9);
             // first add listener for the eventual response
             window.addEventListener('message', function responseHandler(e) {
-                console.log(e, "mmm")
                 const response = e.data;
                 // ignore messages with the wrong request app name, wrong id, or null
                 if (response.app !== "urbitVisorResponse" || response.id !== requestId) return;
