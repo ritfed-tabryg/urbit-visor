@@ -1,3 +1,4 @@
+import Urbit from "@urbit/http-api";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
 
 export type DecryptedShipCredentials = {
@@ -14,6 +15,7 @@ export type EncryptedShipCredentials = {
 
 
 export interface UrbitVisorState{
+  airlock: Urbit,
   first: boolean,
   ships: EncryptedShipCredentials[],
   cached_url: string,
@@ -21,7 +23,6 @@ export interface UrbitVisorState{
   requestedPerms: PermissionRequest,
   selectedShip: EncryptedShipCredentials,
   activeShip: EncryptedShipCredentials,
-  url: string,
   permissions: PermissionsGraph,
   init: () => Promise<void>,
   setMasterPassword: (password: string) => Promise<void>,
@@ -34,7 +35,7 @@ export interface UrbitVisorState{
   grantPerms: (perms: PermissionRequest) => Promise<void>,
   denyPerms: () => void,
   removeWholeDomain: (domain: string) => void,
-  revokePerm: (ship: EncryptedShipCredentials, url: string, perms: PermissionRequest) => Promise<void>,
+  revokePerm: (perms: PermissionRequest) => Promise<void>,
   loadPerms: (permissions: PermissionsGraph) => void,
   changePopupPreference: (preference: PopupPreference) => Promise<void>,
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>

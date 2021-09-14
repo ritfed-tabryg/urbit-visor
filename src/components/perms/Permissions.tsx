@@ -41,7 +41,7 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
     };
     function revokePerm(domain: string, perm: Permission) {
         const p = { website: domain, permissions: [perm] };
-        revokePerms(ship.shipName, shipURL, p)
+        revokePerms(shipURL, ship.shipName, p)
             .then(res => {
                 if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
             })

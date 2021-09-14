@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Spinner from "../ui/svg/Spinner";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
+import { fetchShipname } from "../../urbit";
 import { Messaging } from "../../messaging";
 import { useStore } from "../../store";
 import "./adding.css";
@@ -14,11 +15,10 @@ interface AddShipFormProps {
   code: string,
   setUrl: (v: string) => void,
   setCode: (v: string) => void,
-  getShipname: (url: string) => void,
-  setConfirm: (v: boolean) => void,
+  setShipName: (shipName: string) => void,
 }
 
-export default function AddShipForm({ url, code, setUrl, setCode, getShipname, setConfirm }: AddShipFormProps) {
+export default function AddShipForm({ url, code, setUrl, setCode, setShipName }: AddShipFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,8 +38,9 @@ export default function AddShipForm({ url, code, setUrl, setCode, getShipname, s
           case 204:
             Messaging.sendToBackground({ action: "cache_form_url", data: { url: "" } });
             setLoading(false);
-            getShipname(url);
-            setConfirm(true);
+            fetchShipname(url)
+              .then(shipName => setShipName(shipName))
+              .catch(err => setError("Your ship needs an OS update"))
             break;
           case 400:
             setError("Invalid +code.\nCould not connect to ship.");

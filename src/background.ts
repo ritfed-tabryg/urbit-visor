@@ -107,8 +107,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "revoke_perms":
       break;
-    case "fetch_perms":
-      break;
     case "change_popup_preference":
       state.changePopupPreference(request.data.preference)
         .then(res => sendResponse("ok"));
@@ -161,7 +159,7 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
-  fetchAllPerms(state.url)
+  fetchAllPerms(state.airlock.url)
     .then(res => {
       const existingPerms = res.bucket[sender.origin];
       if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
@@ -193,27 +191,27 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       sendResponse({ status: "ok", response: state.activeShip.shipName })
       break;
     case "shipURL":
-      sendResponse({ status: "ok", response: state.url })
+      sendResponse({ status: "ok", response: state.airlock })
       break;
     case "scry":
-      scry(state.url, request.data)
+      scry(state.airlock, request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;
     case "poke":
       const pokePayload = Object.assign(request.data, { onSuccess: handlePokeSuccess, onError: handleError });
-      poke(state.activeShip.shipName, state.url, pokePayload)
+      poke(state.airlock, pokePayload)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;
     case "thread":
-      thread(state.url, request.data)
+      thread(state.airlock, request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;
     case "subscribe":
       const payload = Object.assign(request.data, { event: (event: any) => handleEvent(event, sender.tab.id), err: handleError })
-      subscribe(state.activeShip.shipName, state.url, payload)
+      subscribe(state.airlock, payload)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;

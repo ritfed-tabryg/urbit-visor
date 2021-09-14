@@ -39,6 +39,7 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
     : <p className="shipname">~{displayName}</p>
   useEffect(()=>{
     let isMounted = true;
+    Messaging.sendToBackground({ action: "cache_form_url", data: { url: "" } });
     Messaging.sendToBackground({ action: "get_ships" })
       .then(res => {
         if (isMounted) {
