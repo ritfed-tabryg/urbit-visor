@@ -1,5 +1,5 @@
 import * as React from "react";
-import logo from "./urbit.svg";
+import logo from "./icons/urbit.svg";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
 import ShipList from "./components/ShipList";

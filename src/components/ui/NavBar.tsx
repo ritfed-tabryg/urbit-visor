@@ -3,7 +3,7 @@ import { useOnClickOutside } from '../../hooks/hooks';
 import { useStore } from "../../store";
 import "./navbar.css";
 import Sigil from "./svg/Sigil"
-import logo from "../../urbit.svg";
+import logo from "../../icons/urbit.svg";
 import RocketIcon from "../../icons/rocket";
 import SettingsIcon from "../../icons/settings";
 import AboutIcon from "../../icons/info";
