@@ -1,5 +1,5 @@
 import * as React from "react";
-import logo from "../../urbit.svg";
+import logo from "../../icons/urbit.svg";
 import { useHistory } from "react-router";
 import { motion } from "framer-motion";
 
