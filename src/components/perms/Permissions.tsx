@@ -17,36 +17,36 @@ interface PermissionsProps {
 export default function Permissions({ ship, shipURL, ...props }: PermissionsProps) {
     const [perms, setPerms] = useState<PermissionsGraph>({});
 
-    useEffect(() => {
-        let isMounted = true;
-        fetchAllPerms(shipURL).then(res => {
-            if (isMounted) setPerms(res.bucket)
-        });
-        return () => { isMounted = false }; 
-    }, []);
+    // useEffect(() => {
+    //     let isMounted = true;
+    //     fetchAllPerms(shipURL).then(res => {
+    //         if (isMounted) setPerms(res.bucket)
+    //     });
+    //     return () => { isMounted = false }; 
+    // }, []);
 
-    const [query, search] = useState("");
-    const domains = Object.keys(perms).sort();
-    const displayName = processName(ship.shipName);
-    const shipname = whatShip(ship.shipName) === "moon"
-        ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
-        : <p className="shipname">~{displayName}</p>
+    // const [query, search] = useState("");
+    // const domains = Object.keys(perms).sort();
+    // const displayName = processName(ship.shipName);
+    // const shipname = whatShip(ship.shipName) === "moon"
+    //     ? <p className="moonname shipname"><span>~{displayName.slice(0, -14)}</span><span>{displayName.slice(-14)}</span></p>
+    //     : <p className="shipname">~{displayName}</p>
 
-    function doDeleteDomain(domain: string) {
-        deleteDomain(ship.shipName, shipURL, domain)
-            .then(res => {
-                if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
-            })
-            .catch(err => console.log(err))
-    };
-    function revokePerm(domain: string, perm: Permission) {
-        const p = { website: domain, permissions: [perm] };
-        revokePerms(ship.shipName, shipURL, p)
-            .then(res => {
-                if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
-            })
-            .catch(err => console.log(err))
-    }
+    // function doDeleteDomain(domain: string) {
+    //     deleteDomain(ship.shipName, shipURL, domain)
+    //         .then(res => {
+    //             if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+    //         })
+    //         .catch(err => console.log(err))
+    // };
+    // function revokePerm(domain: string, perm: Permission) {
+    //     const p = { website: domain, permissions: [perm] };
+    //     revokePerms(ship.shipName, shipURL, p)
+    //         .then(res => {
+    //             if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+    //         })
+    //         .catch(err => console.log(err))
+    // }
 
 
 
@@ -57,7 +57,7 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
             exit={{ opacity: 0 }}
             className="permissions small-padding perms-flex-grow-wrapper">
             <div className="ship-data">
-                <Sigil size={78} patp={ship.shipName} />
+                {/* <Sigil size={78} patp={ship.shipName} />
                 {shipname}
             </div>
             <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
@@ -67,7 +67,7 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
                     : !query.length
                         ? domains.map((domain) => <Domain shipURL={shipURL} ship={ship} key={domain} domain={domain} perms={perms[domain]} deleteDomain={doDeleteDomain} revokePerm={revokePerm} />)
                         : domains.filter((d) => d.includes(query)).map((domain) => <Domain shipURL={shipURL} ship={ship} key={domain} domain={domain} perms={perms[domain]} deleteDomain={doDeleteDomain} revokePerm={revokePerm} />)
-                }
+                } */}
             </div>
         </motion.div>
     )

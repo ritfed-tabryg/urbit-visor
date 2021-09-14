@@ -1,11 +1,12 @@
+import Urbit from "@urbit/http-api";
 import { UrbitVisorState } from "./types/types";
 import { getStorage, decrypt, initStorage, storeCredentials, removeShip, setPopupPreference, reEncryptAll, savePassword, resetApp } from "./storage";
-import { fetchAllPerms, connectToShip, grantPerms, revokePerms, deleteDomain } from "./urbit";
-import { Messaging } from "./messaging";
+import { fetchAllPerms, connectToShip, grantPerms, revokePerms } from "./urbit";
 import create from 'zustand';
 
 
 export const useStore = create<UrbitVisorState>((set, get) => ({
+    airlock: null,
     first: true,
     ships: [],
     cached_url: "",
@@ -13,7 +14,6 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     requestedPerms: null,
     selectedShip: null,
     activeShip: null,
-    url: null,
     permissions: {},
     init: async () => {
         const res = await getStorage(["popup", "ships", "password", "permissions"]);
@@ -34,23 +34,26 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     },
     selectShip: (ship) => set(state => ({ selectedShip: ship })),
     connectShip: async (url, ship) => {
-        await connectToShip(url, ship.shipName);
-        set(state => ({ activeShip: ship, url: url }));
+        const airlock = await connectToShip(url, ship.shipName);
+        set(state => ({ activeShip: ship, airlock: airlock }));
     },
-    disconnectShip: () => set(state => ({ activeShip: null })),
+    disconnectShip: () => {
+        const airlock = (get() as any).airlock;
+        airlock.reset();
+        set(state => ({ activeShip: null, airlock: null }))
+    },
     grantPerms: async (perms) => {
-        const shipName = (get() as any).activeShip.shipName;
-        const url = (get() as any).url
-        await grantPerms(shipName, url, perms);
+        const airlock = (get() as any).airlock;
+        await grantPerms(airlock, perms);
         set(state => ({ requestedPerms: null }))
     },
     denyPerms: () => set(state => ({ requestedPerms: null })),
     removeWholeDomain: async (domain) => {
-
     },
-    revokePerm: async (ship, url, permRequest) => {
-        const res = await revokePerms(ship.shipName, url, permRequest);
-        const perms = await fetchAllPerms(url);
+    revokePerm: async (permRequest) => {
+        const airlock = (get() as any).airlock;
+        const res = await revokePerms(airlock, permRequest);
+        const perms = await fetchAllPerms(airlock);
         set(state => ({permissions: perms}))
     },
     loadPerms:  (permissions:any) => {

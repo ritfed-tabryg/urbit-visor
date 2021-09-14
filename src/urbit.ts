@@ -3,17 +3,25 @@ import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-ap
 import { EncryptedShipCredentials, PermissionRequest } from "./types/types";
 
 
-export async function fetchShipname(url: string): Promise<string>{
-  const res = await fetch(url.replace(/\/$/g, '') + "/who.json");
-  const json = await res.json();
-  return await json.who;
-}
 
+export async function fetchShipname(url: string): Promise<string>{
+  return new Promise(async (resolve, reject) => {
+    try{
+      const res = await fetch(url.replace(/\/$/g, '') + "/who.json");
+      const json = await res.json();
+      resolve(json.who)
+    } catch{
+      reject("OTA outdated")
+    }
+  })
+}
+// todo
 export async function connectToShip(url: string, shipName: string): Promise<any>{
   const airlock = new Urbit(url, "");
     airlock.ship = shipName;
-    // airlock.verbose = true;
-    return airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' })
+    airlock.verbose = true;
+    await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
+    return airlock;
 }
 
 export async function loginToShip(url: string, code: string): Promise<any>{
@@ -31,18 +39,18 @@ export async function loginToShip(url: string, code: string): Promise<any>{
 export async function savePermission(permission: any): Promise<void> {
 
 }
-
-export async function initPerms(ship: string, url: string) {
+// this should go through the background script really
+export async function initPerms(shipName: string, url: string) {
+  const airlock = new Urbit(url, "");
+  airlock.ship = shipName;
   try {
-    const res = await fetchAllPerms(url);
+    const res = await fetchAllPerms(airlock);
     return "exist"
   } catch {
-    return setPerms(ship, url);
+    return setPerms(airlock);
   }
 }
-export async function setPerms(ship: string, url: string) {
-  const airlock = new Urbit(url, "");
-  airlock.ship = ship;
+export async function setPerms(airlock: Urbit) {
   const json = {
     "put-bucket": {
       "bucket-key": "urbit-visor-permissions",
@@ -53,11 +61,9 @@ export async function setPerms(ship: string, url: string) {
   return await airlock.poke({ app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function grantPerms(ship: string, url: string, perms: PermissionRequest) {
-  const airlock = new Urbit(url, "");
-  airlock.ship = ship;
+export async function grantPerms(airlock: Urbit, perms: PermissionRequest) {
   let value;
-  const existing = await checkPerms(url, perms.website);
+  const existing = await checkPerms(airlock, perms.website);
   const set = new Set(existing);
   if (existing) {
     for (let p of perms.permissions) set.add(p);
@@ -75,11 +81,9 @@ export async function grantPerms(ship: string, url: string, perms: PermissionReq
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function revokePerms(ship: string, url: string, perms: PermissionRequest) {
-  const airlock = new Urbit(url, "");
-  airlock.ship = ship;
+export async function revokePerms(airlock: Urbit, perms: PermissionRequest) {
   let value;
-  const existing = await checkPerms(url, perms.website);
+  const existing = await checkPerms(airlock, perms.website);
   const set = new Set(existing)
   if (existing) {
     for (let p of perms.permissions) set.delete(p);
@@ -109,14 +113,14 @@ export async function deleteDomain(ship: string, url: string, domain: string){
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function checkPerms(url: string, domain: string) {
-  const perms = await fetchAllPerms(url);
+export async function checkPerms(airlock: Urbit, domain: string) {
+  const perms = await fetchAllPerms(airlock);
   const domainPerms = perms.bucket[domain];
   return await domainPerms
 }
-export async function fetchAllPerms(url: string) {
+export async function fetchAllPerms(airlock: Urbit) {
   const payload = { app: "settings-store", path: "/bucket/urbit-visor-permissions" };
-  return await scry(url, payload)
+  return await scry(airlock, payload)
 }
 
 export async function wipeAllPerms(ship: string, url: string) {
@@ -128,39 +132,31 @@ export async function wipeAllPerms(ship: string, url: string) {
     }
   }
   return await airlock.poke({ app: "settings-store", mark: "settings-event", json: json })
-}
+};
 
 export async function openChannel(airlock: Urbit) {
   await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
-}
+};
 
-export async function scry(url: string, payload: Scry) {
-  const airlock = new Urbit(url, "");
-  const res = await airlock.scry(payload);
-  return await res
-}
-export async function thread(url: string, payload: Thread<any>) {
-  const airlock = new Urbit(url, "");
-  const res = await airlock.thread(payload);
-  return await res
-}
+export async function scry(airlock: Urbit, payload: Scry) {
+  return await airlock.scry(payload);
+};
+
+export async function thread(airlock: Urbit, payload: Thread<any>) {
+  return await airlock.thread(payload);
+};
+
 // Pokes take two optional callbacks, onSuccess and onError
-export async function poke(ship: string, url: string, payload: Poke<any>) {
-  const airlock = new Urbit(url, "");
-  airlock.ship = ship;
-  const res = await airlock.poke(payload);
-  return await res
-}
+export async function poke(airlock: Urbit, payload: Poke<any>) {
+  return await airlock.poke(payload);
+};
+
 // subscriptions take two optional callbacks, event() and err()
-export async function subscribe(ship: string, url: string, payload: SubscriptionRequestInterface) {
-  const airlock = new Urbit(url, "");
+export async function subscribe(airlock: Urbit, payload: SubscriptionRequestInterface) {
+  return await airlock.subscribe(payload);
+};
+
+export async function unsubscribe(airlock: Urbit, ship: string, subscription: number) {
   airlock.ship = ship;
-  const res = await airlock.subscribe(payload);
-  return await res
-}
-export async function unsubscribe(ship: string, url: string, subscription: number) {
-  const airlock = new Urbit(url, "");
-  airlock.ship = ship;
-  const res = await airlock.unsubscribe(subscription);
-  return await res
-}
+  return await airlock.unsubscribe(subscription);
+};
