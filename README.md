@@ -54,6 +54,16 @@ Below you will find the API which the current version of Urbit Visor supports. I
 | `requestPermissions`    | Returns the user's ship URL.                                                 | No                  | ``    | ``        |
 | `authorizedPermissions` | Returns the permissions that the user has authorized for the current domain. | No                  | ()    | ``        |
 
+## FAQ
+
+#### What does the "Your ship needs an OS update" error mean?
+This typically happens when you have spawned a brand new comet which has not gone through any OTA updates and as such is running on an old version that makes it incompatible with Urbit Visor. Simply OTA via one of Tlon's stars using the following command in dojo:
+
+```
+|ota ~marzod %kids
+```
+
+
 ## Credit
 
 Urbit Visor was designed and built by [dcSpark](https://dcspark.io) from scratch and was made possible thanks to the [Urbit Foundation Grant Program](https://urbit.org/grants).
