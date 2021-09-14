@@ -52,7 +52,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     },
     revokePerm: async (permRequest) => {
         const airlock = (get() as any).airlock;
-        const res = await revokePerms(airlock, permRequest);
+        const res = await revokePerms(airlock.url, airlock.ship, permRequest);
         const perms = await fetchAllPerms(airlock);
         set(state => ({permissions: perms}))
     },

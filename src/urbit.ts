@@ -44,7 +44,7 @@ export async function initPerms(shipName: string, url: string) {
   const airlock = new Urbit(url, "");
   airlock.ship = shipName;
   try {
-    const res = await fetchAllPerms(airlock);
+    const res = await fetchAllPerms(url);
     return "exist"
   } catch {
     return setPerms(airlock);
@@ -63,7 +63,7 @@ export async function setPerms(airlock: Urbit) {
 
 export async function grantPerms(airlock: Urbit, perms: PermissionRequest) {
   let value;
-  const existing = await checkPerms(airlock, perms.website);
+  const existing = await checkPerms(airlock.url, perms.website);
   const set = new Set(existing);
   if (existing) {
     for (let p of perms.permissions) set.add(p);
@@ -81,9 +81,11 @@ export async function grantPerms(airlock: Urbit, perms: PermissionRequest) {
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function revokePerms(airlock: Urbit, perms: PermissionRequest) {
+export async function revokePerms(url: string, shipName: string, perms: PermissionRequest) {
+  const airlock = new Urbit(url, "");
+  airlock.ship = shipName;
   let value;
-  const existing = await checkPerms(airlock, perms.website);
+  const existing = await checkPerms(url, perms.website);
   const set = new Set(existing)
   if (existing) {
     for (let p of perms.permissions) set.delete(p);
@@ -113,12 +115,13 @@ export async function deleteDomain(ship: string, url: string, domain: string){
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function checkPerms(airlock: Urbit, domain: string) {
-  const perms = await fetchAllPerms(airlock);
+export async function checkPerms(url: string, domain: string) {
+  const perms = await fetchAllPerms(url);
   const domainPerms = perms.bucket[domain];
   return await domainPerms
 }
-export async function fetchAllPerms(airlock: Urbit) {
+export async function fetchAllPerms(url: string) {
+  const airlock = new Urbit(url, "");
   const payload = { app: "settings-store", path: "/bucket/urbit-visor-permissions" };
   return await scry(airlock, payload)
 }

@@ -107,8 +107,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "revoke_perms":
       break;
-    case "fetch_perms":
-      break;
     case "change_popup_preference":
       state.changePopupPreference(request.data.preference)
         .then(res => sendResponse("ok"));
@@ -161,7 +159,7 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 }
 
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
-  fetchAllPerms(state.airlock)
+  fetchAllPerms(state.airlock.url)
     .then(res => {
       const existingPerms = res.bucket[sender.origin];
       if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
