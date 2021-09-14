@@ -14,6 +14,7 @@ interface ShipListProps {
 export default function ShipList({ active }: ShipListProps) {
     useEffect(() => {
         let isMounted = true;
+        Messaging.sendToBackground({ action: "cache_form_url", data: { url: "" } });
         Messaging.sendToBackground({ action: "get_ships" }).then(res => {
             if (isMounted) setShips(res.ships)
         });

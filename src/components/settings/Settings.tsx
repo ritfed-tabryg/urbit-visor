@@ -15,6 +15,10 @@ import {
 } from "react-router-dom";
 
 export default function Settings() {
+  useEffect(() => {
+    Messaging.sendToBackground({ action: "cache_form_url", data: { url: "" } });
+  }, [])
+
   const [shipToRemove, setShip] = useState<EncryptedShipCredentials>(null);
   return (
     <motion.div
