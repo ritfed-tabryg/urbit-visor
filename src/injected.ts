@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types";
-import {UrbitVisorAction, UrbitVisorRequest} from "./types/types";
+import {UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse} from "./types/types";
 import {Messaging} from "./messaging";
 
 function showPopup(text: string){
@@ -29,10 +29,12 @@ async function requestData(action: UrbitVisorAction, data: any = null): Promise<
   })
 };
 
-async function checkConnection(): Promise<boolean>{
-  const response = await Messaging.callVisor({app: "urbitVisor", action: "shipName"});
-  if (response.status === "locked") return false
-  else return true
+async function checkConnection(): Promise<UrbitVisorResponse>{
+  const response = await Messaging.callVisor({app: "urbitVisor", action: "check_connection"});
+  return response
+}
+async function promptConnection(){
+  const response = await Messaging.callVisor({app: "urbitVisor", action: "prompt_connection"});
 }
 async function checkPermissions(): Promise<any>{
   const response = await Messaging.callVisor({app: "urbitVisor", action: "check_perms"})
@@ -43,6 +45,7 @@ async function checkPermissions(): Promise<any>{
 (window as any).urbitVisor = {
   // on: (action: string, fn: Function) => listen(action),
   isConnected: () => checkConnection(),
+  promptConnection: () => requestData("prompt_connection"),
   authorizedPermissions: () => checkPermissions(),
   getShip: () => requestData("shipName"),
   getURL: () => requestData("shipURL"),

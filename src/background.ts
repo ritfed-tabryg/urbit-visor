@@ -134,7 +134,8 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
 
 function handleVisorCall(request: any, sender: any, sendResponse: any) {
   const state = useStore.getState();
-  if (!state.activeShip) requirePerm(state, "locked", sendResponse);
+  if (request.action == "check_connection") sendResponse({status: "ok", response: !!state.activeShip})
+  else if (!state.activeShip) requirePerm(state, "locked", sendResponse);
   else checkPerms(state, request, sender, sendResponse);
 }
 
