@@ -33,9 +33,7 @@ async function checkConnection(): Promise<UrbitVisorResponse>{
   const response = await Messaging.callVisor({app: "urbitVisor", action: "check_connection"});
   return response
 }
-async function promptConnection(){
-  const response = await Messaging.callVisor({app: "urbitVisor", action: "prompt_connection"});
-}
+
 async function checkPermissions(): Promise<any>{
   const response = await Messaging.callVisor({app: "urbitVisor", action: "check_perms"})
   return response
@@ -45,7 +43,7 @@ async function checkPermissions(): Promise<any>{
 (window as any).urbitVisor = {
   // on: (action: string, fn: Function) => listen(action),
   isConnected: () => checkConnection(),
-  promptConnection: () => requestData("prompt_connection"),
+  promptConnection: () => promptUnlock(),
   authorizedPermissions: () => checkPermissions(),
   getShip: () => requestData("shipName"),
   getURL: () => requestData("shipURL"),
