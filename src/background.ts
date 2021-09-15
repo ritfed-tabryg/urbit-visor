@@ -161,13 +161,13 @@ function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
 function checkPerms(state: UrbitVisorState, request: any, sender: any, sendResponse: any) {
   fetchAllPerms(state.airlock.url)
     .then(res => {
-      const existingPerms = res.bucket[sender.origin];
+      const existingPerms = res.bucket[sender.origin] || [];
       if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
+      else if (request.action === "perms") bulkRequest(state, existingPerms, request, sender, sendResponse)
       else if (!existingPerms || !existingPerms.includes(request.action)) {
         state.requestedPerms = { website: sender.origin, permissions: [request.action], existing: existingPerms };
         requirePerm(state, "noperms", sendResponse);
       }
-      else if (request.action === "perms") bulkRequest(state, existingPerms, request, sender, sendResponse)
       else respond(state, request, sender, sendResponse);
     })
 };
