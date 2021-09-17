@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types";
 import {UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse} from "./types/types";
 import {Messaging} from "./messaging";
@@ -41,7 +40,6 @@ async function checkPermissions(): Promise<any>{
 
 
 (window as any).urbitVisor = {
-  // on: (action: string, fn: Function) => listen(action),
   isConnected: () => checkConnection(),
   promptConnection: () => promptUnlock(),
   authorizedPermissions: () => checkPermissions(),

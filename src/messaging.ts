@@ -28,6 +28,7 @@ export const Messaging = {
             // first add listener for the eventual response
             window.addEventListener('message', function responseHandler(e) {
                 const response = e.data;
+                console.log(e, "content script receiving message")
                 // ignore messages with the wrong request app name, wrong id, or null
                 if (response.app !== "urbitVisorResponse" || response.id !== requestId) return;
                 // remove listener else they keep stacking up
@@ -45,13 +46,22 @@ export const Messaging = {
         window.addEventListener('message', async function (e) {
             const request = e.data;
             if (request && request.app !== "urbitVisor") return;
-            request.origin = e.origin;
             // relay message to background script
+            request.origin = e.origin;
             Messaging.relayToBackground(request).then((response: UrbitVisorResponse) => {
                 // relay back responses to webpage
                 window.postMessage({ app: "urbitVisorResponse", id: request.id, status: response.status, response: response.response }, window.origin)
             });
             return;
         });
+        // listen to events from the background script
+        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+            // relay events to webpage
+            if (request.app == "urbitVisorEvent") {
+                window.postMessage(request, window.origin);
+                sendResponse("ok")
+            }
+        }
+        );
     }
 };

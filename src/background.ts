@@ -2,6 +2,10 @@ import { EncryptedShipCredentials, UrbitVisorAction, UrbitVisorInternalAction, U
 
 import { fetchAllPerms, scry, thread, poke, subscribe } from "./urbit"
 import { useStore } from "./store";
+import { EventEmitter } from 'events';
+
+export const Pusher = new EventEmitter();
+
 
 async function init() {
   const state = useStore.getState();
@@ -216,6 +220,9 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ error: err }))
       break;
+    case "on":
+      request.data.thing.emit("lmao")
+      sendResponse({status: "ok", response: request.data.thing})
     default: 
       sendResponse("invalid_request")
       break;
@@ -223,11 +230,11 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
 }
 
 function handlePokeSuccess() {
-  window.postMessage({ app: "urbitVisor-sse", poke: "ok" }, window.origin)
+  window.postMessage({ app: "urbitVisorEvent", poke: "ok" }, window.origin)
 }
 function handleEvent(event: any, tab_id: number) {
-  chrome.tabs.sendMessage(tab_id, { app: "urbitVisor-sse", event: event })
+  chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: event })
 }
 function handleError(error: any) {
-  window.postMessage({ app: "urbitVisor-sse", error: error }, window.origin)
+  window.postMessage({ app: "urbitVisorEvent", error: error }, window.origin)
 }
