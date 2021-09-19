@@ -3,6 +3,7 @@ import { EncryptedShipCredentials, UrbitVisorAction, UrbitVisorInternalAction, U
 import { fetchAllPerms, scry, thread, poke, subscribe } from "./urbit"
 import { useStore } from "./store";
 import { EventEmitter } from 'events';
+import { Messaging } from "./messaging";
 
 export const Pusher = new EventEmitter();
 
@@ -13,6 +14,7 @@ async function init() {
   // listen to changes in popup preference in storage
   storageListener();
   messageListener();
+  portListener();
 };
 init();
 
@@ -47,8 +49,18 @@ function messageListener() {
   });
 }
 
+function portListener() {
+  chrome.runtime.onConnect.addListener(function (port) {
+    console.log(port, "background script onConnect")
+    port.onMessage.addListener(function (msg) {
+      console.log(msg, "background script received message through port")
+    });
+  });
+}
+
 function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, sendResponse: any) {
   const state = useStore.getState();
+  console.log(request, "mmm")
   switch (request.action) {
     case "get_initial_state":
       sendResponse({ first: state.first, ships: state.ships, activeShip: state.activeShip, cachedURL: state.cached_url, requestedPerms: state.requestedPerms })
@@ -88,17 +100,30 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       state.connectShip(request.data.url, request.data.ship)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
+          Messaging.pushEvent({ action: "connected" }, state.consumers)
+          // for (const tab_id of state.consumers){
+          //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
+          // }
           sendResponse("ok")
         });
       break;
     case "disconnect_ship":
       state.disconnectShip();
+      Messaging.pushEvent({ action: "disconnected" }, state.consumers)
+
+      // for (const tab_id of state.consumers){
+      //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
+      // }
       sendResponse("ok");
       break;
     case "grant_perms":
       state.grantPerms(request.data.request)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
+          Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, state.consumers)
+          // for (const tab_id of state.consumers){
+          //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
+          // }
           sendResponse("ok")
         })
       break;
@@ -109,7 +134,13 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "remove_whole_domain":
       break;
-    case "revoke_perms":
+    case "revoke_perm":
+      console.log(request, "revoking perms")
+      state.revokePerm(request.data)
+        .then(res => {
+          Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+          sendResponse("ok")
+        })
       break;
     case "change_popup_preference":
       state.changePopupPreference(request.data.preference)
@@ -117,7 +148,7 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "change_master_password":
       state.changeMasterPassword(request.data.oldPw, request.data.newPw)
-        .then(res => sendResponse("ok"))    
+        .then(res => sendResponse("ok"))
       break;
     case "reset_app":
       state.resetApp()
@@ -138,7 +169,8 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
 
 function handleVisorCall(request: any, sender: any, sendResponse: any) {
   const state = useStore.getState();
-  if (request.action == "check_connection") sendResponse({status: "ok", response: !!state.activeShip})
+  state.addConsumer(sender.tab.id);
+  if (request.action == "check_connection") sendResponse({ status: "ok", response: !!state.activeShip })
   else if (!state.activeShip) requirePerm(state, "locked", sendResponse);
   else checkPerms(state, request, sender, sendResponse);
 }
@@ -167,10 +199,10 @@ function checkPerms(state: UrbitVisorState, request: any, sender: any, sendRespo
   fetchAllPerms(state.airlock.url)
     .then(res => {
       const existingPerms = res.bucket[sender.origin] || [];
-      if (request.action === "check_perms") sendResponse({status: "ok", response: existingPerms});
+      if (request.action === "check_perms") sendResponse({ status: "ok", response: existingPerms });
       else if (request.action === "perms") bulkRequest(state, existingPerms, request, sender, sendResponse)
       else if (!existingPerms || !existingPerms.includes(request.action)) {
-        state.requestedPerms = { website: sender.origin, permissions: [request.action], existing: existingPerms };
+        state.requestPerms(sender.origin, [request.action], existingPerms)
         requirePerm(state, "noperms", sendResponse);
       }
       else respond(state, request, sender, sendResponse);
@@ -180,7 +212,7 @@ function checkPerms(state: UrbitVisorState, request: any, sender: any, sendRespo
 function bulkRequest(state: UrbitVisorState, existingPerms: any, request: any, sender: any, sendResponse: any) {
   if (existingPerms && request.data.every((el: UrbitVisorAction) => existingPerms.includes(el))) sendResponse("perms_exist")
   else {
-    state.requestedPerms = { website: sender.origin, permissions: request.data, existing: existingPerms };
+    state.requestPerms(sender.origin, request.data, existingPerms);
     requirePerm(state, "noperms", sendResponse);
   }
 }
@@ -222,8 +254,8 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       break;
     case "on":
       request.data.thing.emit("lmao")
-      sendResponse({status: "ok", response: request.data.thing})
-    default: 
+      sendResponse({ status: "ok", response: request.data.thing })
+    default:
       sendResponse("invalid_request")
       break;
   }

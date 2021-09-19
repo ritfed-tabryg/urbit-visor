@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
+import { Messaging } from "../../messaging";
 import "./perms.css";
 import Sigil from "../ui/svg/Sigil";
 import { Chip } from "./PermissionsPrompt";
@@ -22,7 +23,7 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
         fetchAllPerms(shipURL).then(res => {
             if (isMounted) setPerms(res.bucket)
         });
-        return () => { isMounted = false }; 
+        return () => { isMounted = false };
     }, []);
 
     const [query, search] = useState("");
@@ -40,10 +41,9 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
             .catch(err => console.log(err))
     };
     function revokePerm(domain: string, perm: Permission) {
-        const p = { website: domain, permissions: [perm] };
-        revokePerms(shipURL, ship.shipName, p)
+        Messaging.sendToBackground({ action: "revoke_perm", data: { domain: domain, perm: [perm] } })
             .then(res => {
-                if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+                fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
             })
             .catch(err => console.log(err))
     }

@@ -15,6 +15,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     selectedShip: null,
     activeShip: null,
     permissions: {},
+    consumers: new Set(),
     init: async () => {
         const res = await getStorage(["popup", "ships", "password", "permissions"]);
         set(state => ({ first: !("password" in res), popupPreference: res.popup || "modal", ships: res.ships || [], permissions: res.permissions || {}}))
@@ -42,6 +43,8 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         airlock.reset();
         set(state => ({ activeShip: null, airlock: null }))
     },
+    requestPerms: (website, permissions, existing) => 
+        set(state => ({requestedPerms: {website: website, permissions: permissions, existing: existing}})),
     grantPerms: async (perms) => {
         const airlock = (get() as any).airlock;
         await grantPerms(airlock, perms);
@@ -67,6 +70,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         await reEncryptAll(oldPassword, password);
         await savePassword(password);
     },
-    resetApp: async () => await resetApp()
+    resetApp: async () => await resetApp(),
+    addConsumer: (tab_id) => set(state => ({consumers: (get() as any).consumers.add(tab_id)}))
 }))
 
