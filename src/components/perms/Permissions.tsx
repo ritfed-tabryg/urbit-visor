@@ -34,14 +34,14 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
         : <p className="shipname">~{displayName}</p>
 
     function doDeleteDomain(domain: string) {
-        deleteDomain(ship.shipName, shipURL, domain)
+        Messaging.sendToBackground({ action: "remove_whole_domain", data: {url: shipURL, ship: ship.shipName, domain: domain}})
             .then(res => {
-                if (typeof (res) === "number") fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+                fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
             })
             .catch(err => console.log(err))
     };
     function revokePerm(domain: string, perm: Permission) {
-        Messaging.sendToBackground({ action: "revoke_perm", data: { domain: domain, perm: [perm] } })
+        Messaging.sendToBackground({ action: "revoke_perm", data: {url: shipURL, ship: ship.shipName, request: { website: domain, permissions: [perm] }}})
             .then(res => {
                 fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
             })

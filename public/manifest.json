@@ -46,6 +46,6 @@
     }
   },
   "permissions": [
-    "storage", "tabs"
+    "storage"
  ]
 }

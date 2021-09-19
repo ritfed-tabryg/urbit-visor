@@ -101,19 +101,12 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
           Messaging.pushEvent({ action: "connected" }, state.consumers)
-          // for (const tab_id of state.consumers){
-          //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
-          // }
           sendResponse("ok")
         });
       break;
     case "disconnect_ship":
       state.disconnectShip();
       Messaging.pushEvent({ action: "disconnected" }, state.consumers)
-
-      // for (const tab_id of state.consumers){
-      //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
-      // }
       sendResponse("ok");
       break;
     case "grant_perms":
@@ -121,9 +114,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
           Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, state.consumers)
-          // for (const tab_id of state.consumers){
-          //   chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: "connected" })
-          // }
           sendResponse("ok")
         })
       break;
@@ -133,12 +123,19 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       sendResponse("ok");
       break;
     case "remove_whole_domain":
+      state.removeWholeDomain(request.data.url, request.data.ship, request.data.domain)
+      .then(res => {
+        // only if url coincides with the website
+        // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+        sendResponse("ok")
+      })
       break;
     case "revoke_perm":
-      console.log(request, "revoking perms")
-      state.revokePerm(request.data)
+      state.revokePerm(request.data.url, request.data.ship, request.data.request)
         .then(res => {
-          Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+          chrome.tabs.query
+          // only if url coincides with the website, need "tabs" permissions to implement
+          // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
           sendResponse("ok")
         })
       break;

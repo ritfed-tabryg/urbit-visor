@@ -36,8 +36,8 @@ export interface UrbitVisorState{
   requestPerms: (website: string, permissions: Permission[], existing: Permission[]) => void,
   grantPerms: (perms: PermissionRequest) => Promise<void>,
   denyPerms: () => void,
-  removeWholeDomain: (domain: string) => void,
-  revokePerm: (perms: PermissionRequest) => Promise<void>,
+  removeWholeDomain: (url: string, ship: string, domain: string) => Promise<void>,
+  revokePerm: (url: string, ship: string, perms: PermissionRequest) => Promise<void>,
   loadPerms: (permissions: PermissionsGraph) => void,
   changePopupPreference: (preference: PopupPreference) => Promise<void>,
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>
