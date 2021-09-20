@@ -1,4 +1,4 @@
-import { UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse, UrbitVisorState, UrbitVisorInternalComms } from "./types/types";
+import { UrbitVisorAction, UrbitVisorRequest, UrbitVisorEvent, UrbitVisorResponse, UrbitVisorState, UrbitVisorInternalComms } from "./types/types";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types";
 
 
@@ -22,13 +22,18 @@ export const Messaging = {
             chrome.runtime.sendMessage(request, (response) => res(response))
         );
     },
+    pushEvent: function (event: UrbitVisorEvent, recipients: Set<number>) {
+        console.log(event, "pushing event")
+        console.log(recipients, "recipients")
+      for (let tab_id of recipients) chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: event})
+    },
     callVisor: function ({ app, action, data }: UrbitVisorRequest): Promise<UrbitVisorResponse> {
         return new Promise((res, rej) => {
             const requestId = Math.random().toString(36).substr(2, 9);
             // first add listener for the eventual response
             window.addEventListener('message', function responseHandler(e) {
                 const response = e.data;
-                console.log(e, "content script receiving message")
+                // console.log(e, "content script receiving message")
                 // ignore messages with the wrong request app name, wrong id, or null
                 if (response.app !== "urbitVisorResponse" || response.id !== requestId) return;
                 // remove listener else they keep stacking up
@@ -42,6 +47,13 @@ export const Messaging = {
         });
     },
     createProxyController: () => {
+        // const port = chrome.runtime.connect({name: "urbitVisorConnection"});
+        // // const port2 = chrome.tabs.connect({name: "urbitVisorConnection"});
+        // port.postMessage({joke: "Knock knock"});
+        // port.onMessage.addListener(function(msg) {
+        //     console.log(msg, "content script received message through port");
+        //   });
+          
         //listen to function calls from webpage
         window.addEventListener('message', async function (e) {
             const request = e.data;
@@ -58,6 +70,7 @@ export const Messaging = {
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // relay events to webpage
             if (request.app == "urbitVisorEvent") {
+                console.log(request, "event received by content script")
                 window.postMessage(request, window.origin);
                 sendResponse("ok")
             }

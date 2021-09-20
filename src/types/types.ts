@@ -24,6 +24,7 @@ export interface UrbitVisorState{
   selectedShip: EncryptedShipCredentials,
   activeShip: EncryptedShipCredentials,
   permissions: PermissionsGraph,
+  consumers: Set<number>
   init: () => Promise<void>,
   setMasterPassword: (password: string) => Promise<void>,
   addShip: (ship: string, url: string, code: string, pw: string) => Promise<void>,
@@ -32,14 +33,16 @@ export interface UrbitVisorState{
   selectShip: (ship: EncryptedShipCredentials) => void,
   connectShip: (url: string, ship: EncryptedShipCredentials) => Promise<void>,
   disconnectShip: () => void,
+  requestPerms: (website: string, permissions: Permission[], existing: Permission[]) => void,
   grantPerms: (perms: PermissionRequest) => Promise<void>,
   denyPerms: () => void,
-  removeWholeDomain: (domain: string) => void,
-  revokePerm: (perms: PermissionRequest) => Promise<void>,
+  removeWholeDomain: (url: string, ship: string, domain: string) => Promise<void>,
+  revokePerm: (url: string, ship: string, perms: PermissionRequest) => Promise<void>,
   loadPerms: (permissions: PermissionsGraph) => void,
   changePopupPreference: (preference: PopupPreference) => Promise<void>,
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>
   resetApp: () => Promise<void>,
+  addConsumer: (tab_id: number) => void
 }
 
 export type PopupPreference = "modal" | "window";
@@ -72,5 +75,10 @@ export interface UrbitVisorResponse{
 
 export interface UrbitVisorInternalComms {
   action: UrbitVisorInternalAction | string,
+  data?: any
+}
+
+export interface UrbitVisorEvent {
+  action: "connected" | "disconnected" | "permissions_granted" | "permissions_revoked" | "sse" | "poke_success" | "poke_error" | "subscription_error"
   data?: any
 }

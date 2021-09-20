@@ -1,7 +1,7 @@
 import Urbit from "@urbit/http-api";
 import { UrbitVisorState } from "./types/types";
 import { getStorage, decrypt, initStorage, storeCredentials, removeShip, setPopupPreference, reEncryptAll, savePassword, resetApp } from "./storage";
-import { fetchAllPerms, connectToShip, grantPerms, revokePerms } from "./urbit";
+import { fetchAllPerms, connectToShip, grantPerms, deleteDomain, revokePerms } from "./urbit";
 import create from 'zustand';
 
 
@@ -15,6 +15,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     selectedShip: null,
     activeShip: null,
     permissions: {},
+    consumers: new Set(),
     init: async () => {
         const res = await getStorage(["popup", "ships", "password", "permissions"]);
         set(state => ({ first: !("password" in res), popupPreference: res.popup || "modal", ships: res.ships || [], permissions: res.permissions || {}}))
@@ -42,18 +43,22 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         airlock.reset();
         set(state => ({ activeShip: null, airlock: null }))
     },
+    requestPerms: (website, permissions, existing) => 
+        set(state => ({requestedPerms: {website: website, permissions: permissions, existing: existing}})),
     grantPerms: async (perms) => {
         const airlock = (get() as any).airlock;
         await grantPerms(airlock, perms);
         set(state => ({ requestedPerms: null }))
     },
     denyPerms: () => set(state => ({ requestedPerms: null })),
-    removeWholeDomain: async (domain) => {
+    removeWholeDomain: async (url, ship, domain) => {
+        const res = await deleteDomain(url, ship, domain)
+        const perms = await fetchAllPerms(url);
+        set(state => ({permissions: perms}))
     },
-    revokePerm: async (permRequest) => {
-        const airlock = (get() as any).airlock;
-        const res = await revokePerms(airlock.url, airlock.ship, permRequest);
-        const perms = await fetchAllPerms(airlock.url);
+    revokePerm: async (url, ship, permRequest) => {
+        const res = await revokePerms(url, ship, permRequest);
+        const perms = await fetchAllPerms(url);
         set(state => ({permissions: perms}))
     },
     loadPerms:  (permissions:any) => {
@@ -67,6 +72,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         await reEncryptAll(oldPassword, password);
         await savePassword(password);
     },
-    resetApp: async () => await resetApp()
+    resetApp: async () => await resetApp(),
+    addConsumer: (tab_id) => set(state => ({consumers: (get() as any).consumers.add(tab_id)}))
 }))
 

@@ -103,7 +103,7 @@ export async function revokePerms(url: string, shipName: string, perms: Permissi
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
-export async function deleteDomain(ship: string, url: string, domain: string){
+export async function deleteDomain(url: string, ship: string, domain: string){
   const airlock = new Urbit(url, "");
   airlock.ship = ship;
   const json = {
@@ -112,6 +112,7 @@ export async function deleteDomain(ship: string, url: string, domain: string){
       "entry-key": domain,
     }
   }
+  console.log(json, "json")
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
