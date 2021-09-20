@@ -230,40 +230,47 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
     case "scry":
       scry(state.airlock, request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
-        .catch(err => sendResponse({ error: err }))
+        .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "poke":
-      const pokePayload = Object.assign(request.data, { onSuccess: handlePokeSuccess, onError: handleError });
+      const pokePayload = Object.assign(request.data, { 
+        onSuccess: () => handlePokeSuccess(request.data, sender.tab.id), 
+        onError: (e: any) => handlePokeError(e, request.data, sender.tab.id) 
+      });
       poke(state.airlock, pokePayload)
         .then(res => sendResponse({ status: "ok", response: res }))
-        .catch(err => sendResponse({ error: err }))
+        .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "thread":
       thread(state.airlock, request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
-        .catch(err => sendResponse({ error: err }))
+        .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "subscribe":
-      const payload = Object.assign(request.data, { event: (event: any) => handleEvent(event, sender.tab.id), err: handleError })
+      const payload = Object.assign(request.data, { 
+        event: (event: any) => handleEvent(event, sender.tab.id), 
+        err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id) })
       subscribe(state.airlock, payload)
         .then(res => sendResponse({ status: "ok", response: res }))
-        .catch(err => sendResponse({ error: err }))
+        .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "on":
-      request.data.thing.emit("lmao")
       sendResponse({ status: "ok", response: request.data.thing })
     default:
-      sendResponse("invalid_request")
+      sendResponse({status: "error", response: "invalid_request"})
       break;
   }
 }
 
-function handlePokeSuccess() {
-  window.postMessage({ app: "urbitVisorEvent", poke: "ok" }, window.origin)
+function handlePokeSuccess(poke: any, tab_id: number) {
+  Messaging.pushEvent({action: "poke_success", data: poke}, new Set([tab_id]))
 }
 function handleEvent(event: any, tab_id: number) {
-  chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: event })
+  Messaging.pushEvent({action: "sse", data: event}, new Set([tab_id]))
 }
-function handleError(error: any) {
-  window.postMessage({ app: "urbitVisorEvent", error: error }, window.origin)
+function handlePokeError(error: any, poke: any, tab_id: number) {
+  Messaging.pushEvent({action: "poke_error", data: poke}, new Set([tab_id]))
+}
+function handleSubscriptionError(error: any, subscription: any, tab_id: number){
+  Messaging.pushEvent({action: "subscription_error", data: subscription}, new Set([tab_id]))
 }
