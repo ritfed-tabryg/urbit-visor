@@ -145,8 +145,8 @@ if (!showPerms) return (
           </div>
           <div className="inputs flex-grow">
             <label>
-              Input your master password.
-              <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="password" />
+              Input Your Master Password
+              <input onChange={(e) => setPw(e.currentTarget.value)} type="password" placeholder="Master Password" />
             </label>
             <div className="spinner">
               {loading && spinner}

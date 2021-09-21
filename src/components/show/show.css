@@ -1,7 +1,15 @@
 .ship-data{
+    margin-top: 1rem;
     display: flex;
-    margin-bottom: 2rem;
+    margin-bottom: 0rem;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+.ship-show div.inputs {
+    margin-top: 5rem !important;
+}
+
 .ship-data p{
     font-size: 1.5rem;
     margin-left: 1.2rem;

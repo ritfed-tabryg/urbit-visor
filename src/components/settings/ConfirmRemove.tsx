@@ -42,11 +42,11 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
             </div>
             <div className="text">
                 <p className="ship-to-delete">~{ship.shipName}</p>
-                <p>The above ship will be removed from Urbit Visor.</p>
+                {/* <p>The above ship will be removed from Urbit Visor.</p> */}
             </div>
             <form className="flex-grow-wrapper" onSubmit={remove}>
                 <div className="password-input flex-grow">
-                    <label>Input your master password
+                    <label>Input Your Master Password
                         <input onChange={(e) => setPw(e.currentTarget.value)} type="password" />
                     </label>
                     <p className="errorMessage">{error}</p>
@@ -59,14 +59,3 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         </motion.div>
     )
 }
-
-// {deleting && 
-//     <form onSubmit={remove}>
-//     <label>Input your master password to confirm
-//       <input onChange={(e) => setPw(e.currentTarget.value)}type="password" />
-//       </label>
-//       <p className="errorMessage">{error}</p>
-//       <button className="small-button" type="submit">Confirm</button> 
-//       <button onClick={()=> setDeleting(false)} className="small-button" type="submit">Cancel</button> 
-//       </form>
-//       }

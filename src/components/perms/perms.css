@@ -105,3 +105,7 @@ ul{
 .perm-deletion-confirmation-prompt{
     margin-bottom: 10px;
 }
+
+.permission-search {
+    margin-top: 1.5rem;
+}

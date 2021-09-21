@@ -65,6 +65,7 @@
 .ship-to-delete{
     font-weight: 700;
     font-family:'Courier New', Courier, monospace;
+    margin-bottom: 2rem;
 }
 .sigil-wrap{
     margin: 1rem auto;
