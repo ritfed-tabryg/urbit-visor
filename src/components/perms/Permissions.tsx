@@ -60,7 +60,9 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
                 <Sigil size={78} patp={ship.shipName} />
                 {shipname}
             </div>
-            <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="search domain" type="text" />
+            <div className="permission-search">
+                <input onChange={(e) => search(e.currentTarget.value)} value={query} placeholder="Search" type="text" />
+            </div>
             <div className="permslist perms-flex-grow-wrapper">
                 {!domains.length
                     ? <p>No permissions granted</p>

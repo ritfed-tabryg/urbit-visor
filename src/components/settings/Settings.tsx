@@ -267,11 +267,11 @@ function SettingsChangePw() {
       <form onSubmit={checkOld} className="form padding flex-grow-wrapper">
         <h3>Change Master Password</h3>
         <div className="flex-grow">
-          <label>Old password
+          <label>Old Password
             <input onChange={(e) => setOldpw(e.currentTarget.value)} type="password" />
           </label>
-          <label>New password<input onChange={(e) => setPw(e.currentTarget.value)} type="password" /></label>
-          <label>Confirm new password<input onChange={(e) => setConfirmation(e.currentTarget.value)} type="password" /></label>
+          <label>New Password<input onChange={(e) => setPw(e.currentTarget.value)} type="password" /></label>
+          <label>Confirm New Password<input onChange={(e) => setConfirmation(e.currentTarget.value)} type="password" /></label>
           {displayMessage}
         </div>
         <button className="single-button" type="submit">Submit</button>
