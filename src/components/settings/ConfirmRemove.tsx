@@ -59,14 +59,3 @@ export default function ConfirmRemove({ ship }: ConfirmRemoveProps) {
         </motion.div>
     )
 }
-
-// {deleting && 
-//     <form onSubmit={remove}>
-//     <label>Input your master password to confirm
-//       <input onChange={(e) => setPw(e.currentTarget.value)}type="password" />
-//       </label>
-//       <p className="errorMessage">{error}</p>
-//       <button className="small-button" type="submit">Confirm</button> 
-//       <button onClick={()=> setDeleting(false)} className="small-button" type="submit">Cancel</button> 
-//       </form>
-//       }
