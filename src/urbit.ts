@@ -160,7 +160,6 @@ export async function subscribe(airlock: Urbit, payload: SubscriptionRequestInte
   return await airlock.subscribe(payload);
 };
 
-export async function unsubscribe(airlock: Urbit, ship: string, subscription: number) {
-  airlock.ship = ship;
+export async function unsubscribe(airlock: Urbit, subscription: number) {
   return await airlock.unsubscribe(subscription);
 };

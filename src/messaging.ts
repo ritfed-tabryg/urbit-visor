@@ -62,6 +62,7 @@ export const Messaging = {
             request.origin = e.origin;
             Messaging.relayToBackground(request).then((response: UrbitVisorResponse) => {
                 // relay back responses to webpage
+                if (!response) console.log(request, "bugging at proxy controller")
                 window.postMessage({ app: "urbitVisorResponse", id: request.id, status: response.status, response: response.response }, window.origin)
             });
             return;

@@ -1,9 +1,10 @@
 import { EncryptedShipCredentials, UrbitVisorAction, UrbitVisorInternalAction, UrbitVisorInternalComms, UrbitVisorState } from "./types/types";
 
-import { fetchAllPerms, scry, thread, poke, subscribe } from "./urbit"
+import { fetchAllPerms, scry, thread, poke, subscribe, unsubscribe } from "./urbit"
 import { useStore } from "./store";
 import { EventEmitter } from 'events';
 import { Messaging } from "./messaging";
+import { SubscriptionRequestInterface } from "@urbit/http-api";
 
 export const Pusher = new EventEmitter();
 
@@ -97,23 +98,29 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       sendResponse("ok");
       break;
     case "connect_ship":
+      if (state.activeShip) {
+        state.disconnectShip();
+        Messaging.pushEvent({ action: "disconnected", data: { ship: state.activeShip.shipName } }, state.consumers)
+      }
       state.connectShip(request.data.url, request.data.ship)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
-          Messaging.pushEvent({ action: "connected" }, state.consumers)
+          Messaging.pushEvent({ action: "connected", data: { debug: state, ship: request.data.ship } }, state.consumers)
           sendResponse("ok")
         });
       break;
     case "disconnect_ship":
+      const ship = state.activeShip.shipName;
       state.disconnectShip();
-      Messaging.pushEvent({ action: "disconnected" }, state.consumers)
+      Messaging.pushEvent({ action: "disconnected", data: { ship: ship } }, state.consumers)
       sendResponse("ok");
       break;
     case "grant_perms":
       state.grantPerms(request.data.request)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
-          Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, state.consumers)
+          // only if url coincides with the website
+          // Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, state.consumers)
           sendResponse("ok")
         })
       break;
@@ -124,11 +131,11 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "remove_whole_domain":
       state.removeWholeDomain(request.data.url, request.data.ship, request.data.domain)
-      .then(res => {
-        // only if url coincides with the website
-        // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
-        sendResponse("ok")
-      })
+        .then(res => {
+          // only if url coincides with the website
+          // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+          sendResponse("ok")
+        })
       break;
     case "revoke_perm":
       state.revokePerm(request.data.url, request.data.ship, request.data.request)
@@ -233,9 +240,9 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "poke":
-      const pokePayload = Object.assign(request.data, { 
-        onSuccess: () => handlePokeSuccess(request.data, sender.tab.id), 
-        onError: (e: any) => handlePokeError(e, request.data, sender.tab.id) 
+      const pokePayload = Object.assign(request.data, {
+        onSuccess: () => handlePokeSuccess(request.data, sender.tab.id),
+        onError: (e: any) => handlePokeError(e, request.data, sender.tab.id)
       });
       poke(state.airlock, pokePayload)
         .then(res => sendResponse({ status: "ok", response: res }))
@@ -247,30 +254,66 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "subscribe":
-      const payload = Object.assign(request.data, { 
-        event: (event: any) => handleEvent(event, sender.tab.id), 
-        err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id) })
-      subscribe(state.airlock, payload)
-        .then(res => sendResponse({ status: "ok", response: res }))
+      const existing = state.activeSubscriptions.find(sub => {
+        return (
+          sub.subscription.app == request.data.app &&
+          sub.subscription.path == request.data.path)
+      });
+      console.log(state, "state")
+      console.log(request, "request")
+      console.log(state.activeSubscriptions, "active")
+      console.log(existing, "existing")
+      if (!existing) {
+        const payload = Object.assign(request.data, {
+          event: (event: any) => handleEvent(event, request.data),
+          err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
+        });
+        subscribe(state.airlock, payload)
+          .then(res => {
+            state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: res })
+            sendResponse({ status: "ok", response: res })
+          })
+          .catch(err => sendResponse({ status: "error", response: err }))
+      } else if (existing.subscriber !== sender.tab.id) 
+        state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: existing.airlockID })
+      break;
+    case "unsubscribe":
+      state.activeSubscriptions.find(sub => {
+        sub.subscription.app == request.data.app &&
+          sub.subscription.path == request.data.path &&
+          sub.subscriber == sender.tab.id
+      })
+      const subscriptionNumber = 0;
+      unsubscribe(state.airlock, subscriptionNumber)
+        .then(res => {
+          sendResponse({ status: "ok", response: res })
+        })
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "on":
       sendResponse({ status: "ok", response: request.data.thing })
     default:
-      sendResponse({status: "error", response: "invalid_request"})
+      sendResponse({ status: "error", response: "invalid_request" })
       break;
   }
 }
 
 function handlePokeSuccess(poke: any, tab_id: number) {
-  Messaging.pushEvent({action: "poke_success", data: poke}, new Set([tab_id]))
+  Messaging.pushEvent({ action: "poke_success", data: poke }, new Set([tab_id]))
 }
-function handleEvent(event: any, tab_id: number) {
-  Messaging.pushEvent({action: "sse", data: event}, new Set([tab_id]))
+function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
+  const state = useStore.getState();
+  const recipients = 
+    state.activeSubscriptions
+      .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
+      .map(sub => sub.subscriber)
+  console.log(subscription, "subscription issuing the SSE")
+  console.log(recipients, "recipients")
+  Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
 }
 function handlePokeError(error: any, poke: any, tab_id: number) {
-  Messaging.pushEvent({action: "poke_error", data: poke}, new Set([tab_id]))
+  Messaging.pushEvent({ action: "poke_error", data: poke }, new Set([tab_id]))
 }
-function handleSubscriptionError(error: any, subscription: any, tab_id: number){
-  Messaging.pushEvent({action: "subscription_error", data: subscription}, new Set([tab_id]))
+function handleSubscriptionError(error: any, subscription: any, tab_id: number) {
+  Messaging.pushEvent({ action: "subscription_error", data: subscription }, new Set([tab_id]))
 }
