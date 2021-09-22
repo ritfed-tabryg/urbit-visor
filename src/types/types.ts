@@ -17,7 +17,8 @@ type TabID = number;
 
 interface WebsiteSubscription {
   subscription: SubscriptionRequestInterface,
-  subscriber: TabID
+  subscriber: TabID,
+  airlockID: number
 }
 
 

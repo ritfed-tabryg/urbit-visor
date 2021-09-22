@@ -1,9 +1,10 @@
 import { EncryptedShipCredentials, UrbitVisorAction, UrbitVisorInternalAction, UrbitVisorInternalComms, UrbitVisorState } from "./types/types";
 
-import { fetchAllPerms, scry, thread, poke, subscribe } from "./urbit"
+import { fetchAllPerms, scry, thread, poke, subscribe, unsubscribe } from "./urbit"
 import { useStore } from "./store";
 import { EventEmitter } from 'events';
 import { Messaging } from "./messaging";
+import { SubscriptionRequestInterface } from "@urbit/http-api";
 
 export const Pusher = new EventEmitter();
 
@@ -253,24 +254,41 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "subscribe":
-      const payload = Object.assign(request.data, {
-        event: (event: any) => handleEvent(event, sender.tab.id),
-        err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
-      })
+      const existing = state.activeSubscriptions.find(sub => {
+        return (
+          sub.subscription.app == request.data.app &&
+          sub.subscription.path == request.data.path)
+      });
       console.log(state, "state")
       console.log(request, "request")
-      if (!state.activeSubscriptions.find(sub => {
-        return (sub.subscription.app == request.data.app 
-          && sub.subscription.path == request.data.path
-          && sub.subscriber == sender.tab.id)
-      })) {
+      console.log(state.activeSubscriptions, "active")
+      console.log(existing, "existing")
+      if (!existing) {
+        const payload = Object.assign(request.data, {
+          event: (event: any) => handleEvent(event, request.data),
+          err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
+        });
         subscribe(state.airlock, payload)
           .then(res => {
-            state.addSubscription({subscription: request.data, subscriber: sender.tab.id})
+            state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: res })
             sendResponse({ status: "ok", response: res })
           })
           .catch(err => sendResponse({ status: "error", response: err }))
-      }
+      } else if (existing.subscriber !== sender.tab.id) 
+        state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: existing.airlockID })
+      break;
+    case "unsubscribe":
+      state.activeSubscriptions.find(sub => {
+        sub.subscription.app == request.data.app &&
+          sub.subscription.path == request.data.path &&
+          sub.subscriber == sender.tab.id
+      })
+      const subscriptionNumber = 0;
+      unsubscribe(state.airlock, subscriptionNumber)
+        .then(res => {
+          sendResponse({ status: "ok", response: res })
+        })
+        .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "on":
       sendResponse({ status: "ok", response: request.data.thing })
@@ -283,8 +301,15 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
 function handlePokeSuccess(poke: any, tab_id: number) {
   Messaging.pushEvent({ action: "poke_success", data: poke }, new Set([tab_id]))
 }
-function handleEvent(event: any, tab_id: number) {
-  Messaging.pushEvent({ action: "sse", data: event }, new Set([tab_id]))
+function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
+  const state = useStore.getState();
+  const recipients = 
+    state.activeSubscriptions
+      .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
+      .map(sub => sub.subscriber)
+  console.log(subscription, "subscription issuing the SSE")
+  console.log(recipients, "recipients")
+  Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
 }
 function handlePokeError(error: any, poke: any, tab_id: number) {
   Messaging.pushEvent({ action: "poke_error", data: poke }, new Set([tab_id]))
