@@ -21,7 +21,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         set(state => ({ first: !("password" in res), popupPreference: res.popup || "modal", ships: res.ships || [], permissions: res.permissions || {}}))
     },
     setMasterPassword: async (password) => {
-        await initStorage(password);
+        const res = await initStorage(password);
         set(state => ({ first: false }));
     },
     addShip: async (ship, url, code, pw) => {

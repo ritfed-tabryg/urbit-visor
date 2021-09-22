@@ -82,7 +82,10 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "set_master_password":
       state.setMasterPassword(request.data.password)
-        .then(res => sendResponse("ok"));
+        .then(res => {
+          console.log("password set")
+          sendResponse("ok");
+        });
       break;
     case "add_ship":
       state.addShip(request.data.ship, request.data.url, request.data.code, request.data.pw)
