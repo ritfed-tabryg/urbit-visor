@@ -42,7 +42,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     disconnectShip: () => {
         const airlock = (get() as any).airlock;
         airlock.reset();
-        set(state => ({ activeShip: null, airlock: null }))
+        set(state => ({ activeShip: null, airlock: null, activeSubscriptions: [] }))
     },
     requestPerms: (website, permissions, existing) => 
         set(state => ({requestedPerms: {website: website, permissions: permissions, existing: existing}})),
@@ -76,6 +76,10 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     resetApp: async () => await resetApp(),
     addConsumer: (tab_id) => set(state => ({consumers: state.consumers.add(tab_id)})),
     addSubscription: (sub) => set(state => ({activeSubscriptions: [...state.activeSubscriptions, sub]})),
-    removeSubscription: (newSub) => set(state => ({activeSubscriptions: state.activeSubscriptions.filter(sub => sub.app != newSub.app && sub.path != newSub.path)})),
+    removeSubscription: (newSub) => set(state => ({activeSubscriptions: state.activeSubscriptions.filter(sub => {
+        return (sub.subscription.app != newSub.subscription.app 
+            && sub.subscription.path != newSub.subscription.path
+            && sub.subscriber != newSub.subscriber)
+    })})),
 }))
 

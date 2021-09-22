@@ -257,10 +257,16 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         event: (event: any) => handleEvent(event, sender.tab.id),
         err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
       })
-      if (!state.activeSubscriptions.find(sub => sub.app == request.data.app && sub.path == request.data.path)) {
+      console.log(state, "state")
+      console.log(request, "request")
+      if (!state.activeSubscriptions.find(sub => {
+        return (sub.subscription.app == request.data.app 
+          && sub.subscription.path == request.data.path
+          && sub.subscriber == sender.tab.id)
+      })) {
         subscribe(state.airlock, payload)
           .then(res => {
-            state.addSubscription(request.data)
+            state.addSubscription({subscription: request.data, subscriber: sender.tab.id})
             sendResponse({ status: "ok", response: res })
           })
           .catch(err => sendResponse({ status: "error", response: err }))
