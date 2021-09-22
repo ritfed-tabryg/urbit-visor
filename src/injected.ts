@@ -49,6 +49,6 @@ async function checkPermissions(): Promise<any>{
   scry: (payload: Scry) => requestData("scry", payload),
   poke: (payload: Poke<any>) => requestData("poke", payload),
   thread: (payload: Thread<any>) => requestData("thread", payload),
-  subscribe: (payload: SubscriptionRequestInterface) => requestData("subscribe", payload),
+  subscribe: (payload: SubscriptionRequestInterface, once?: boolean) => requestData("subscribe", {payload: payload, once: once}),
   unsubscribe: (payload: SubscriptionRequestInterface) => requestData("unsubscribe", payload)
 };
