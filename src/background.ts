@@ -1,6 +1,6 @@
 import { EncryptedShipCredentials, UrbitVisorAction, UrbitVisorInternalAction, UrbitVisorInternalComms, UrbitVisorState } from "./types/types";
 
-import { fetchAllPerms, scry, thread, poke, subscribe, unsubscribe } from "./urbit"
+import { fetchAllPerms } from "./urbit"
 import { useStore } from "./store";
 import { EventEmitter } from 'events';
 import { Messaging } from "./messaging";
@@ -238,7 +238,7 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       sendResponse({ status: "ok", response: state.airlock })
       break;
     case "scry":
-      scry(state.airlock, request.data)
+      state.airlock.scry(request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
@@ -247,39 +247,47 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         onSuccess: () => handlePokeSuccess(request.data, sender.tab.id),
         onError: (e: any) => handlePokeError(e, request.data, sender.tab.id)
       });
-      poke(state.airlock, pokePayload)
+      state.airlock.poke(pokePayload)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "thread":
-      thread(state.airlock, request.data)
+      state.airlock.thread(request.data)
         .then(res => sendResponse({ status: "ok", response: res }))
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
     case "subscribe":
       const existing = state.activeSubscriptions.find(sub => {
         return (
-          sub.subscription.app == request.data.app &&
-          sub.subscription.path == request.data.path)
+          sub.subscription.app == request.data.payload.app &&
+          sub.subscription.path == request.data.payload.path)
       });
       console.log(state, "state")
       console.log(request, "request")
       console.log(state.activeSubscriptions, "active")
       console.log(existing, "existing")
       if (!existing) {
-        const payload = Object.assign(request.data, {
-          event: (event: any) => handleEvent(event, request.data),
+        const payload = Object.assign(request.data.payload, {
+          event: (event: any) => handleEvent(event, request.data.payload),
           err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
         });
-        subscribe(state.airlock, payload)
+        if (request.data.once){
+          state.airlock.subscribeOnce(request.data.payload.app, request.data.payload.path, 5000)
+            .then(event => {
+              console.log(event, "event from subscribeonce")
+              handleOneOffEvent(event, sender.tab.id)
+            })
+        } else{
+        state.airlock.subscribe(payload)
           .then(res => {
             console.log(res, "subscription added to airlock");
-            state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: res });
+            state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: res });
             sendResponse({ status: "ok", response: res });
           })
           .catch(err => sendResponse({ status: "error", response: err }))
+        }
       } else if (existing.subscriber !== sender.tab.id){
-        state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: existing.airlockID });
+        state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: existing.airlockID });
         sendResponse({ status: "ok", response: "piggyback" })
       } else sendResponse({ status: "ok", response: "noop" })
       break;
@@ -290,7 +298,7 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
           sub.subscriber == sender.tab.id
       })
       const subscriptionNumber = 0;
-      unsubscribe(state.airlock, subscriptionNumber)
+      state.airlock.unsubscribe(subscriptionNumber)
         .then(res => {
           sendResponse({ status: "ok", response: res })
         })
@@ -307,6 +315,11 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
 function handlePokeSuccess(poke: any, tab_id: number) {
   Messaging.pushEvent({ action: "poke_success", data: poke }, new Set([tab_id]))
 }
+
+function handleOneOffEvent(event: any, recipient: number){
+  Messaging.pushEvent({ action: "sse", data: event }, new Set([recipient]))
+}
+
 function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
   setTimeout(()=> {
     const state = useStore.getState();
