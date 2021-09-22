@@ -27,7 +27,7 @@ export default function AddShip() {
 
   const [url, setURL] = useState("http://localhost");
   const [ship, setShipName] = useState<string>(null);
-  const [code, setCode] = useState("picdyl-ticler-nomdut-litnum");
+  const [code, setCode] = useState("");
   const component =
     ship
       ? <Confirm
