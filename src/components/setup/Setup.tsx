@@ -20,7 +20,7 @@ export default function Setup() {
             setError("");
             Messaging.sendToBackground({ action: "set_master_password", data: { password: pw } })
                 .then(res => {
-                    history.push("/");
+                    history.push("/add_ship");
                 })
         } else {
             setError("Passwords do not match")
