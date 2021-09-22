@@ -273,12 +273,15 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         });
         subscribe(state.airlock, payload)
           .then(res => {
-            state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: res })
-            sendResponse({ status: "ok", response: res })
+            console.log(res, "subscription added to airlock");
+            state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: res });
+            sendResponse({ status: "ok", response: res });
           })
           .catch(err => sendResponse({ status: "error", response: err }))
-      } else if (existing.subscriber !== sender.tab.id) 
-        state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: existing.airlockID })
+      } else if (existing.subscriber !== sender.tab.id){
+        state.addSubscription({ subscription: request.data, subscriber: sender.tab.id, airlockID: existing.airlockID });
+        sendResponse({ status: "ok", response: "piggyback" })
+      } else sendResponse({ status: "ok", response: "noop" })
       break;
     case "unsubscribe":
       state.activeSubscriptions.find(sub => {
@@ -305,14 +308,16 @@ function handlePokeSuccess(poke: any, tab_id: number) {
   Messaging.pushEvent({ action: "poke_success", data: poke }, new Set([tab_id]))
 }
 function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
-  const state = useStore.getState();
-  const recipients = 
-    state.activeSubscriptions
-      .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
-      .map(sub => sub.subscriber)
-  console.log(subscription, "subscription issuing the SSE")
-  console.log(recipients, "recipients")
-  Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
+  setTimeout(()=> {
+    const state = useStore.getState();
+    const recipients = 
+      state.activeSubscriptions
+        .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
+        .map(sub => sub.subscriber)
+    console.log(subscription, "subscription issuing the SSE")
+    console.log(state.activeSubscriptions, "state")
+    Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
+  }, 2000)
 }
 function handlePokeError(error: any, poke: any, tab_id: number) {
   Messaging.pushEvent({ action: "poke_error", data: poke }, new Set([tab_id]))
