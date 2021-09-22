@@ -24,7 +24,8 @@ export interface UrbitVisorState{
   selectedShip: EncryptedShipCredentials,
   activeShip: EncryptedShipCredentials,
   permissions: PermissionsGraph,
-  consumers: Set<number>
+  consumers: Set<number>,
+  activeSubscriptions: SubscriptionRequestInterface[],
   init: () => Promise<void>,
   setMasterPassword: (password: string) => Promise<void>,
   addShip: (ship: string, url: string, code: string, pw: string) => Promise<void>,
@@ -43,6 +44,8 @@ export interface UrbitVisorState{
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>
   resetApp: () => Promise<void>,
   addConsumer: (tab_id: number) => void
+  addSubscription: (sub: SubscriptionRequestInterface) => void,
+  removeSubscription: (sub: SubscriptionRequestInterface) => void
 }
 
 export type PopupPreference = "modal" | "window";
@@ -57,7 +60,7 @@ export interface PermissionsGraph {
   [key: string] : Permission[]
 }
 
-export type UrbitVisorAction = "on" | "check_connection" | "check_perms" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "thread";
+export type UrbitVisorAction = "on" | "check_connection" | "check_perms" | "shipURL" | "perms"| "shipName" | "scry" | "poke" | "subscribe" | "unsubscribe" | "thread";
 export type UrbitVisorInternalAction = "state" | "connected" | "cache_form_url" | "end_url_caching" | "dismiss_perms";
 type UrbitVisorRequestType = Scry | Thread<any> | Poke<any> | SubscriptionRequestInterface | UrbitVisorAction[]
 

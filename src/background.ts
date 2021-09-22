@@ -97,8 +97,10 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       sendResponse("ok");
       break;
     case "connect_ship":
-      if (state.activeShip)
+      if (state.activeShip) {
+        state.disconnectShip();
         Messaging.pushEvent({ action: "disconnected", data: { ship: state.activeShip.shipName } }, state.consumers)
+      }
       state.connectShip(request.data.url, request.data.ship)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
@@ -255,9 +257,14 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         event: (event: any) => handleEvent(event, sender.tab.id),
         err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
       })
-      subscribe(state.airlock, payload)
-        .then(res => sendResponse({ status: "ok", response: res }))
-        .catch(err => sendResponse({ status: "error", response: err }))
+      if (!state.activeSubscriptions.find(sub => sub.app == request.data.app && sub.path == request.data.path)) {
+        subscribe(state.airlock, payload)
+          .then(res => {
+            state.addSubscription(request.data)
+            sendResponse({ status: "ok", response: res })
+          })
+          .catch(err => sendResponse({ status: "error", response: err }))
+      }
       break;
     case "on":
       sendResponse({ status: "ok", response: request.data.thing })
