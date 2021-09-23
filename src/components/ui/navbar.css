@@ -8,14 +8,26 @@
   }
 
 .Nav-logo {
-    height: 56px;
+    height: 40px;
+    margin-left: 0.2rem;
     cursor: pointer;
+    z-index: 2;
     /* pointer-events: none; */
-  }
+}
+
+.navbar-title {
+    margin-left: auto;
+    margin-right: auto;
+    width: 357px !important;
+    position: fixed;
+    left: 0;
+    z-index: 1;
+}
 
 .navbar-sigil-wrapper{
     margin-right: 0.24em;
     /* padding: 2px; */
+    z-index: 2;
 }
 
 .navbar-sigil{

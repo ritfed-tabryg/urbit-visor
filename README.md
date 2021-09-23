@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://i.imgur.com/V91h3Al.png" width="224px"/><br/>
+  <img src="assets/visor-logo.png" width="224px"/><br/>
   Urbit Visor
 </h1>
 <p align="center">Urbit Visor is an extension which <b>transforms your web browser</b> into a <b>first class Urbit client</b>. Its goal is to allow existing web tech to seamlessly integrate together with the novel functionality of Urbit. </p>
@@ -57,12 +57,12 @@ Below you will find the API which the current version of Urbit Visor supports. I
 ## FAQ
 
 #### What does the "Your ship needs an OS update" error mean?
+
 This typically happens when you have spawned a brand new comet which has not gone through any OTA updates and as such is running on an old version that makes it incompatible with Urbit Visor. Simply OTA via one of Tlon's stars using the following command in dojo:
 
 ```
 |ota ~marzod %kids
 ```
-
 
 ## Credit
 
