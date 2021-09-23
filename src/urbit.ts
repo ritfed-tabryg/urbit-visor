@@ -19,7 +19,7 @@ export async function fetchShipname(url: string): Promise<string>{
 export async function connectToShip(url: string, shipName: string): Promise<any>{
   const airlock = new Urbit(url, "");
     airlock.ship = shipName;
-    airlock.verbose = true;
+    // airlock.verbose = true;
     await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
     return airlock;
 }
