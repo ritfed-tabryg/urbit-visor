@@ -61,7 +61,6 @@ function portListener() {
 
 function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, sendResponse: any) {
   const state = useStore.getState();
-  console.log(request, "mmm")
   switch (request.action) {
     case "get_initial_state":
       sendResponse({ first: state.first, ships: state.ships, activeShip: state.activeShip, cachedURL: state.cached_url, requestedPerms: state.requestedPerms })
@@ -175,6 +174,8 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
 }
 
 function handleVisorCall(request: any, sender: any, sendResponse: any) {
+  console.log(request.action, "visor called received");
+  console.log(Date.now())
   const state = useStore.getState();
   state.addConsumer(sender.tab.id);
   if (request.action == "check_connection") sendResponse({ status: "ok", response: !!state.activeShip })
@@ -272,7 +273,7 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
           err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
         });
         if (request.data.once){
-          state.airlock.subscribeOnce(request.data.payload.app, request.data.payload.path, 5000)
+          state.airlock.subscribeOnce(request.data.payload.app, request.data.payload.path)
             .then(event => {
               console.log(event, "event from subscribeonce")
               handleOneOffEvent(event, sender.tab.id)
@@ -327,8 +328,8 @@ function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
       state.activeSubscriptions
         .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
         .map(sub => sub.subscriber)
-    console.log(subscription, "subscription issuing the SSE")
-    console.log(state.activeSubscriptions, "state")
+    // console.log(subscription, "subscription issuing the SSE")
+    // console.log(state.activeSubscriptions, "state")
     Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
   }, 2000)
 }
