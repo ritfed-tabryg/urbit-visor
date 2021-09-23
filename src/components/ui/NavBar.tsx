@@ -4,6 +4,7 @@ import { useStore } from "../../store";
 import "./navbar.css";
 import Sigil from "./svg/Sigil"
 import logo from "../../icons/urbit.svg";
+import visorLogo from "../../icons/visor.png"
 import RocketIcon from "../../icons/rocket";
 import SettingsIcon from "../../icons/settings";
 import AboutIcon from "../../icons/info";
@@ -40,8 +41,10 @@ export default function NavBar({interacting, active}: NavbarProps) {
   const displaySigil = active ? sigil : dummy;
 
   return (<nav className="App-navbar">
-    <img ref={urbitlogo} onClick={openMenu} src={logo} className="Nav-logo" />
-      <h4>Urbit Visor</h4>
+    <img ref={urbitlogo} onClick={openMenu} src={visorLogo} className="Nav-logo" />
+      <div className="navbar-title">
+        <h4>Urbit Visor</h4>
+      </div>
     <div className={wrapperClass}>
       {displaySigil}
     </div>
