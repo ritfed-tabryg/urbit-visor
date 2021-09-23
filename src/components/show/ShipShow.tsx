@@ -132,7 +132,7 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
       setError("Wrong password")
     }
   }
-  function gotoDashboard() { chrome.tabs.create({ url: "https://dashboard.urbitvisor.com" }) }
+  function gotoDashboard() { chrome.tabs.create({ url: "http://dashboard.urbitvisor.com" }) }
 if (!showPerms) return (
         <motion.div
           initial={{ opacity: 0 }}
