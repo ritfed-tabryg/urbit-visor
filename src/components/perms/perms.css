@@ -62,12 +62,16 @@
 
 
 .permission-string{
-    padding: 0.5rem;
     margin: 0.3rem;
+    margin-left: 1.25rem;
 }
 .permission-string:hover{
   color: red;
   font-weight: 500;
+  cursor: pointer;
+}
+.permission-string .chip:hover{
+  background-color: red;
   cursor: pointer;
 }
 ul{
