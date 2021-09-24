@@ -148,7 +148,7 @@ function SettingsPopup() {
       exit={{ opacity: 0 }}
       className="popup-settings-page padding flex-grow-wrapper">
       <h3>Permission Confirmation Settings</h3>
-      <p>Choose whether your Urbit Visor will create a new page popup when requesting permission.</p>
+      <p>Choose whether Urbit Visor will create a new page popup when permissions are requested.</p>
       <div className="popup-settings flex-grow">
         <div className="option">
           <p> Show Modal in Page
