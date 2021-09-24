@@ -47,7 +47,8 @@
   height: 70px;
 }
 .comet-sigil{
-  background-color: black;
+  /* background-color: black; */
+  padding: 3px !important;
 }
 
 .active-ship{
