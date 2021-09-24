@@ -14,7 +14,7 @@ export default function About() {
       </div>
       <p>Version: 0.1.0</p>
       <div className="about-description">
-        <p>Urbit Visor is an overlay platform that merges Urbit and the web together. Its goal is to allow existing web tech to seamlessly integrate together with the novel functionality of Urbit.</p>
+        <p>Urbit Visor is an extension which transforms your web browser into a first class Urbit client. Its goal is to allow existing web tech to seamlessly integrate together with the novel functionality of Urbit.</p>
       </div>
       <div className="about-created-by">
         {/* <p>Created by:</p> */}

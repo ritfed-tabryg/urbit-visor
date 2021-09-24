@@ -16,13 +16,14 @@
 }
 
 .navbar-title {
-    margin-left: auto;
+    /* margin-left: auto;
     margin-right: auto;
     width: 357px !important;
-    /* position: fixed; */
+    position: fixed;
     left: 0;
-    z-index: 1;
+    z-index: 1; */
     position: inherit;
+    margin-left: -5px;
 }
 
 .navbar-sigil-wrapper{

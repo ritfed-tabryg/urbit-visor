@@ -412,6 +412,7 @@ button:hover {
   padding: 0.5rem;
   width: 180px;
   background-color: white;
+  border-radius: 5px;
 }
 .full-size{
   height: 100%;

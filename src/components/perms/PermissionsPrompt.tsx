@@ -59,13 +59,15 @@ export default function PermissionsPrompt(props: PermissionsPromptProps) {
             className="permissions padding flex-grow-wrapper">
             <h3>Permissions Requested</h3>
             <div className="flex-grow">
-                <a href={perms.website} rel="noopener noreferrer" target="_blank" className="requesting-domain">{perms.website}</a>
-                <p className="align-left">requested the following permissions: </p>
-                <ul>
-                    {perms.permissions.map(perm => {
-                        return <li key={perm}><Chip type={"new"} perm={perm} destroyPerm={removePerm} /></li>
-                    })}
-                </ul>
+                <a href={perms.website} title={perms.website} rel="noopener noreferrer" target="_blank" className="requesting-domain">{perms.website}</a>
+                <p className="align-center">requested the following permissions: </p>
+                <div className="permission-request-list">
+                    <ul>
+                        {perms.permissions.map(perm => {
+                            return <li key={perm}><Chip type={"new"} perm={perm} destroyPerm={removePerm} /></li>
+                        })}
+                    </ul>
+                </div>
                 {/* {perms.existing && <Existing {...props}/>} */}
                 <p>Enter your master password to grant them.</p>
                 <input onChange={(e) => setPw(e.currentTarget.value)} type="password" />

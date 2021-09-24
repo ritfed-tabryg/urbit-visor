@@ -27,7 +27,7 @@ const Sigil = (props: SigilProps) => {
   };
   const cometStyle = { fill: "var(--foreground)" };
   if (props.patp.length > 28) return (
-    <div style={styles}>
+    <div className="comet-sigil" style={styles}>
       <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <g>
           <path style={cometStyle} d="M503.694,7.871c1.344-2.047,1.047-4.781-0.734-6.453c-1.781-1.703-4.5-1.891-6.484-0.438l-98.547,71.344
