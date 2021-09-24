@@ -50,5 +50,5 @@ async function checkPermissions(): Promise<any>{
   poke: (payload: Poke<any>) => requestData("poke", payload),
   thread: (payload: Thread<any>) => requestData("thread", payload),
   subscribe: (payload: SubscriptionRequestInterface, once?: boolean) => requestData("subscribe", {payload: payload, once: once}),
-  unsubscribe: (payload: SubscriptionRequestInterface) => requestData("unsubscribe", payload)
+  unsubscribe: (payload: number) => requestData("unsubscribe", payload)
 };
