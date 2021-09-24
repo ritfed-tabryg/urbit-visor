@@ -31,15 +31,11 @@
   color: white;
   text-decoration: none;
   font-size: 1.2rem;
-  /* white-space: nowrap; */
-  /* word-wrap:break-word */
 }
 .ship p{
     margin: auto auto auto 1.2rem;
 }
-.add-more{
 
-}
 .sigil-wrapper{
   margin: auto 5px;
   cursor: pointer;
@@ -47,7 +43,6 @@
   height: 70px;
 }
 .comet-sigil{
-  /* background-color: black; */
   padding: 3px !important;
 }
 

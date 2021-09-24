@@ -62,12 +62,16 @@
 
 
 .permission-string{
-    padding: 0.5rem;
     margin: 0.3rem;
+    margin-left: 1.25rem;
 }
 .permission-string:hover{
   color: red;
   font-weight: 500;
+  cursor: pointer;
+}
+.permission-string .chip:hover{
+  background-color: red;
   cursor: pointer;
 }
 ul{
@@ -106,13 +110,11 @@ ul{
 }
 .minibutton{
     margin: auto 0;
-    width: 30px;
+    width: 28px;
+    height: 28px;
     font-size: 0.7rem;
-    height: 1.5rem;
     padding: 8px;
     text-transform: none;
-    /* background-color: rgb(3, 125, 214, 0.5); */
-    /* todo need a way to have different colors here */
     background: url('https://api.iconify.design/mdi:delete.svg') no-repeat center center / contain;
 }
 .minibutton:hover{
