@@ -241,20 +241,6 @@ input {
   width: 14ch;
 }
 
-.about-title {
-  display: block;
-  text-align: center;
-}
-
-.about-title h4 {
-  /* margin: 0.2rem 0.2rem 0 25%; */
-}
-
-.about-title p {
-  margin: 0.7rem 0 0 0.2rem;
-  font-size: 0.9rem;
-}
-
 /* buttons */
 
 button {
@@ -403,17 +389,33 @@ button:hover {
 }
 
 /* about page */
-
-.about div {
-  margin-top: 3rem;
+.about-version {
+  font-weight: bolder;
 }
 
-.about img {
+.about div {
+  margin-top: 2rem;
+}
+
+img.about-visor-logo {
+    background: none;
+    height: 5.8rem;
+    width: 8rem;
+    margin-top: 1.25rem;
+}
+
+img.about-dcspark-logo {
   padding: 0.5rem;
   width: 180px;
   background-color: white;
   border-radius: 5px;
+  margin-top: 0.6rem;
 }
+
+.about-description {
+    line-height: 1.4rem;
+}
+
 .full-size{
   height: 100%;
   width: 100%;
