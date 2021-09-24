@@ -179,7 +179,8 @@ function handleVisorCall(request: any, sender: any, sendResponse: any) {
   const state = useStore.getState();
   state.addConsumer(sender.tab.id);
   if (request.action == "check_connection") sendResponse({ status: "ok", response: !!state.activeShip })
-  else if (!state.activeShip) requirePerm(state, "locked", sendResponse);
+  else if (request.action == "unsubscribe") respond(state, request, sender, sendResponse)
+  else if (!state.activeShip) requirePerm(state, "locked", sendResponse)
   else checkPerms(state, request, sender, sendResponse);
 }
 
@@ -293,15 +294,11 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       } else sendResponse({ status: "ok", response: "noop" })
       break;
     case "unsubscribe":
-      state.activeSubscriptions.find(sub => {
-        sub.subscription.app == request.data.app &&
-          sub.subscription.path == request.data.path &&
-          sub.subscriber == sender.tab.id
-      })
-      const subscriptionNumber = 0;
-      state.airlock.unsubscribe(subscriptionNumber)
+      state.airlock.unsubscribe(request.data)
         .then(res => {
           sendResponse({ status: "ok", response: res })
+          const sub = state.activeSubscriptions.find(sub => sub.airlockID === request.data && sub.subscriber === sender.tab.id)
+          state.removeSubscription(sub)
         })
         .catch(err => sendResponse({ status: "error", response: err }))
       break;

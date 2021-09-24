@@ -76,10 +76,15 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     resetApp: async () => await resetApp(),
     addConsumer: (tab_id) => set(state => ({consumers: state.consumers.add(tab_id)})),
     addSubscription: (sub) => set(state => ({activeSubscriptions: [...state.activeSubscriptions, sub]})),
-    removeSubscription: (newSub) => set(state => ({activeSubscriptions: state.activeSubscriptions.filter(sub => {
-        return (sub.subscription.app != newSub.subscription.app 
-            && sub.subscription.path != newSub.subscription.path
-            && sub.subscriber != newSub.subscriber)
-    })})),
+    removeSubscription: (subToDelete) => {
+        console.log(get().activeSubscriptions, "subs");
+        const filtered = get().activeSubscriptions.filter(sub => {
+            return (
+                !(sub.airlockID === subToDelete.airlockID &&
+                sub.subscriber === subToDelete.subscriber)
+                )
+        });
+        set(state => ({activeSubscriptions: filtered}))
+    },
 }))
 
