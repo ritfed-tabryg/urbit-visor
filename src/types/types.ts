@@ -18,7 +18,8 @@ type TabID = number;
 interface WebsiteSubscription {
   subscription: SubscriptionRequestInterface,
   subscriber: TabID,
-  airlockID: number
+  airlockID: number,
+  requestID: string
 }
 
 
@@ -91,5 +92,6 @@ export interface UrbitVisorInternalComms {
 
 export interface UrbitVisorEvent {
   action: "connected" | "disconnected" | "permissions_granted" | "permissions_revoked" | "sse" | "poke_success" | "poke_error" | "subscription_error"
+  requestID?: string,
   data?: any
 }

@@ -1,4 +1,5 @@
 import Urbit from "@urbit/http-api";
+import {useStore} from "./store";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
 import { EncryptedShipCredentials, PermissionRequest } from "./types/types";
 
@@ -16,11 +17,20 @@ export async function fetchShipname(url: string): Promise<string>{
   })
 }
 // todo
-export async function connectToShip(url: string, shipName: string): Promise<any>{
+export async function connectToShip(url: string, ship: EncryptedShipCredentials): Promise<any>{
+  const {connectShip, activeSubscriptions} = useStore.getState();
   const airlock = new Urbit(url, "");
-    airlock.ship = shipName;
+    airlock.ship = ship.shipName;
     // airlock.verbose = true;
+    airlock.onError = async (err) => {
+      airlock.reset();
+      console.log(err, "errah");
+      await connectShip(url, ship);
+    }
+    airlock.onRetry = () => console.log("airlock retrying")
+    airlock.onOpen = () => console.log("airlock open!")
     await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
+    for (let sub of activeSubscriptions) await airlock.subscribe(sub.subscription)
     return airlock;
 }
 
@@ -124,7 +134,7 @@ export async function checkPerms(url: string, domain: string) {
 export async function fetchAllPerms(url: string) {
   const airlock = new Urbit(url, "");
   const payload = { app: "settings-store", path: "/bucket/urbit-visor-permissions" };
-  return await scry(airlock, payload)
+  return await airlock.scry(payload)
 }
 
 export async function wipeAllPerms(ship: string, url: string) {
@@ -140,26 +150,4 @@ export async function wipeAllPerms(ship: string, url: string) {
 
 export async function openChannel(airlock: Urbit) {
   await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
-};
-
-export async function scry(airlock: Urbit, payload: Scry) {
-  return await airlock.scry(payload);
-};
-
-export async function thread(airlock: Urbit, payload: Thread<any>) {
-  return await airlock.thread(payload);
-};
-
-// Pokes take two optional callbacks, onSuccess and onError
-export async function poke(airlock: Urbit, payload: Poke<any>) {
-  return await airlock.poke(payload);
-};
-
-// subscriptions take two optional callbacks, event() and err()
-export async function subscribe(airlock: Urbit, payload: SubscriptionRequestInterface) {
-  return await airlock.subscribe(payload);
-};
-
-export async function unsubscribe(airlock: Urbit, subscription: number) {
-  return await airlock.unsubscribe(subscription);
 };

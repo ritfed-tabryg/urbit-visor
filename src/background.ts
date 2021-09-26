@@ -246,8 +246,8 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       break;
     case "poke":
       const pokePayload = Object.assign(request.data, {
-        onSuccess: () => handlePokeSuccess(request.data, sender.tab.id),
-        onError: (e: any) => handlePokeError(e, request.data, sender.tab.id)
+        onSuccess: () => handlePokeSuccess(request.data, sender.tab.id, request.id),
+        onError: (e: any) => handlePokeError(e, request.data, sender.tab.id, request.id)
       });
       state.airlock.poke(pokePayload)
         .then(res => sendResponse({ status: "ok", response: res }))
@@ -270,26 +270,26 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       console.log(existing, "existing")
       if (!existing) {
         const payload = Object.assign(request.data.payload, {
-          event: (event: any) => handleEvent(event, request.data.payload),
-          err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id)
+          event: (event: any) => handleEvent(event, request.data.payload, request.id),
+          err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id, request.id)
         });
         if (request.data.once){
           state.airlock.subscribeOnce(request.data.payload.app, request.data.payload.path)
             .then(event => {
               console.log(event, "event from subscribeonce")
-              handleOneOffEvent(event, sender.tab.id)
+              handleOneOffEvent(event, sender.tab.id, request.id)
             })
         } else{
         state.airlock.subscribe(payload)
           .then(res => {
             console.log(res, "subscription added to airlock");
-            state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: res });
+            state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: res, requestID: request.id });
             sendResponse({ status: "ok", response: res });
           })
           .catch(err => sendResponse({ status: "error", response: err }))
         }
       } else if (existing.subscriber !== sender.tab.id){
-        state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: existing.airlockID });
+        state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: existing.airlockID, requestID: request.id  });
         sendResponse({ status: "ok", response: "piggyback" })
       } else sendResponse({ status: "ok", response: "noop" })
       break;
@@ -310,15 +310,15 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
   }
 }
 
-function handlePokeSuccess(poke: any, tab_id: number) {
-  Messaging.pushEvent({ action: "poke_success", data: poke }, new Set([tab_id]))
+function handlePokeSuccess(poke: any, tab_id: number, requestID: string) {
+  Messaging.pushEvent({ action: "poke_success", data: poke, requestID: requestID }, new Set([tab_id]))
 }
 
-function handleOneOffEvent(event: any, recipient: number){
-  Messaging.pushEvent({ action: "sse", data: event }, new Set([recipient]))
+function handleOneOffEvent(event: any, recipient: number, requestID: string){
+  Messaging.pushEvent({ action: "sse", data: event, requestID: requestID }, new Set([recipient]))
 }
 
-function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
+function handleEvent(event: any, subscription: SubscriptionRequestInterface, requestID: string) {
   setTimeout(()=> {
     const state = useStore.getState();
     const recipients = 
@@ -327,12 +327,12 @@ function handleEvent(event: any, subscription: SubscriptionRequestInterface) {
         .map(sub => sub.subscriber)
     // console.log(subscription, "subscription issuing the SSE")
     // console.log(state.activeSubscriptions, "state")
-    Messaging.pushEvent({ action: "sse", data: event }, new Set(recipients))
+    Messaging.pushEvent({ action: "sse", data: event, requestID: requestID}, new Set(recipients))
   }, 2000)
 }
-function handlePokeError(error: any, poke: any, tab_id: number) {
-  Messaging.pushEvent({ action: "poke_error", data: poke }, new Set([tab_id]))
+function handlePokeError(error: any, poke: any, tab_id: number, requestID: string) {
+  Messaging.pushEvent({ action: "poke_error", data: poke, requestID: requestID }, new Set([tab_id]))
 }
-function handleSubscriptionError(error: any, subscription: any, tab_id: number) {
-  Messaging.pushEvent({ action: "subscription_error", data: subscription }, new Set([tab_id]))
+function handleSubscriptionError(error: any, subscription: any, tab_id: number, requestID: string) {
+  Messaging.pushEvent({ action: "subscription_error", data: subscription, requestID: requestID }, new Set([tab_id]))
 }
