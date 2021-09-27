@@ -109,7 +109,8 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
           chrome.browserAction.setBadgeText({ text: "" });
           Messaging.pushEvent({ action: "connected", data: { debug: state, ship: request.data.ship } }, state.consumers)
           sendResponse("ok")
-        });
+        })
+        .catch(err => sendResponse(null));
       break;
     case "disconnect_ship":
       const ship = state.activeShip.shipName;
