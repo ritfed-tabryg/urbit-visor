@@ -87,19 +87,16 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
       setLoading(true);
       Messaging.sendToBackground({ action: "connect_ship", data: { url: url, ship: ship } })
         .then(res => {
+          if (res) setActive(ship);
+          else setError("Could not connect");
           setLoading(false);
-          setActive(ship);
         })
         .catch(err => {
           if (err.message == 'Failed to PUT channel') reconnect(url)
-          else {
-            setError("Could not connect")
-            setLoading(false);
-          }
+          else setError("Could not connect")
+          setLoading(false);
         })
-    } else {
-      setError("Wrong password.")
-    }
+    } else setError("Wrong password."), setLoading(false);
   }
   function disconnect(): void {
     Messaging.sendToBackground({ action: "disconnect_ship" })
