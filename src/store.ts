@@ -36,7 +36,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     },
     selectShip: (ship) => set(state => ({ selectedShip: ship })),
     connectShip: async (url, ship) => {
-        const airlock = await connectToShip(url, ship.shipName);
+        const airlock = await connectToShip(url, ship);
         set(state => ({ activeShip: ship, airlock: airlock }));
     },
     disconnectShip: () => {
