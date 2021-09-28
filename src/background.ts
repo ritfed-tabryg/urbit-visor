@@ -129,7 +129,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
             .filter(consumer => consumer.url.origin === request.data.request.website)
             .map(consumer => consumer.tabID)
             );
-          // only if url coincides with the website
           Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, recipients)
           sendResponse("ok")
         })
@@ -146,7 +145,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
             .filter(consumer => consumer.url.origin === request.data.domain)
             .map(consumer => consumer.tabID)
           );
-          // only if url coincides with the website
           Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, recipients)
           sendResponse("ok")
         })
@@ -158,7 +156,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
             .filter(consumer => consumer.url.origin === request.data.request.website)
             .map(consumer => consumer.tabID)
           );    
-          // only if url coincides with the website, need "tabs" permissions to implement
           Messaging.pushEvent({ action: "permissions_revoked", data: request.data.request }, recipients)
           sendResponse("ok")
         })
