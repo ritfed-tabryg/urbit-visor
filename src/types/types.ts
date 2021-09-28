@@ -91,7 +91,11 @@ export interface UrbitVisorInternalComms {
 }
 
 export interface UrbitVisorEvent {
-  action: "connected" | "disconnected" | "permissions_granted" | "permissions_revoked" | "sse" | "poke_success" | "poke_error" | "subscription_error"
+  action: UrbitVisorEventType
   requestID?: string,
   data?: any
 }
+export type UrbitVisorEventType =  UrbitVisorInternalEvent | UrbitEvent
+
+type UrbitVisorInternalEvent = "connected" | "disconnected" | "permissions_granted" | "permissions_revoked" 
+type UrbitEvent =  "sse" | "poke_success" | "poke_error" | "subscription_error"
