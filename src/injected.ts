@@ -1,3 +1,4 @@
+import {fromEvent} from "rxjs";
 import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types";
 import {UrbitVisorAction, UrbitVisorRequest, UrbitVisorResponse} from "./types/types";
 import {Messaging} from "./messaging";
