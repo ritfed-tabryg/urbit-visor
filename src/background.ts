@@ -102,28 +102,35 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
     case "connect_ship":
       if (state.activeShip) {
         state.disconnectShip();
-        Messaging.pushEvent({ action: "disconnected", data: { ship: state.activeShip.shipName } }, state.consumers)
+        const recipients = new Set(state.consumers.map(consumer => consumer.tabID));
+        Messaging.pushEvent({ action: "disconnected", data: { ship: state.activeShip.shipName } }, recipients)
       }
       state.connectShip(request.data.url, request.data.ship)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
-          Messaging.pushEvent({ action: "connected", data: { debug: state, ship: request.data.ship } }, state.consumers)
+          const recipients = new Set(state.consumers.map(consumer => consumer.tabID));
+          Messaging.pushEvent({ action: "connected"}, recipients)
           sendResponse("ok")
         })
         .catch(err => sendResponse(null));
       break;
     case "disconnect_ship":
-      const ship = state.activeShip.shipName;
       state.disconnectShip();
-      Messaging.pushEvent({ action: "disconnected", data: { ship: ship } }, state.consumers)
+      const recipients = new Set(state.consumers.map(consumer => consumer.tabID));
+      Messaging.pushEvent({ action: "disconnected"}, recipients)
       sendResponse("ok");
       break;
     case "grant_perms":
+      console.log(request, "granting perms")
       state.grantPerms(request.data.request)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
+          const recipients = new Set(state.consumers
+            .filter(consumer => consumer.url.origin === request.data.request.website)
+            .map(consumer => consumer.tabID)
+            );
           // only if url coincides with the website
-          // Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, state.consumers)
+          Messaging.pushEvent({ action: "permissions_granted", data: request.data.request }, recipients)
           sendResponse("ok")
         })
       break;
@@ -135,17 +142,24 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
     case "remove_whole_domain":
       state.removeWholeDomain(request.data.url, request.data.ship, request.data.domain)
         .then(res => {
+          const recipients = new Set(state.consumers
+            .filter(consumer => consumer.url.origin === request.data.domain)
+            .map(consumer => consumer.tabID)
+          );
           // only if url coincides with the website
-          // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+          Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, recipients)
           sendResponse("ok")
         })
       break;
     case "revoke_perm":
       state.revokePerm(request.data.url, request.data.ship, request.data.request)
         .then(res => {
-          chrome.tabs.query
+          const recipients = new Set(state.consumers
+            .filter(consumer => consumer.url.origin === request.data.request.website)
+            .map(consumer => consumer.tabID)
+          );    
           // only if url coincides with the website, need "tabs" permissions to implement
-          // Messaging.pushEvent({ action: "permissions_revoked", data: request.data }, state.consumers)
+          Messaging.pushEvent({ action: "permissions_revoked", data: request.data.request }, recipients)
           sendResponse("ok")
         })
       break;
@@ -175,10 +189,8 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
 }
 
 function handleVisorCall(request: any, sender: any, sendResponse: any) {
-  console.log(request.action, "visor called received");
-  console.log(Date.now())
   const state = useStore.getState();
-  state.addConsumer(sender.tab.id);
+  state.addConsumer({tabID: sender.tab.id, url: new URL(sender.tab.url)});
   if (request.action == "check_connection") sendResponse({ status: "ok", response: !!state.activeShip })
   else if (request.action == "unsubscribe") respond(state, request, sender, sendResponse)
   else if (!state.activeShip) requirePerm(state, "locked", sendResponse)

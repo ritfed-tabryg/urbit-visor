@@ -15,7 +15,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     selectedShip: null,
     activeShip: null,
     permissions: {},
-    consumers: new Set(),
+    consumers: [],
     activeSubscriptions: [],
     init: async () => {
         const res = await getStorage(["popup", "ships", "password", "permissions"]);
@@ -74,7 +74,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         await savePassword(password);
     },
     resetApp: async () => await resetApp(),
-    addConsumer: (tab_id) => set(state => ({consumers: state.consumers.add(tab_id)})),
+    addConsumer: (consumer) => set(state => ({consumers: [...state.consumers, consumer]})),
     addSubscription: (sub) => set(state => ({activeSubscriptions: [...state.activeSubscriptions, sub]})),
     removeSubscription: (subToDelete) => {
         console.log(get().activeSubscriptions, "subs");
