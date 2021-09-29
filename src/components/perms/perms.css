@@ -64,8 +64,9 @@
 .permission-string{
     margin: 0.3rem;
     margin-left: 1.25rem;
+    cursor: auto !important;
 }
-.permission-string:hover{
+/* .permission-string:hover{
   color: red;
   font-weight: 500;
   cursor: pointer;
@@ -73,7 +74,7 @@
 .permission-string .chip:hover{
   background-color: red;
   cursor: pointer;
-}
+} */
 ul{
     margin: 2rem 0;
     list-style: none;
@@ -97,6 +98,7 @@ ul{
     margin-bottom: 5px;
     width: 129px;
     margin-right: 5px;
+    cursor: auto !important;
 }
 .chip p{
     margin: 0;

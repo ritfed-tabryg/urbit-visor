@@ -146,7 +146,7 @@ function IndividualPerm({ perm, promptRevokePerm }: IPProps) {
     const revoke = () => promptRevokePerm(perm);
     return (
         <>
-            <div onClick={revoke} className="permission-string" key={perm}>
+            <div className="permission-string" key={perm}>
                 <Chip type={"old"} perm={perm} />
             </div>
         </>
