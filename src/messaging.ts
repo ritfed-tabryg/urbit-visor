@@ -24,7 +24,6 @@ export const Messaging = {
     },
     pushEvent: function (event: UrbitVisorEvent, recipients: Set<number>) {
         console.log(event, "pushing event")
-        console.log(recipients, "recipients")
       for (let tab_id of recipients) chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: event})
     },
     callVisor: function ({ app, action, data }: UrbitVisorRequest): Promise<UrbitVisorResponse> {
@@ -62,9 +61,12 @@ export const Messaging = {
             request.origin = e.origin;
             Messaging.relayToBackground(request).then((response: UrbitVisorResponse) => {
                 // relay back responses to webpage
-                if (!response) console.log(request, "bugging at proxy controller")
-                window.postMessage({ app: "urbitVisorResponse", id: request.id, status: response.status, response: response.response }, window.origin)
-            });
+                if (!response) {
+                    console.log(request, "request bugging at proxy controller")
+                    console.log(response, "response bugging at proxy controller")
+                }
+                window.postMessage({ app: "urbitVisorResponse", id: request.id, status: response?.status, response: response?.response }, window.origin)
+            })
             return;
         });
         // listen to events from the background script
