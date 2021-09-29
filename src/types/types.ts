@@ -22,6 +22,11 @@ interface WebsiteSubscription {
   requestID: string
 }
 
+interface UrbitVisorConsumer{
+  tabID: number,
+  url: URL
+}
+
 
 export interface UrbitVisorState{
   airlock: Urbit,
@@ -33,7 +38,7 @@ export interface UrbitVisorState{
   selectedShip: EncryptedShipCredentials,
   activeShip: EncryptedShipCredentials,
   permissions: PermissionsGraph,
-  consumers: Set<TabID>,
+  consumers: UrbitVisorConsumer[],
   activeSubscriptions: WebsiteSubscription[],
   init: () => Promise<void>,
   setMasterPassword: (password: string) => Promise<void>,
@@ -52,7 +57,7 @@ export interface UrbitVisorState{
   changePopupPreference: (preference: PopupPreference) => Promise<void>,
   changeMasterPassword: (oldPassword: string, newPassword: string) => Promise<void>
   resetApp: () => Promise<void>,
-  addConsumer: (tab_id: number) => void
+  addConsumer: (consumer: UrbitVisorConsumer) => void
   addSubscription: (sub: WebsiteSubscription) => void,
   removeSubscription: (sub: WebsiteSubscription) => void
 }

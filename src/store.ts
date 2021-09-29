@@ -15,7 +15,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     selectedShip: null,
     activeShip: null,
     permissions: {},
-    consumers: new Set(),
+    consumers: [],
     activeSubscriptions: [],
     init: async () => {
         const res = await getStorage(["popup", "ships", "password", "permissions"]);
@@ -39,7 +39,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         const airlock = await connectToShip(url, ship);
         set(state => ({ activeShip: ship, airlock: airlock }));
     },
-    disconnectShip: () => {
+    disconnectShip: async () => {
         const airlock = (get() as any).airlock;
         airlock.reset();
         set(state => ({ activeShip: null, airlock: null, activeSubscriptions: [] }))
@@ -53,12 +53,12 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     },
     denyPerms: () => set(state => ({ requestedPerms: null })),
     removeWholeDomain: async (url, ship, domain) => {
-        const res = await deleteDomain(url, ship, domain)
+        await deleteDomain(url, ship, domain);
         const perms = await fetchAllPerms(url);
         set(state => ({permissions: perms}))
     },
     revokePerm: async (url, ship, permRequest) => {
-        const res = await revokePerms(url, ship, permRequest);
+        await revokePerms(url, ship, permRequest);
         const perms = await fetchAllPerms(url);
         set(state => ({permissions: perms}))
     },
@@ -74,7 +74,7 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
         await savePassword(password);
     },
     resetApp: async () => await resetApp(),
-    addConsumer: (tab_id) => set(state => ({consumers: state.consumers.add(tab_id)})),
+    addConsumer: (consumer) => set(state => ({consumers: [...state.consumers, consumer]})),
     addSubscription: (sub) => set(state => ({activeSubscriptions: [...state.activeSubscriptions, sub]})),
     removeSubscription: (subToDelete) => {
         console.log(get().activeSubscriptions, "subs");

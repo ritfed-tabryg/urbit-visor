@@ -122,7 +122,6 @@ export async function deleteDomain(url: string, ship: string, domain: string){
       "entry-key": domain,
     }
   }
-  console.log(json, "json")
   return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
 }
 
