@@ -22,8 +22,8 @@ function promptPerms() {
 async function requestData(action: UrbitVisorAction, data: any = null): Promise<any> {
   return new Promise(async (resolve, reject) => {
     const response = await Messaging.callVisor({ app: "urbitVisor", action: action, data: data });
-    if (response.status === "locked") promptUnlock(), reject();
-    else if (response.status == "noperms") promptPerms(), reject();
+    if (response.status === "locked") promptUnlock(), resolve(response);
+    else if (response.status == "noperms") promptPerms(), resolve(response);
     else if (response.error) reject(response)
     else resolve(response)
   })

@@ -274,30 +274,22 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
           sub.subscription.app == request.data.payload.app &&
           sub.subscription.path == request.data.payload.path)
       });
-      console.log(state, "state")
-      console.log(request, "request")
-      console.log(state.activeSubscriptions, "active")
-      console.log(existing, "existing")
+      // console.log(state, "state")
+      // console.log(request, "request")
+      // console.log(state.activeSubscriptions, "active")
+      // console.log(existing, "existing")
       if (!existing) {
         const payload = Object.assign(request.data.payload, {
           event: (event: any) => handleEvent(event, request.data.payload, request.id),
           err: (error: any) => handleSubscriptionError(error, request.data, sender.tab.id, request.id)
         });
-        if (request.data.once){
-          state.airlock.subscribeOnce(request.data.payload.app, request.data.payload.path)
-            .then(event => {
-              console.log(event, "event from subscribeonce")
-              handleOneOffEvent(event, sender.tab.id, request.id)
-            })
-        } else{
         state.airlock.subscribe(payload)
           .then(res => {
-            console.log(res, "subscription added to airlock");
+            // console.log(res, "subscription added to airlock");
             state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: res, requestID: request.id });
             sendResponse({ status: "ok", response: res });
           })
           .catch(err => sendResponse({ status: "error", response: err }))
-        }
       } else if (existing.subscriber !== sender.tab.id){
         state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: existing.airlockID, requestID: request.id  });
         sendResponse({ status: "ok", response: "piggyback" })
@@ -306,9 +298,12 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
     case "unsubscribe":
       state.airlock.unsubscribe(request.data)
         .then(res => {
-          sendResponse({ status: "ok", response: res })
           const sub = state.activeSubscriptions.find(sub => sub.airlockID === request.data && sub.subscriber === sender.tab.id)
-          state.removeSubscription(sub)
+          // console.log(res, "unsubscription sent")
+          // console.log(state.activeSubscriptions, "subs from which to unsubscribe");
+          // console.log(sub, "sub to remove")
+          state.removeSubscription(sub);
+          sendResponse({ status: "ok", response: `unsubscribed to ${request.data}` });
         })
         .catch(err => sendResponse({ status: "error", response: err }))
       break;
