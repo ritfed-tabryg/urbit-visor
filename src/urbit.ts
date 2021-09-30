@@ -63,6 +63,7 @@ export async function initPerms(shipName: string, url: string) {
 export async function setPerms(airlock: Urbit) {
   const json = {
     "put-bucket": {
+      "desk": "landscape",
       "bucket-key": "urbit-visor-permissions",
       "bucket": {},
     }
@@ -83,6 +84,7 @@ export async function grantPerms(airlock: Urbit, perms: PermissionRequest) {
 
   const json = {
     "put-entry": {
+      "desk": "landscape",
       "bucket-key": "urbit-visor-permissions",
       "entry-key": perms.website,
       "value": value
@@ -105,6 +107,7 @@ export async function revokePerms(url: string, shipName: string, perms: Permissi
 
   const json = {
     "put-entry": {
+      "desk": "landscape",
       "bucket-key": "urbit-visor-permissions",
       "entry-key": perms.website,
       "value": value
@@ -120,6 +123,7 @@ export async function deleteDomain(url: string, ship: string, domain: string){
   airlock.ship = ship;
   const json = {
     "del-entry": {
+      "desk": "landscape",
       "bucket-key": "urbit-visor-permissions",
       "entry-key": domain,
     }
@@ -134,7 +138,7 @@ export async function checkPerms(url: string, domain: string) {
 }
 export async function fetchAllPerms(url: string) {
   const airlock = new Urbit(url, "");
-  const payload = { app: "settings-store", path: "/bucket/urbit-visor-permissions" };
+  const payload = { app: "settings-store", path: "/bucket/landscape/urbit-visor-permissions" };
   const res = await airlock.scry(payload);
   airlock.reset();
   return res
@@ -145,6 +149,7 @@ export async function wipeAllPerms(ship: string, url: string) {
   airlock.ship = ship;
   const json = {
     "del-bucket": {
+      "desk": "landscape",
       "bucket-key": "urbit-visor-permissions",
     }
   }

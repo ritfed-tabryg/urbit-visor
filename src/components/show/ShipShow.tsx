@@ -110,7 +110,7 @@ export default function ShipShow({ active, setActive, ...props }: ShipProps) {
   const disconnectButton = <button onClick={disconnect} className="single-button  connect-button red-bg">Disconnect</button>;
   const connectionButton = ship?.shipName == active?.shipName ? disconnectButton : connectButton;
 
-  function gotoLandscape() {
+  function gotoHome() {
     setError("");
     const url = decrypt(ship.encryptedShipURL, pw);
     if (url.length) {
@@ -154,7 +154,7 @@ if (!showPerms) return (
           <button onClick={gotoPerms} className="single-button cancel-button">Permissions</button>
           <div className="two-buttons second-row">
             <button onClick={gotoDashboard} className="cancel-button">Dashboard</button>
-            <button onClick={gotoLandscape} className="cancel-button right">Landscape</button>
+            <button onClick={gotoHome} className="cancel-button right">Home</button>
           </div>
         </motion.div>
   )
