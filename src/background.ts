@@ -15,7 +15,6 @@ async function init() {
   // listen to changes in popup preference in storage
   storageListener();
   messageListener();
-  portListener();
 };
 init();
 
@@ -46,16 +45,8 @@ function messageListener() {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.app == "urbit-visor-internal") handleInternalMessage(request, sender, sendResponse);
     else if (request.app == "urbitVisor") handleVisorCall(request, sender, sendResponse);
+    else sendResponse("ng")
     return true
-  });
-}
-
-function portListener() {
-  chrome.runtime.onConnect.addListener(function (port) {
-    console.log(port, "background script onConnect")
-    port.onMessage.addListener(function (msg) {
-      console.log(msg, "background script received message through port")
-    });
   });
 }
 
@@ -181,6 +172,7 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "cache_form_url":
       state.cacheURL(request.data.url);
+      sendResponse("ok");
       break;
   }
 }
@@ -206,7 +198,10 @@ function openWindow() {
 }
 type Lock = "locked" | "noperms";
 function requirePerm(state: UrbitVisorState, type: Lock, sendResponse: any) {
-  if (state.popupPreference == "window") openWindow();
+  if (state.popupPreference == "window") {
+    openWindow();
+    sendResponse("ng")
+  }
   else {
     chrome.browserAction.setBadgeText({ text: "1" });
     chrome.browserAction.setBadgeBackgroundColor({ color: "#FF0000" });
