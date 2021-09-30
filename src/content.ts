@@ -12,8 +12,9 @@ const injectScript = () => {
 };
 
 function injectModal() {
+  document.body.style.overflow = "hidden";
   const background = document.createElement('div');
-  background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100vw;height:100vh;transition: top 2s, opacity 2s;z-index:2147483646';
+  background.style.cssText = 'display:none;opacity:0;background-color:rgb(0,0,0,0.7);position:absolute;top:0;left:0;width:100%;height:100vh;transition: top 2s, opacity 2s;z-index:2147483646';
   background.id = "urbit-visor-modal-bg";
   const foreground = document.createElement('div');
   foreground.id = "urbit-visor-modal-fg";
