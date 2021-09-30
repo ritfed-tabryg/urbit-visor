@@ -94,7 +94,3 @@ This typically happens when you have spawned a brand new comet which has not gon
 ## Credit
 
 Urbit Visor was designed and built by [dcSpark](https://dcspark.io) from scratch and was made possible thanks to the [Urbit Foundation Grant Program](https://urbit.org/grants).
-
-```
-
-```
