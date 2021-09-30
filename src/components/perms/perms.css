@@ -1,4 +1,3 @@
-
 .requesting-domain{
     display: block;
     font-size: 1rem;
@@ -60,21 +59,19 @@
     border-bottom: 1px solid grey;
 }
 
-
 .permission-string{
     margin: 0.3rem;
     margin-left: 1.25rem;
-    cursor: auto !important;
 }
-/* .permission-string:hover{
+.permission-string:hover{
   color: red;
   font-weight: 500;
-  cursor: pointer;
+  cursor: pointer !important;
 }
 .permission-string .chip:hover{
   background-color: red;
-  cursor: pointer;
-} */
+  cursor: pointer !important;
+}
 ul{
     margin: 2rem 0;
     list-style: none;
