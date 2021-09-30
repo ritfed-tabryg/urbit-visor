@@ -52,24 +52,24 @@ async function checkPermissions(): Promise<any> {
   thread: (payload: Thread<any>) => requestData("thread", payload),
   subscribe: (payload: SubscriptionRequestInterface, once?: boolean) => requestData("subscribe", { payload: payload, once: once }),
   unsubscribe: (payload: number) => requestData("unsubscribe", payload),
-  on: (eventType: string, details: EventSubscription, callback: Function) => addListener(eventType, details, callback),
+  on: (eventType: string, keys: string[], callback: Function) => addListener(eventType, keys, callback),
   off: (subscription: Subscription) => subscription.unsubscribe()
 };
 
-type EventSubscription = {
-  gallApp?: string,
-  dataType?: string
-}
-function addListener(eventType: string, details: EventSubscription, callback: Function) {
-  console.log(eventType, "event type")
-  console.log(details, "details")
+function addListener(eventType: string, keys: string[], callback: Function) {
+  const get_in = (object: any, array: string[]): any => {
+    if (object && typeof object === "object" && array.length) return get_in(object[array[0]], array.slice(1))
+    else return object
+  }
   const messages = fromEvent<MessageEvent>(window, 'message');
   return messages.subscribe((message) => {
     const data = message?.data?.event?.data;
     if (message.data.app == "urbitVisorEvent" && message.data.event.action == eventType) {
-      if (data?.[details?.gallApp] && data?.[details?.gallApp][details?.dataType] ) callback(message.data.event.data[details.gallApp][details.dataType])
-      else if (!details.dataType && data?.[details?.gallApp]) callback(message.data.event.data[details.gallApp])
-      else if(!details.gallApp) callback(message)
+      if (!data) callback()
+      if (data && keys.length) {
+        const result = get_in(data, keys);
+        if (result) callback(result);
+      }
     }
   });
 }
