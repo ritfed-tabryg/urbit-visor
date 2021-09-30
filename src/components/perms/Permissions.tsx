@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { fetchAllPerms, revokePerms, deleteDomain } from "../../urbit";
+import { fetchAllPerms } from "../../urbit";
 import { Messaging } from "../../messaging";
 import "./perms.css";
 import Sigil from "../ui/svg/Sigil";
@@ -38,14 +38,16 @@ export default function Permissions({ ship, shipURL, ...props }: PermissionsProp
             .then(res => {
                 fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err, "error"))
     };
     function revokePerm(domain: string, perm: Permission) {
         Messaging.sendToBackground({ action: "revoke_perm", data: {url: shipURL, ship: ship.shipName, request: { website: domain, permissions: [perm] }}})
             .then(res => {
-                fetchAllPerms(shipURL).then(res => setPerms(res.bucket));
+                fetchAllPerms(shipURL).then(res => {
+                    setPerms(res.bucket)
+                });
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err, "error"))
     }
 
 
@@ -146,7 +148,7 @@ function IndividualPerm({ perm, promptRevokePerm }: IPProps) {
     const revoke = () => promptRevokePerm(perm);
     return (
         <>
-            <div className="permission-string" key={perm}>
+            <div onClick={revoke} className="permission-string" key={perm}>
                 <Chip type={"old"} perm={perm} />
             </div>
         </>

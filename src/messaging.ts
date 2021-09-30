@@ -76,7 +76,8 @@ export const Messaging = {
                 console.log(request, "event received by content script")
                 window.postMessage(request, window.origin);
                 sendResponse("ok")
-            }
+            } else sendResponse("ng")
+            return true
         }
         );
     }

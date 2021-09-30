@@ -113,7 +113,9 @@ export async function revokePerms(url: string, shipName: string, perms: Permissi
       "value": value
     }
   }
-  return await airlock.poke({app: "settings-store", mark: "settings-event", json: json })
+  const poke =  await airlock.poke({app: "settings-store", mark: "settings-event", json: json });
+  airlock.reset();
+  return poke
 }
 
 export async function deleteDomain(url: string, ship: string, domain: string){
@@ -137,7 +139,9 @@ export async function checkPerms(url: string, domain: string) {
 export async function fetchAllPerms(url: string) {
   const airlock = new Urbit(url, "");
   const payload = { app: "settings-store", path: "/bucket/landscape/urbit-visor-permissions" };
-  return await airlock.scry(payload)
+  const res = await airlock.scry(payload);
+  airlock.reset();
+  return res
 }
 
 export async function wipeAllPerms(ship: string, url: string) {
