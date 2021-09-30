@@ -42,17 +42,24 @@ After a user installs the Urbit Visor extension into their web browser, the Urbi
 
 Below you will find the API which the current version of Urbit Visor supports. If a given method requires permission, this means that the user must grant the website permission to have access to use this method. If this authorization has not yet been given, Urbit Visor will automatically ask the user to authorize said permission upon attempt to use said method.
 
-| Method                  | Description                                                                  | Requires Permission | Input | Returns   |
-| ----------------------- | ---------------------------------------------------------------------------- | ------------------- | ----- | --------- |
-| `isConnected`           | Returns whether or not the user actively has an Urbit ship connected.        | No                  | ()    | `boolean` |
-| `getShip`               | Returns the user's ship @p.                                                  | Yes                 | ()    | `string`  |
-| `getURL`                | Returns the user's ship URL.                                                 | Yes                 | ()    | `string`  |
-| `scry`                  | Issues a scry on the user's ship and returns the result.                     | Yes                 | ``    | ``        |
-| `poke`                  | Issues a poke on the user's ship and returns the result.                     | Yes                 | ``    | ``        |
-| `thread`                | Runs a spider thread on the user's ship and returns the result.              | Yes                 | ``    | ``        |
-| `subscribe`             | Returns the user's ship URL.                                                 | Yes                 | ``    | ``        |
-| `requestPermissions`    | Returns the user's ship URL.                                                 | No                  | ``    | ``        |
-| `authorizedPermissions` | Returns the permissions that the user has authorized for the current domain. | No                  | ()    | ``        |
+| Method                  | Description                                                                  | Requires Permission | Input                                                                     | Returns                      |
+| ----------------------- | ---------------------------------------------------------------------------- | ------------------- | -----                                                                     | ---------                    |
+| `isConnected`           | Returns whether or not the user actively has an Urbit ship connected.        | No                  | `()`                                                                      | `boolean`                    |
+| `getShip`               | Returns the user's ship @p.                                                  | Yes                 | `()`                                                                      | `string`                     |
+| `getURL`                | Returns the user's ship URL.                                                 | Yes                 | `()`                                                                      | `string`                     |
+| `scry`                  | Issues a scry on the user's ship and returns the result.                     | Yes                 | `({app: string, path: string})`                                           | `any`                        |
+| `poke`                  | Issues a poke on the user's ship and returns the result.                     | Yes                 | `({app: string, mark: string, json: object})`                             | `number` (request id)        |
+| `thread`                | Runs a spider thread on the user's ship and returns the result.              | Yes                 | `({threadName: string, inputMark: string, outputMark: string, body: any})`| `any`                        |
+| `subscribe`             | Subscribes to a gall app.                                                    | Yes                 | `({app: gall-app, path: /path})`                                          | `number` (request id)        |
+| `unsubscribe`           | Unsubscribes from a gall app.                                                | Yes                 | `({app: gall-app, path: /path})`                                          | `number` (request id)        |
+| `requestPermissions`    | Requests permissions from a given URL to Urbit Visor.                        | No                  | `Array<Permission>`                                                       | `void`                       |
+| `authorizedPermissions` | Returns the permissions that the user has authorized for the current domain. | No                  | `()`                                                                      | `Array<Permission>`          |
+| `on`                    | Adds an event listener for a subscription to Urbit Visor Events.             | No                  | `(eventType: string, keys: Array<string>, callback: Function)`            | `Subscription`               |
+| `off`                   | Removes an event listener set up by `on()`.                                  | No                  | `Subscription` (returned by `.on()`)                                      | undefined                    |
+
+The `.on()` method is most complicated. `eventType` is an `UrbitVisorEventType`, which you can see defined in `types.ts`. The second argument, an array of string, is the keys of the expected data structure sent by your urbit.
+e.g., if your urbit sends you a chat message, `{"graph-update": {"add-nodes": {"resource", resource, "nodes": {"post": post, "children: []}}} you can add a listener to the exact key you need by passing an array of keys, such as ["graph-update", "add-nodes"], which will then be sent as the sole argument to the callback you pass as third argument of the `.on` function.
+If you want the whole data structure you can just pass an empty array.
 
 ## FAQ
 
