@@ -66,7 +66,7 @@ function addListener(eventType: string, keys: string[], callback: Function) {
     const data = message?.data?.event?.data;
     if (message.data.app == "urbitVisorEvent" && message.data.event.action == eventType) {
       if (!data) callback()
-      if (data && keys.length) {
+      else {
         const result = get_in(data, keys);
         if (result) callback(result);
       }
