@@ -57,7 +57,7 @@ Below you will find the API which the current version of Urbit Visor supports. I
 | `requestPermissions`    | Requests permissions from a given URL to Urbit Visor.                        | No                  | `Array<Permission>`                                                        | `void`                |
 | `authorizedPermissions` | Returns the permissions that the user has authorized for the current domain. | No                  | `()`                                                                       | `Array<Permission>`   |
 | `on`                    | Adds an event listener for a subscription to Urbit Visor Events.             | No                  | `(eventType: string, keys: Array<string>, callback: Function)`             | `Subscription`        |
-| `off`                   | Removes an event listener set up by `on()`.                                  | No                  | `Subscription` (returned by `.on()`) https://cardanocataly.st/             | undefined             |
+| `off`                   | Removes an event listener set up by `on()`.                                  | No                  | `Subscription` (returned by `.on()`)                | undefined             |
 
 ### .on()
 
@@ -68,7 +68,7 @@ The `.on()` method is a useful helper method which simplifies adding event liste
 E.g. Let's take a look at a graph-store chat message json:
 
 ```
-{"graph-update": {"add-nodes": {"resource", resource, "nodes": {"post": post, "children: []}}}
+{"graph-update": {"add-nodes": {"resource": resource, "nodes": {"post": post, "children: []}}}
 ```
 
 You can add a listener for the exact key you need by passing an array of keys:
