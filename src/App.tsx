@@ -10,7 +10,7 @@ import PermissionsPrompt from "./components/perms/PermissionsPrompt";
 import Settings from "./components/settings/Settings";
 import About from "./components/ui/About";
 import { AnimatePresence } from "framer-motion";
-import { EncryptedShipCredentials, UrbitVisorState, PermissionRequest } from "./types/types";
+import { EncryptedShipCredentials } from "./types/types";
 import { Messaging } from "./messaging";
 import {
   MemoryRouter as Router,
@@ -20,7 +20,6 @@ import {
   useHistory
 } from "react-router-dom";
 import { LocationDescriptor } from "history";
-import { useStore } from "./store";
 
 
 import "./App.css";
@@ -34,8 +33,6 @@ export default function App() {
         setActive(state.activeShip);
         setPermsRequest(state.requestedPerms);
         setInteracting(state.requestedPerms != undefined || state.first);
-        // setCachedURL(state.cached_url);
-        // setRequestedInput(state.requestedPerms);
         route(state);
       })
   }, [])
@@ -47,9 +44,6 @@ export default function App() {
 
   const history = useHistory();
 
-  async function readState(): Promise<any> {
-    return Messaging.sendToBackground({ action: "state" });
-  };
 
   function route(state: any): void{
     if (state.first)  history.push("/welcome")

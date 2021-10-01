@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 
 
 export default function Setup() {
-    // const setMasterPassword = useStore(state => state.setMasterPassword);
     const history = useHistory();
     const [pw, setpw] = useState("");
     const [tooltip, setTooltip] = useState(false);

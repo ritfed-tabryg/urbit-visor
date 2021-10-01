@@ -1,7 +1,6 @@
-import Urbit from "@urbit/http-api";
 import { UrbitVisorState } from "./types/types";
-import { getStorage, decrypt, initStorage, storeCredentials, removeShip, setPopupPreference, reEncryptAll, savePassword, resetApp } from "./storage";
-import { fetchAllPerms, connectToShip, grantPerms, deleteDomain, revokePerms } from "./urbit";
+import { getStorage, initStorage, storeCredentials, removeShip, setPopupPreference, reEncryptAll, savePassword, resetApp } from "./storage";
+import { connectToShip, grantPerms, deleteDomain, revokePerms } from "./urbit";
 import create from 'zustand';
 
 
@@ -54,13 +53,9 @@ export const useStore = create<UrbitVisorState>((set, get) => ({
     denyPerms: () => set(state => ({ requestedPerms: null })),
     removeWholeDomain: async (url, ship, domain) => {
         await deleteDomain(url, ship, domain);
-        // const perms = await fetchAllPerms(url);
-        // set(state => ({permissions: perms}))
     },
     revokePerm: async (url, ship, permRequest) => {
         const res = await revokePerms(url, ship, permRequest);
-        // const perms = await fetchAllPerms(url);
-        // set(state => ({permissions: perms}))
     },
     loadPerms:  (permissions:any) => {
         set(state => ({permissions: permissions}))

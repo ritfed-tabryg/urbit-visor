@@ -27,7 +27,7 @@ function storageListener() {
       if (state.activeShip && deletedWasActive(state.activeShip, changes.ships.newValue, changes.ships.oldValue)) {
         state.disconnectShip();
       }
-      state.init().then(res => console.log("visor state initialized"))
+      state.init().then(res => console.log(""))
     }
   });
 }
@@ -73,10 +73,7 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       break;
     case "set_master_password":
       state.setMasterPassword(request.data.password)
-        .then(res => {
-          console.log("password set")
-          sendResponse("ok");
-        });
+        .then(res => sendResponse("ok"));
       break;
     case "add_ship":
       state.addShip(request.data.ship, request.data.url, request.data.code, request.data.pw)
@@ -112,7 +109,6 @@ function handleInternalMessage(request: UrbitVisorInternalComms, sender: any, se
       sendResponse("ok");
       break;
     case "grant_perms":
-      console.log(request, "granting perms")
       state.grantPerms(request.data.request)
         .then(res => {
           chrome.browserAction.setBadgeText({ text: "" });
@@ -269,10 +265,6 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
           sub.subscription.app == request.data.payload.app &&
           sub.subscription.path == request.data.payload.path)
       });
-      // console.log(state, "state")
-      // console.log(request, "request")
-      // console.log(state.activeSubscriptions, "active")
-      // console.log(existing, "existing")
       if (!existing) {
         const payload = Object.assign(request.data.payload, {
           event: (event: any) => handleEvent(event, request.data.payload, request.id),
@@ -280,7 +272,6 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
         });
         state.airlock.subscribe(payload)
           .then(res => {
-            // console.log(res, "subscription added to airlock");
             state.addSubscription({ subscription: request.data.payload, subscriber: sender.tab.id, airlockID: res, requestID: request.id });
             sendResponse({ status: "ok", response: res });
           })
@@ -294,9 +285,6 @@ function respond(state: UrbitVisorState, request: any, sender: any, sendResponse
       state.airlock.unsubscribe(request.data)
         .then(res => {
           const sub = state.activeSubscriptions.find(sub => sub.airlockID === request.data && sub.subscriber === sender.tab.id)
-          // console.log(res, "unsubscription sent")
-          // console.log(state.activeSubscriptions, "subs from which to unsubscribe");
-          // console.log(sub, "sub to remove")
           state.removeSubscription(sub);
           sendResponse({ status: "ok", response: `unsubscribed to ${request.data}` });
         })
@@ -325,8 +313,6 @@ function handleEvent(event: any, subscription: SubscriptionRequestInterface, req
       state.activeSubscriptions
         .filter(sub => sub.subscription.app === subscription.app && sub.subscription.path === subscription.path)
         .map(sub => sub.subscriber)
-    // console.log(subscription, "subscription issuing the SSE")
-    // console.log(state.activeSubscriptions, "state")
     Messaging.pushEvent({ action: "sse", data: event, requestID: requestID}, new Set(recipients))
   }, 2000)
 }

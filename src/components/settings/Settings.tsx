@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useStore } from "../../store";
 import Sigil from "../../components/ui/svg/Sigil"
-import { validate, decrypt, savePassword, reEncryptAll } from "../../storage";
-import { EncryptedShipCredentials, PermissionRequest } from "../../types/types";
+import { validate } from "../../storage";
+import { EncryptedShipCredentials } from "../../types/types";
 import ConfirmRemove from "./ConfirmRemove";
 import { whatShip, processName } from "../../utils";
 import { Messaging } from "../../messaging";
@@ -52,9 +52,9 @@ export default function Settings() {
 function SettingsMenu() {
   return (
     <motion.div
-    initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        exit={{opacity: 0}}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
       <div className="settings-option">
         <Link to="/settings/popup">
@@ -154,7 +154,7 @@ function SettingsPopup() {
           <p> Show Modal in Page
           </p>
           <input className="toggle" name="popup" type="radio" id="modal" value="modal" checked={setting == "modal"}
-            onChange={handleChange} onClick={handleClick} 
+            onChange={handleChange} onClick={handleClick}
           />
         </div>
         <div className="option">

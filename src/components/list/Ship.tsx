@@ -3,10 +3,8 @@ import Sigil from "../ui/svg/Sigil"
 import { EncryptedShipCredentials } from "../../types/types";
 import { whatShip, processName } from "../../utils"
 
-import Spinner from "../ui/svg/Spinner";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Messaging } from "../../messaging";
-import { useStore } from "../../store";
 
 
 

@@ -1,6 +1,5 @@
 import Urbit from "@urbit/http-api";
 import {useStore} from "./store";
-import { Scry, Thread, Poke, SubscriptionRequestInterface } from "@urbit/http-api/src/types"
 import { EncryptedShipCredentials, PermissionRequest } from "./types/types";
 
 
@@ -24,11 +23,11 @@ export async function connectToShip(url: string, ship: EncryptedShipCredentials)
     // airlock.verbose = true;
     airlock.onError = async (err) => {
       airlock.reset();
-      console.log(err, "errah");
+      console.log(err, "error");
       await connectShip(url, ship);
     }
-    airlock.onRetry = () => console.log("airlock retrying")
-    airlock.onOpen = () => console.log("airlock open!")
+    airlock.onRetry = () => console.log("")
+    airlock.onOpen = () => console.log("")
     await airlock.poke({ app: 'hood', mark: 'helm-hi', json: 'opening airlock' });
     for (let sub of activeSubscriptions) await airlock.subscribe(sub.subscription)
     return airlock;
