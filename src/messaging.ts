@@ -23,7 +23,6 @@ export const Messaging = {
         );
     },
     pushEvent: function (event: UrbitVisorEvent, recipients: Set<number>) {
-        console.log(event, "pushing event")
       for (let tab_id of recipients) chrome.tabs.sendMessage(tab_id, { app: "urbitVisorEvent", event: event})
     },
     callVisor: function ({ app, action, data }: UrbitVisorRequest): Promise<UrbitVisorResponse> {
@@ -32,7 +31,6 @@ export const Messaging = {
             // first add listener for the eventual response
             window.addEventListener('message', function responseHandler(e) {
                 const response = e.data;
-                // console.log(e, "content script receiving message")
                 // ignore messages with the wrong request app name, wrong id, or null
                 if (response.app !== "urbitVisorResponse" || response.id !== requestId) return;
                 // remove listener else they keep stacking up
@@ -45,14 +43,7 @@ export const Messaging = {
             window.postMessage({ action, data, app, id: requestId }, window.origin);
         });
     },
-    createProxyController: () => {
-        // const port = chrome.runtime.connect({name: "urbitVisorConnection"});
-        // // const port2 = chrome.tabs.connect({name: "urbitVisorConnection"});
-        // port.postMessage({joke: "Knock knock"});
-        // port.onMessage.addListener(function(msg) {
-        //     console.log(msg, "content script received message through port");
-        //   });
-          
+    createProxyController: () => {          
         //listen to function calls from webpage
         window.addEventListener('message', async function (e) {
             const request = e.data;
@@ -61,10 +52,6 @@ export const Messaging = {
             request.origin = e.origin;
             Messaging.relayToBackground(request).then((response: UrbitVisorResponse) => {
                 // relay back responses to webpage
-                if (!response) {
-                    console.log(request, "request bugging at proxy controller")
-                    console.log(response, "response bugging at proxy controller")
-                }
                 window.postMessage({ app: "urbitVisorResponse", id: request.id, status: response?.status, response: response?.response }, window.origin)
             })
             return;
@@ -73,7 +60,6 @@ export const Messaging = {
         chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // relay events to webpage
             if (request.app == "urbitVisorEvent") {
-                console.log(request, "event received by content script")
                 window.postMessage(request, window.origin);
                 sendResponse("ok")
             } else sendResponse("ng")

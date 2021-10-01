@@ -1,9 +1,6 @@
 import * as CryptoJS from "crypto-js";
 import { EncryptedShipCredentials, PopupPreference, PermissionsGraph } from "./types/types";
 
-interface Permission{
-    thing: string
-}
 
 interface Storage{
     ships?: EncryptedShipCredentials[],

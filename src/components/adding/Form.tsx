@@ -1,11 +1,8 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Spinner from "../ui/svg/Spinner";
-import { useHistory } from "react-router-dom";
-import { EncryptedShipCredentials } from "../../types/types";
 import { fetchShipname } from "../../urbit";
 import { Messaging } from "../../messaging";
-import { useStore } from "../../store";
 import "./adding.css";
 import { motion } from "framer-motion";
 

@@ -1,7 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
 import { sigil, reactRenderer } from '@tlon/sigil-js';
-import comet from "../../../icons/comet.svg";
 interface SigilProps {
   patp: string,
   size: number

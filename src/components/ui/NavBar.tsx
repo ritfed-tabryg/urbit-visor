@@ -1,9 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useOnClickOutside } from '../../hooks/hooks';
-import { useStore } from "../../store";
 import "./navbar.css";
 import Sigil from "./svg/Sigil"
-import logo from "../../icons/urbit.svg";
 import visorLogo from "../../icons/visor.png"
 import RocketIcon from "../../icons/rocket";
 import SettingsIcon from "../../icons/settings";
@@ -16,7 +14,6 @@ interface NavbarProps{
   interacting: boolean
 }
 export default function NavBar({interacting, active}: NavbarProps) {
-  console.log(interacting, "interacting")
   const history = useHistory();
   const urbitlogo = useRef(null);
   const [modalOpen, toggleModal] = useState(false);

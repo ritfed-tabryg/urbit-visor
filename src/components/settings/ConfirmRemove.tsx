@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sigil from "../ui/svg/Sigil";
 import { useHistory } from "react-router-dom";
 import { EncryptedShipCredentials } from "../../types/types";
-import { decrypt, removeShip, } from "../../storage";
+import { decrypt  } from "../../storage";
 import { Messaging } from "../../messaging";
 import { motion } from "framer-motion";
 
