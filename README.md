@@ -74,7 +74,7 @@ E.g. Let's take a look at a graph-store chat message json:
 You can add a listener for the exact key you need by passing an array of keys:
 
 ```
-urbitVisor.on("sse", ["graph-update", "add-nodes", "nodes", "children"] , () => someCallback)
+urbitVisor.on("sse", ["graph-update", "add-nodes", "nodes", "children"] , (data) => someCallback(data))
 ```
 
 This will thus sent the sole argument, `children`, to the callback function that you call.
